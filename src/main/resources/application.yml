@@ -1,0 +1,201 @@
+server:
+  port: ${SERVER_PORT:9797}
+
+spring:
+  application:
+    name: financial-coach-backend
+  # --- Envoi de mails (Gmail) ---
+  # Renseigner MAIL_USERNAME (adresse Gmail) et MAIL_PASSWORD (mot de passe d'application Gmail,
+  # PAS le mot de passe du compte — voir https://myaccount.google.com/apppasswords).
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:mli.2023.fr@gmail.com}
+    password: ${CLE_GOOGLE_COACH_FINANCIER:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+app:
+  data:
+    # Racine du répertoire de données consolidé (contient data.json, banking, catalogue, transaction).
+    dir: ${DATA_DIR:./data}
+    # Fichier bancaire consolidé dans le répertoire /data (racine du projet).
+    banking-file: ${BANKING_FILE:./data/banking_demo_normalized.json}
+  # Conseiller destinataire du dossier de suivi de fin de conversation (SEUL destinataire automatique).
+  # Par défaut : le compte mail configuré (utile pour tester la démo en local).
+  advisor:
+    name: ${ADVISOR_NAME:Votre conseiller}
+    email: ${ADVISOR_EMAIL:${MAIL_USERNAME:coach.financier.pay@gmail.com}}
+  # Nom du client (facultatif : le fichier bancaire ne contient qu'une référence).
+  customer:
+    name: ${CUSTOMER_NAME:}
+  # Page coach (chat).
+  chat:
+    # Nombre de messages d'historique transmis à l'IA à CHAQUE appel : 0 = TOUT l'historique (défaut),
+    # ce qui permet au Coach de savoir tout ce qui a déjà été échangé avec le client.
+    # Une valeur > 0 borne volontairement le contexte (coût / taille de requête).
+    history-limit: ${CHAT_HISTORY_LIMIT:0}
+  # Dossier de suivi de fin de conversation.
+  suivi:
+    # Format de la pièce jointe (brouillon d'email client) : txt | html | eml.
+    attachment-format: ${SUIVI_ATTACHMENT_FORMAT:eml}
+    # Lien de prise de rendez-vous inséré dans le brouillon client (facultatif ; vide = aucun lien).
+    advisor-appointment-url: ${ADVISOR_APPOINTMENT_URL:https://particuliers.sg.fr/vos-rendez-vous}
+    # Lien « Ouvrir le dossier du client » ajouté au MAIL CONSEILLER : il pointe par défaut vers la page
+    # « Centre d'appels » de l'IHM (app.advisor-feedback.frontend-url + /#/centre-appels/<sessionId>), qui
+    # ouvre directement la pop-in du dossier. Cette URL-ci n'est qu'un REPLI, utilisé quand aucune IHM n'est
+    # configurée (parse vide = lien relatif vers l'IHM si la base est renseignée, sinon aucun lien).
+    dossier-url: ${SUIVI_DOSSIER_URL:https://particuliers.sg.fr}
+    # Email conseiller envoyé en HTML (liens cliquables) ; false = texte brut.
+    advisor-mail-html: ${SUIVI_ADVISOR_MAIL_HTML:true}
+    # Numéro de téléphone du client, utilisé par le lien d'APPEL ajouté au mail conseiller et affiché
+    # dans l'annuaire du centre d'appels. Renseigné en dur pour la DÉMO ; vide = aucun lien d'appel.
+    # Le numéro n'est JAMAIS produit par l'IA : il vient uniquement de cette configuration.
+    customer-phone: ${SUIVI_CUSTOMER_PHONE:0644910925}
+  # --- Module Marketing Intelligence (POC, AUCUNE base de données : fichiers JSONL/JSON) ---
+  # Les événements sont extraits lors du MÊME appel IA que le dossier de suivi (champ marketingEvents)
+  # puis stockés anonymisés dans <dir>/events/, agrégés par le batch dans <dir>/aggregates/
+  # et interprétés par l'agent `agent/marketing.txt` dans <dir>/reports/.
+  marketing:
+    enabled: ${MARKETING_ENABLED:true}
+    # Autorise/identifie les données de démonstration (les événements portent demo=true).
+    demo-mode: ${MARKETING_DEMO_MODE:false}
+    dir: ${MARKETING_DIR:./data/marketing}
+    # Sel de pseudonymisation des identifiants clients (jamais de données personnelles sur disque).
+    hash-salt: ${MARKETING_HASH_SALT:coach-financier-poc}
+    # Bornes des tranches de montant (configurables, §7) : 0-2000, 2000-5000, ... puis 30000_PLUS.
+    amount-bounds: ${MARKETING_AMOUNT_BOUNDS:2000,5000,10000,15000,30000}
+    extractor-version: ${MARKETING_EXTRACTOR_VERSION:marketing-events-v1}
+    prompt-version: ${MARKETING_PROMPT_VERSION:marketing-extractor-v1}
+    # Poids du SCORE d'intérêt (§17) : calculés par le code, jamais par l'IA.
+    score:
+      recommended: ${MARKETING_SCORE_RECOMMENDED:1}
+      interest-low: ${MARKETING_SCORE_INTEREST_LOW:0}
+      interest-medium: ${MARKETING_SCORE_INTEREST_MEDIUM:2}
+      interest-high: ${MARKETING_SCORE_INTEREST_HIGH:3}
+      comparison: ${MARKETING_SCORE_COMPARISON:2}
+      subscription: ${MARKETING_SCORE_SUBSCRIPTION:4}
+      appointment: ${MARKETING_SCORE_APPOINTMENT:5}
+      rejected: ${MARKETING_SCORE_REJECTED:-5}
+  # --- Module Qualité & Satisfaction du Coach IA (POC, AUCUNE base de données) ---
+  # Deux dimensions SÉPARÉES : satisfaction client (pop-in de fin de conversation) et conformité du
+  # Coach (contrôles automatiques). Les contrôles réellement exécutés sont listés ci-dessous : ceux
+  # qui ne sont pas listés ne sont NI exécutés NI affichés (jamais de faux « 0 »).
+  quality:
+    enabled: ${QUALITY_ENABLED:true}
+    demo-mode: ${QUALITY_DEMO_MODE:false}
+    dir: ${QUALITY_DIR:./data/quality}
+    # Sel de pseudonymisation des identifiants clients (aucun identifiant en clair sur disque).
+    hash-salt: ${QUALITY_HASH_SALT:coach-financier-poc}
+    # Longueur maximale du commentaire libre (tronqué, jamais interprété comme une instruction).
+    comment-max-length: ${QUALITY_COMMENT_MAX_LENGTH:1000}
+    # Nombre maximal de commentaires anonymisés transmis à l'agent IA Qualité.
+    max-comments-to-analyze: ${QUALITY_MAX_COMMENTS:30}
+    # En dessous de ce volume d'avis, le rapport IA doit rester prudent (échantillon insuffisant).
+    sufficient-sample-size: ${QUALITY_SAMPLE_SIZE:10}
+    prompt-version: ${QUALITY_PROMPT_VERSION:quality-report-v1}
+    # Contrôles exécutés (vide = valeur par défaut) :
+    # CREDIT_SIMULATION_VIOLATION, PRODUCT_MISMATCH, INVENTED_URL, UNANSWERED_REQUEST,
+    # MISSING_DATA_NOT_RETRIEVED, EXCESSIVE_REPETITION
+    checks: ${QUALITY_CHECKS:}
+    # Sévérités (configurables, §21) — valeurs par défaut en commentaire.
+    severity:
+      credit-simulation: ${QUALITY_SEVERITY_CREDIT:HIGH}
+      product-mismatch: ${QUALITY_SEVERITY_PRODUCT:HIGH}
+      invented-url: ${QUALITY_SEVERITY_URL:HIGH}
+      unanswered-request: ${QUALITY_SEVERITY_UNANSWERED:MEDIUM}
+      missing-data: ${QUALITY_SEVERITY_MISSING_DATA:MEDIUM}
+      excessive-repetition: ${QUALITY_SEVERITY_REPETITION:LOW}
+  # --- Module Feedback Conseiller (POC, AUCUNE base de données) ---
+  # Le conseiller évalue la PERTINENCE du travail du Coach (résumé, besoin, produits, intérêts, suivi,
+  # email). Indépendant du module Qualité : sa satisfaction, le point de jonction est le sessionId.
+  # Aucun feedback ne modifie automatiquement le Coach (prompt, règle, seuil, catalogue, code).
+  advisor-feedback:
+    enabled: ${ADVISOR_FEEDBACK_ENABLED:true}
+    demo-mode: ${ADVISOR_FEEDBACK_DEMO_MODE:false}
+    dir: ${ADVISOR_FEEDBACK_DIR:./data/advisor-feedback}
+    # Sel de pseudonymisation du conseiller (nom jamais stocké, jamais exposé dans les agrégats).
+    hash-salt: ${ADVISOR_FEEDBACK_HASH_SALT:coach-financier-poc}
+    comment-max-length: ${ADVISOR_FEEDBACK_COMMENT_MAX_LENGTH:1000}
+    # En dessous de ce volume, le rapport IA reste prudent (échantillon insuffisant).
+    sufficient-sample-size: ${ADVISOR_FEEDBACK_SAMPLE_SIZE:5}
+    prompt-version: ${ADVISOR_FEEDBACK_PROMPT_VERSION:advisor-feedback-v1}
+    # Base du LIEN D'ÉVALUATION inséré dans le mail conseiller (bouton « Évaluer le suivi du Coach »).
+    # Exemple : http://localhost:9898 -> <base>/#/advisor-feedback/session/<sessionId>.
+    # Vide = lien relatif (utilisable depuis le navigateur du conseiller sur le même hôte).
+    frontend-url: ${ADVISOR_FEEDBACK_FRONTEND_URL:http://localhost:9898}
+  # --- Atelier d'amélioration itérative des prompts (POC, AUCUNE base de données) ---
+  # Deux agents internes : « Agent B » contrôle la réponse du Coach, « Agent A » améliore la ZONE
+  # ÉDITABLE du prompt (délimitée par [[[ … ]]] dans agent/*.txt). Aucune version candidate ne
+  # modifie la production : la promotion reste une ACTION HUMAINE explicite. Une campagne exige un
+  # fournisseur IA RÉEL (le mode démo ne dépend pas du prompt).
+  prompt-optimization:
+    enabled: ${PROMPT_OPT_ENABLED:true}
+    demo-mode: ${PROMPT_OPT_DEMO_MODE:false}
+    dir: ${PROMPT_OPT_DIR:./data/prompt-optimization}
+    # Plafond ABSOLU et CUMULÉ d'itérations par campagne (recommandation §33 ; jamais au-delà de 50).
+    max-iterations: ${PROMPT_OPT_MAX_ITERATIONS:10}
+    # Longueur maximale d'une zone éditable proposée par l'Agent A (garde-fou anti-dérive).
+    max-editable-section-length: ${PROMPT_OPT_MAX_SECTION_LENGTH:200000}
+    hash-salt: ${PROMPT_OPT_HASH_SALT:coach-financier-poc}
+  mail:
+    # Active/désactive l'envoi de mails (permet de démarrer sans configuration mail).
+    enabled: ${MAIL_ENABLED:true}
+    # Expéditeur affiché. Par défaut : le compte Gmail configuré (MAIL_USERNAME).
+    from: ${MAIL_FROM:${MAIL_USERNAME:}}
+    from-name: ${MAIL_FROM_NAME:Coach financier}
+  ai:
+    openai:
+      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      api-key: ${OPENAI_API_KEY:}
+      model: ${OPENAI_MODEL:gpt-4o-mini}
+      # Plafond de SORTIE demandé au modèle. Reste dans la limite documentée du modèle (gpt-4o-mini :
+      # 16384) : chez OpenAI, la dépasser fait échouer l'appel. Un plafond trop BAS, lui, coupe la réponse.
+      max-tokens: ${OPENAI_MAX_TOKENS:16384}
+    deepseek:
+      base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
+      api-key: ${DEEPSEEK_API_KEY:}
+      model: ${DEEPSEEK_MODEL:deepseek-chat}
+      # deepseek-chat plafonne à 8192 (défaut du fournisseur : 4096, qui coupait les réponses longues).
+      # Mesuré : une valeur plus haute est acceptée mais reste plafonnée par le modèle — l'augmenter
+      # n'apporte donc rien ici ; avec un autre modèle, l'ajuster explicitement.
+      max-tokens: ${DEEPSEEK_MAX_TOKENS:8192}
+    # Serveur LOCAL compatible OpenAI (LM Studio, Ollama, llama.cpp…) : aucun compte, aucune clé API.
+    # LM Studio : activer le serveur (Developer ▸ Start Server, port 1234 par défaut) et charger le modèle
+    # AVEC UN CONTEXTE SUFFISANT (4 096 par défaut est trop petit : une conversation du coach envoie
+    # facilement 6 000 à 15 000 jetons). L'identifiant du modèle est celui de GET /v1/models.
+    local:
+      base-url: ${LOCAL_BASE_URL:http://localhost:1234/v1}
+      # Laissez VIDE : un serveur local n'exige pas de clé (aucun en-tête Authorization n'est envoyé).
+      api-key: ${LOCAL_API_KEY:}
+      model: ${LOCAL_MODEL:gemma-4-12b-it}
+      # Les modèles locaux « raisonneurs » (Qwen3…) consomment des jetons AVANT la réponse : garder de la marge.
+      max-tokens: ${LOCAL_MAX_TOKENS:8192}
+      # none  = AUCUN response_format (défaut) : mesuré comme le plus fiable — les prompts exigent déjà du JSON
+      #         (petits contextes : l'Agent C répond un JSON correct).
+      # schema = contrainte de forme json_schema permissive : LM Studio l'accepte, mais un modèle local
+      #          « lâché » dans un contexte long a alors tendance à renvoyer un objet VIDE (mesuré).
+      # (json_object est refusé par LM Studio : 400 « must be 'json_schema' or 'text' ».)
+      json-mode: ${LOCAL_JSON_MODE:none}
+      # Délai de LECTURE d'une réponse (secondes) : c'est LUI qui coupe un appel qui « n'avance pas ».
+      # Un modèle local est BEAUCOUP plus lent qu'une API distante : les 300 s des fournisseurs distants
+      # ne suffisent pas pour une réponse du Coach, et un modèle « raisonneur » peut même mettre > 15 min.
+      # Par défaut 1800 s (30 min) — largement au-dessus du besoin, sans être infini : sans délai, un
+      # serveur muet bloquerait la requête HTTP indéfiniment. En cas de dépassement, l'IHM affiche
+      # « Délai de lecture dépassé après N s … » avec ce réglage à modifier.
+      read-timeout-seconds: ${LOCAL_READ_TIMEOUT_SECONDS:1800}
+    synthesis-file: ${SYNTHESIS_FILE:./data/synthese_financier.json}
+
+logging:
+  level:
+    com.coach.financier: INFO
+
+cascade: true
