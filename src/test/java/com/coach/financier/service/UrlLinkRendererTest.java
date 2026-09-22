@@ -33,6 +33,13 @@ class UrlLinkRendererTest {
     }
 
     @Test
+    void toHtml_rendersPocAppointmentLinkWithoutExternalNavigation() {
+        String out = UrlLinkRenderer.toHtml(
+                "[URL|Prendre rendez-vous avec un conseiller|#]");
+        assertEquals("<a href=\"#\">Prendre rendez-vous avec un conseiller</a>", out);
+    }
+
+    @Test
     void sanitize_neutralisesUrlNotProvidedBySystem() {
         UrlLinkRenderer.SanitizeResult result = UrlLinkRenderer.sanitize(
                 "Offre [URL|Prêt|https://faux.test/pret] et [URL|Bon|https://ok.test/bon]",

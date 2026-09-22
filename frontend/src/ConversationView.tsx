@@ -102,7 +102,7 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
                     </div>
                     <div className="message-text">
                       {message.role === 'assistant'
-                        ? renderMessageContent(`conv-${index}`, message.content)
+                        ? renderMessageContent(`conv-${index}`, message.content, sessionId)
                         : message.content}
                     </div>
                   </div>

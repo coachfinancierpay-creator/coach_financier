@@ -26,6 +26,7 @@ import {
 import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, sendChat, sendConversationFeedback } from './api'
 import { playWakeCue } from './audioCue'
 import FeedbackPopup from './FeedbackPopup'
+import { getAdvisorIntent } from './advisorCallback'
 import { renderMessageContent, stripMarkdown } from './messageFormat'
 import type { QualityFeedbackRequest } from './types.quality'
 import type { AIProvider, ChatMessage, FinancialSummary } from './types'
@@ -782,7 +783,13 @@ function App() {
     // Fire-and-forget : aucun état d'IHM. En cas d'échec (backend indisponible, session inconnue,
     // mail non configuré, authentification SMTP refusée...), tout reste visible dans la console
     // du navigateur et, côté serveur, dans la page Logs (bloc [SUIVI].mailError).
-    void closeConversation(sessionId, { send: true, provider })
+    const advisorIntent = getAdvisorIntent(sessionId)
+    void closeConversation(sessionId, {
+      send: true,
+      provider,
+      prisRDV: advisorIntent.prisRDV,
+      etreRappele: advisorIntent.etreRappele,
+    })
       .then((result) => console.info('[suivi] clôture traitée :', result.status, result))
       .catch((error) => console.error('[suivi] échec de la clôture :', error))
   }
@@ -1122,7 +1129,7 @@ function App() {
                       )}
                     </div>
                     <div className="message-text">
-                      {renderMessageContent(message.id, message.content)}
+                      {renderMessageContent(message.id, message.content, sessionId)}
                     </div>
                   </div>
                   {message.role === 'user' && <div className="avatar user-avatar">V</div>}

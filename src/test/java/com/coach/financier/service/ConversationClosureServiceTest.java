@@ -331,6 +331,7 @@ class ConversationClosureServiceTest {
                 financialAnalysisService, aiLogService, testObjectMapper(), marketingProperties(),
                 mock(MarketingEventStore.class), mock(MarketingExtractionService.class),
                 qualityChecks(), advisorDossiers(), new CommercialScoreService(financialAnalysisService),
+                mock(CallCenterStatusStore.class),
                 "Conseiller SG", ADVISOR, "Jean Martin", "txt", "https://particuliers.sg.fr/vos-rendez-vous",
                 "https://particuliers.sg.fr", true, DEMO_PHONE);
     }
@@ -367,6 +368,22 @@ class ConversationClosureServiceTest {
                 "Le brouillon client ne doit jamais contenir le score commercial");
         assertFalse(response.preparedCustomerEmail().body().contains(DEMO_PHONE),
                 "Le brouillon client ne doit jamais contenir le numéro de téléphone");
+    }
+
+    @Test
+    void close_addsViewAppointmentLinkOnlyWhenAnAppointmentWasTaken() {
+        when(aiServiceFactory.defaultProvider()).thenReturn(AIModels.AIProvider.MOCK);
+        when(aiServiceFactory.get(any())).thenReturn(new MockAIService());
+        when(conversationService.find("s1")).thenReturn(conversationWithTousRisques());
+
+        SuiviModels.CloseConversationResponse response = service().close("s1",
+                new SuiviModels.CloseConversationRequest(null, null, null, false,
+                        AIModels.AIProvider.MOCK, true, false));
+
+        String body = response.advisorEmail().body();
+        assertTrue(body.contains("[URL|Voir le RDV|#]"));
+        assertFalse(body.contains("Voir le RDV : [URL|Voir le RDV|#]"));
+        assertFalse(body.contains("Prendre rendez-vous avec un conseiller"));
     }
 
     @Test

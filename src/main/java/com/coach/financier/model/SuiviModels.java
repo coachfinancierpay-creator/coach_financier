@@ -191,7 +191,9 @@ public final class SuiviModels {
             String advisorName,
             String attachmentFormat,
             Boolean send,
-            AIModels.AIProvider provider
+            AIModels.AIProvider provider,
+            Boolean prisRDV,
+            Boolean etreRappele
     ) {}
 
     /** Résultat de la clôture renvoyé à l'appelant (IHM ou intégration). */

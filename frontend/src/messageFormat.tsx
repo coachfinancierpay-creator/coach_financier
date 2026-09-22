@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-import { requestAdvisorCallback } from './advisorCallback'
+import { requestAdvisorAppointment, requestAdvisorCallback } from './advisorCallback'
 
 /**
  * Mise en forme des textes de l'IA — PARTAGÉE par la page coach et l'atelier (mêmes règles, même rendu).
@@ -9,7 +9,7 @@ import { requestAdvisorCallback } from './advisorCallback'
  * imposé par le prompt `[URL|nom|lien]` ou le jeton de rappel `[RAPPEL|nom]`. On ne génère JAMAIS de HTML brut
  * (aucun `dangerouslySetInnerHTML`) : tout est découpé en segments React, donc aucun risque d'injection.
  */
-export function renderInline(text: string, key: string, depth = 0): ReactNode[] {
+export function renderInline(text: string, key: string, depth = 0, sessionId?: string): ReactNode[] {
   // Découpe **gras**, *italique*, `code`, [URL|nom|url] et [RAPPEL|nom] en segments React (aucun HTML brut).
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[URL\|[^|\]]+\|[^\]]+\]|\[RAPPEL\|[^|\]]+\])/gi)
   return parts.map((part, index) => {
@@ -24,7 +24,7 @@ export function renderInline(text: string, key: string, depth = 0): ReactNode[] 
           type="button"
           className="callback-link"
           title="Un conseiller vous recontactera dans les plus brefs délais"
-          onClick={() => requestAdvisorCallback()}
+          onClick={() => requestAdvisorCallback(sessionId)}
         >
           {callback[1].trim()}
         </button>
@@ -35,6 +35,24 @@ export function renderInline(text: string, key: string, depth = 0): ReactNode[] 
     if (link) {
       const label = link[1].trim()
       const url = link[2].trim()
+      const normalizedLabel = label
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+      // En POC, le lien de prise de rendez-vous ouvre une information simulée au lieu de naviguer.
+      if (/^prendre\s+rendez-vous\b/.test(normalizedLabel)) {
+        return (
+          <button
+            key={k}
+            type="button"
+            className="callback-link appointment-link"
+            title="Simuler la prise de rendez-vous avec un conseiller"
+            onClick={() => requestAdvisorAppointment(sessionId)}
+          >
+            {label}
+          </button>
+        )
+      }
       // Sécurité : http(s) pour les liens web, tel: pour le lien d'APPEL ajouté par le backend
       // (numéro de la configuration, jamais produit par l'IA) — sinon on n'affiche que le libellé.
       if (/^https?:\/\//i.test(url)) {
@@ -51,13 +69,13 @@ export function renderInline(text: string, key: string, depth = 0): ReactNode[] 
     }
     // Rendu récursif pour que les liens restent cliquables même dans du gras/italique.
     if (depth < 3 && part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-      return <strong key={k}>{renderInline(part.slice(2, -2), k, depth + 1)}</strong>
+      return <strong key={k}>{renderInline(part.slice(2, -2), k, depth + 1, sessionId)}</strong>
     }
     if (depth < 3 && part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return <code key={k}>{part.slice(1, -1)}</code>
     }
     if (depth < 3 && part.startsWith('*') && part.endsWith('*') && part.length > 2) {
-      return <em key={k}>{renderInline(part.slice(1, -1), k, depth + 1)}</em>
+      return <em key={k}>{renderInline(part.slice(1, -1), k, depth + 1, sessionId)}</em>
     }
     return part
   })
@@ -69,20 +87,20 @@ export function renderInline(text: string, key: string, depth = 0): ReactNode[] 
  * tableaux — sinon les barres verticales s'afficheraient en texte brut.
  * {@code id} sert de base aux clés React : il doit être unique pour le message affiché.
  */
-export function renderMessageContent(id: string, content: string): ReactNode[] {
+export function renderMessageContent(id: string, content: string, sessionId?: string): ReactNode[] {
   const lines = content.split('\n')
   const blocks: ReactNode[] = []
   let index = 0
   while (index < lines.length) {
     const end = tableEndIndex(lines, index)
     if (end >= index) {
-      blocks.push(renderTable(lines, index, end, `${id}-table${index}`))
+      blocks.push(renderTable(lines, index, end, `${id}-table${index}`, sessionId))
       index = end + 1
       continue
     }
     blocks.push(
       <span key={`${id}-${index}`}>
-        {renderInline(lines[index], `${id}-${index}`)}
+        {renderInline(lines[index], `${id}-${index}`, 0, sessionId)}
         {index < lines.length - 1 && <br />}
       </span>,
     )
@@ -123,7 +141,7 @@ function tableEndIndex(lines: string[], start: number): number {
 }
 
 /** Tableau Markdown → tableau HTML (les cellules acceptent gras, code et liens). */
-function renderTable(lines: string[], start: number, end: number, key: string): ReactNode {
+function renderTable(lines: string[], start: number, end: number, key: string, sessionId?: string): ReactNode {
   const header = parseCells(lines[start])
   let firstRow = start + 1
   if (firstRow <= end && isSeparatorLine(lines[firstRow])) firstRow += 1
@@ -139,7 +157,7 @@ function renderTable(lines: string[], start: number, end: number, key: string): 
           <tr>
             {header.map((cell, column) => (
               <th key={`${key}-h${column}`} className={cellClassName(cell, numeric[column])}>
-                {renderInline(cell, `${key}-h${column}`)}
+                {renderInline(cell, `${key}-h${column}`, 0, sessionId)}
               </th>
             ))}
           </tr>
@@ -149,7 +167,7 @@ function renderTable(lines: string[], start: number, end: number, key: string): 
             <tr key={`${key}-r${rowIndex}`}>
               {row.map((cell, column) => (
                 <td key={`${key}-r${rowIndex}c${column}`} className={cellClassName(cell, numeric[column])}>
-                  {renderInline(cell, `${key}-r${rowIndex}c${column}`)}
+                  {renderInline(cell, `${key}-r${rowIndex}c${column}`, 0, sessionId)}
                 </td>
               ))}
             </tr>

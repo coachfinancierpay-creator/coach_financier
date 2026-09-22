@@ -478,7 +478,7 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   width: 100%; border: 1px solid #e4e7ee; border-radius: 8px; padding: 8px; margin-top: 6px;
   font-family: inherit; font-size: 13px; resize: vertical;
 }
-.qlt-popup-actions { display: flex; gap: 8px; margin-top: 12px; }
+.qlt-popup-actions { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
 
 /* ---- Demande de rappel par un conseiller : jeton cliquable + pop-in ---- */
 .callback-link {

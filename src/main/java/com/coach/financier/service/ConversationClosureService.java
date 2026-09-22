@@ -81,6 +81,7 @@ public class ConversationClosureService {
     private final CoachQualityCheckService coachQualityCheckService;
     private final AdvisorDossierService advisorDossierService;
     private final CommercialScoreService commercialScoreService;
+    private final CallCenterStatusStore callCenterStatusStore;
 
     private final String configuredAdvisorName;
     private final String configuredAdvisorEmail;
@@ -107,6 +108,7 @@ public class ConversationClosureService {
                                       CoachQualityCheckService coachQualityCheckService,
                                       AdvisorDossierService advisorDossierService,
                                       CommercialScoreService commercialScoreService,
+                                       CallCenterStatusStore callCenterStatusStore,
                                       @Value("${app.advisor.name:}") String configuredAdvisorName,
                                       @Value("${app.advisor.email:}") String configuredAdvisorEmail,
                                       @Value("${app.customer.name:}") String configuredCustomerName,
@@ -131,6 +133,7 @@ public class ConversationClosureService {
         this.coachQualityCheckService = coachQualityCheckService;
         this.advisorDossierService = advisorDossierService;
         this.commercialScoreService = commercialScoreService;
+        this.callCenterStatusStore = callCenterStatusStore;
         this.configuredAdvisorName = configuredAdvisorName;
         this.configuredAdvisorEmail = configuredAdvisorEmail;
         this.configuredCustomerName = configuredCustomerName;
@@ -157,7 +160,7 @@ public class ConversationClosureService {
     public SuiviModels.CloseConversationResponse close(String sessionId, SuiviModels.CloseConversationRequest request,
                                                       boolean archive) {
         SuiviModels.CloseConversationRequest req = request == null
-                ? new SuiviModels.CloseConversationRequest(null, null, null, null, null) : request;
+                ? new SuiviModels.CloseConversationRequest(null, null, null, null, null, false, false) : request;
         ConversationModels.Conversation conversation = conversationService.find(sessionId);
         if (conversation == null) {
             // Session inconnue côté serveur : backend redémarré (mémoire) ou session restaurée par le
@@ -256,8 +259,13 @@ public class ConversationClosureService {
         //          le bloc d'évaluation — qui cible ce dossier — n'est pas ajouté au mail.
         if (archive) {
             advisorDossierService.persist(sessionId, result, dossierExtras(conversation, result, score));
+            if (Boolean.TRUE.equals(req.prisRDV()) && callCenterStatusStore.latestBySession(sessionId).isEmpty()) {
+                callCenterStatusStore.save(sessionId, "RDV", "RDV planifié", "NOUVEAU",
+                        null);
+            }
         }
-        validated = withAdvisorLinks(validated, sessionId, score, archive);
+        validated = withAdvisorLinks(validated, sessionId, score, archive,
+                Boolean.TRUE.equals(req.prisRDV()), Boolean.TRUE.equals(req.etreRappele()));
 
         // 6) Pièce jointe générée à partir du brouillon client : destinataire = mail du client
         //    (fiche customer.mail), expéditeur = mail du conseiller (évite « unknown sender »).
@@ -340,7 +348,8 @@ public class ConversationClosureService {
      * la conversation depuis la pop-in du centre d'appels (la page de relecture reste disponible).
      */
     private Validated withAdvisorLinks(Validated validated, String sessionId,
-                                       SuiviModels.CommercialScore score, boolean archive) {
+                                       SuiviModels.CommercialScore score, boolean archive,
+                                       boolean prisRDV, boolean etreRappele) {
         SuiviModels.EmailContent advisor = validated.advisorEmail();
         if (advisor == null) {
             return validated;
@@ -349,6 +358,13 @@ public class ConversationClosureService {
         String scoreBlockText = scoreBlock(score);
         if (!scoreBlockText.isBlank()) {
             body.append("\n\n").append(scoreBlockText);
+        }
+        body.append("\n\n--------------------------------\n")
+                .append("Actions demandées par le client :\n")
+                .append("- Être rappelé : ").append(etreRappele ? "Oui" : "Non").append('\n')
+                .append("- RDV pris : ").append(prisRDV ? "Oui" : "Non");
+        if (prisRDV) {
+            body.append('\n').append("[URL|Voir le RDV|#]");
         }
         String directoryLink = advisorDossierService.directoryUrl(sessionId);
         if (!advisorDossierService.hasFrontendUrl() && !dossierUrl.isBlank()) {

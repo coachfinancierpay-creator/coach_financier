@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { PhoneCall, X } from 'lucide-react'
+import { CalendarDays, PhoneCall, X } from 'lucide-react'
 
-import { ADVISOR_CALLBACK_EVENT } from './advisorCallback'
+import { ADVISOR_APPOINTMENT_EVENT, ADVISOR_CALLBACK_EVENT } from './advisorCallback'
 
 /**
  * POP-IN « être rappelé par un conseiller » : ouverte par le jeton `[RAPPEL|Être rappelé par un conseiller]`
@@ -14,11 +14,23 @@ import { ADVISOR_CALLBACK_EVENT } from './advisorCallback'
  */
 export default function AdvisorCallbackPopup() {
   const [open, setOpen] = useState(false)
+  const [kind, setKind] = useState<'callback' | 'appointment'>('callback')
 
   useEffect(() => {
-    const onRequest = () => setOpen(true)
-    window.addEventListener(ADVISOR_CALLBACK_EVENT, onRequest)
-    return () => window.removeEventListener(ADVISOR_CALLBACK_EVENT, onRequest)
+    const onCallbackRequest = () => {
+      setKind('callback')
+      setOpen(true)
+    }
+    const onAppointmentRequest = () => {
+      setKind('appointment')
+      setOpen(true)
+    }
+    window.addEventListener(ADVISOR_CALLBACK_EVENT, onCallbackRequest)
+    window.addEventListener(ADVISOR_APPOINTMENT_EVENT, onAppointmentRequest)
+    return () => {
+      window.removeEventListener(ADVISOR_CALLBACK_EVENT, onCallbackRequest)
+      window.removeEventListener(ADVISOR_APPOINTMENT_EVENT, onAppointmentRequest)
+    }
   }, [])
 
   useEffect(() => {
@@ -42,8 +54,12 @@ export default function AdvisorCallbackPopup() {
     >
       <div className="qlt-popup" onClick={(event) => event.stopPropagation()}>
         <div className="callback-popup-head">
-          <span className="callback-popup-icon"><PhoneCall size={18} /></span>
-          <h2 id="callback-popup-title">Votre demande de rappel est prise en compte</h2>
+          <span className="callback-popup-icon">
+            {kind === 'appointment' ? <CalendarDays size={18} /> : <PhoneCall size={18} />}
+          </span>
+          <h2 id="callback-popup-title">
+            {kind === 'appointment' ? 'Prise de rendez-vous simulée' : 'Votre demande de rappel est prise en compte'}
+          </h2>
           <button
             type="button"
             className="callback-popup-close"
@@ -54,14 +70,29 @@ export default function AdvisorCallbackPopup() {
           </button>
         </div>
 
-        <p className="callback-popup-text">
-          Un conseiller prendra contact avec vous <strong>dans les plus brefs délais</strong> pour faire le
-          point sur votre projet.
-        </p>
-        <p className="callback-popup-text">
-          Pensez à garder votre téléphone à portée de main. Aucun rendez-vous n&rsquo;est encore fixé : le
-          conseiller vous proposera un créneau lors de son appel.
-        </p>
+        {kind === 'appointment' ? (
+          <>
+            <p className="callback-popup-text">
+              Dans une version complète, vous seriez redirigé vers la page de prise de rendez-vous avec un
+              conseiller.
+            </p>
+            <p className="callback-popup-text">
+              Comme il s&rsquo;agit d&rsquo;un POC, ce message simule la prise de rendez-vous. Aucun créneau
+              n&rsquo;est réellement réservé.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="callback-popup-text">
+              Un conseiller prendra contact avec vous <strong>dans les plus brefs délais</strong> pour faire le
+              point sur votre projet.
+            </p>
+            <p className="callback-popup-text">
+              Pensez à garder votre téléphone à portée de main. Aucun rendez-vous n&rsquo;est encore fixé : le
+              conseiller vous proposera un créneau lors de son appel.
+            </p>
+          </>
+        )}
 
         <div className="qlt-popup-actions">
           <button type="button" className="callback-popup-ok" onClick={() => setOpen(false)}>

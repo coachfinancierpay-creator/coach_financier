@@ -90,6 +90,8 @@ public final class UrlLinkRenderer {
                         ? "<a href=\"" + url + "\" target=\"_blank\" rel=\"noopener\">" + label + "</a>"
                         : isTelUrl(url)
                         ? "<a href=\"" + url + "\">" + label + "</a>"
+                        : isPocNoOpUrl(url)
+                        ? "<a href=\"#\">" + label + "</a>"
                         : label);
         Matcher bold = BOLD_PATTERN.matcher(escaped);
         StringBuilder bolded = new StringBuilder();
@@ -119,6 +121,11 @@ public final class UrlLinkRenderer {
             return false;
         }
         return TEL_PATTERN.matcher(url.trim()).matches();
+    }
+
+    /** Marqueur réservé aux liens ajoutés par le POC : le clic reste volontairement sans navigation utile. */
+    private static boolean isPocNoOpUrl(String url) {
+        return "#".equals(url == null ? "" : url.trim());
     }
 
     /** Numéro affiché (sans le préfixe {@code tel:}) pour le rendu texte. */

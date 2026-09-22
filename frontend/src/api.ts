@@ -186,6 +186,9 @@ export interface CloseConversationOptions {
   /** Destinataire conseiller (sinon config backend). */
   advisorEmail?: string
   advisorName?: string
+  /** Actions déclenchées par le client dans le Coach, transmises au mail conseiller. */
+  prisRDV?: boolean
+  etreRappele?: boolean
 }
 
 /**

@@ -75,7 +75,7 @@ public class PromptThreadClosureService {
         applyContextFromThread(conversation, thread);
 
         SuiviModels.CloseConversationResponse response = closureService.close(thread.threadId(),
-                new SuiviModels.CloseConversationRequest(null, null, null, sendMail, provider), archive);
+                new SuiviModels.CloseConversationRequest(null, null, null, sendMail, provider, false, false), archive);
         log.info("Clôture du fil d'atelier {} ({} message(s)) : archive={}, mail={}, statut={}",
                 thread.threadId(), thread.turns().size(), archive, sendMail, response.status());
         return new ThreadClosure(thread.threadId(), thread.agentId(), thread.turns().size(), response);

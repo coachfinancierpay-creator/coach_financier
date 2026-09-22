@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 
 import { fetchConversationDirectory, fetchConversationDirectoryDetail, updateDirectoryStatus } from './api'
+import { ADVISOR_INTENT_UPDATED_EVENT, getAdvisorIntent } from './advisorCallback'
 import { DOSSIER_STATUSES } from './types.directory'
 import type {
   DirectoryDetail,
@@ -32,12 +33,14 @@ const PERIODS: { days: number; label: string }[] = [
   { days: 0, label: 'Tout' },
 ]
 
-const COLUMNS: { key: DirectorySort | 'statut'; label: string; sortable: boolean }[] = [
+const COLUMNS: { key: DirectorySort | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
   { key: 'categorie', label: 'Catégorie', sortable: true },
   { key: 'client', label: 'Client', sortable: true },
   { key: 'titre', label: 'Conversation', sortable: true },
   { key: 'score', label: 'Score commercial', sortable: true },
   { key: 'statut', label: 'Statut', sortable: false },
+  { key: 'rdv', label: 'RDV pris', sortable: false },
+  { key: 'rappel', label: 'Être rappelé', sortable: false },
   { key: 'date', label: 'DATE', sortable: true },
 ]
 
@@ -61,6 +64,13 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [openSession, setOpenSession] = useState<string | null>(initialSessionId ?? null)
+  const [, setIntentVersion] = useState(0)
+
+  useEffect(() => {
+    const onIntentUpdated = () => setIntentVersion((version) => version + 1)
+    window.addEventListener(ADVISOR_INTENT_UPDATED_EVENT, onIntentUpdated)
+    return () => window.removeEventListener(ADVISOR_INTENT_UPDATED_EVENT, onIntentUpdated)
+  }, [])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -237,8 +247,11 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     <span className="cc-score-label">{row.priorityLabel ?? ''}</span>
                   </td>
                   <td>
-                    <span className={`cc-status ${statusClass(row.status)}`} title={row.statusUpdatedAt ? `Statut modifié le ${formatDateTime(row.statusUpdatedAt)}` : undefined}>
-                      {row.statusLabel}
+                    <span
+                      className={`cc-status ${statusClass(getAdvisorIntent(row.sessionId).prisRDV ? 'RDV' : row.status)}`}
+                      title={row.statusUpdatedAt ? `Statut modifié le ${formatDateTime(row.statusUpdatedAt)}` : undefined}
+                    >
+                      {getAdvisorIntent(row.sessionId).prisRDV ? 'RDV planifié' : row.statusLabel}
                     </span>
                     {row.noteCount > 0 && (
                       <span className="cc-note-count" title={`${row.noteCount} message(s) laissé(s) sur ce dossier`}>
@@ -246,6 +259,8 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                       </span>
                     )}
                   </td>
+                  <td>{getAdvisorIntent(row.sessionId).prisRDV ? 'Oui' : 'Non'}</td>
+                  <td>{getAdvisorIntent(row.sessionId).etreRappele ? 'Oui' : 'Non'}</td>
                   <td>{formatDateTime(row.closedAt)}</td>
                   <td>
                     {row.productCount > 0 ? row.topProduct ?? `${row.productCount} offre(s)` : '—'}
@@ -300,7 +315,11 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
       try {
         const loaded = await fetchConversationDirectoryDetail(sessionId)
         setDetail(loaded)
-        setStatusDraft(loaded.row.status)
+        setStatusDraft(
+          loaded.row.status === 'NOUVEAU' && getAdvisorIntent(sessionId).prisRDV
+            ? 'RDV'
+            : loaded.row.status,
+        )
         setError(null)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Dossier indisponible')
@@ -403,7 +422,13 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                 <MessageSquare size={16} /> Suivi du dossier
               </h3>
               <div className="cc-status-row">
-                <span className={`cc-status big ${statusClass(row?.status ?? '')}`}>{row?.statusLabel}</span>
+                <span
+                  className={`cc-status big ${statusClass(
+                    row?.status === 'NOUVEAU' && getAdvisorIntent(sessionId).prisRDV ? 'RDV' : row?.status ?? '',
+                  )}`}
+                >
+                  {row?.status === 'NOUVEAU' && getAdvisorIntent(sessionId).prisRDV ? 'RDV planifié' : row?.statusLabel}
+                </span>
                 <select
                   aria-label="Nouveau statut"
                   value={statusDraft}
@@ -516,7 +541,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                 <div className="cc-toggle-body">
                   <p className="cc-subject">{detail.advisorSubject ?? '—'}</p>
                   <div className="cc-mail">
-                    {renderMessageContent(`dossier-${sessionId}`, detail.advisorBody ?? '')}
+                    {renderMessageContent(`dossier-${sessionId}`, detail.advisorBody ?? '', sessionId)}
                   </div>
                 </div>
               )}
@@ -539,7 +564,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                   <div className="cc-toggle-body">
                     <p className="cc-subject">{detail.customerEmailSubject ?? '—'}</p>
                     <div className="cc-mail">
-                      {renderMessageContent(`client-${sessionId}`, detail.customerEmailBody)}
+                      {renderMessageContent(`client-${sessionId}`, detail.customerEmailBody, sessionId)}
                     </div>
                     <p className="cc-hint">
                       Brouillon préparé par le Coach : il n&rsquo;est jamais envoyé automatiquement — à relire et
@@ -579,7 +604,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                         </div>
                         <div className="message-text">
                           {message.role === 'assistant'
-                            ? renderMessageContent(`dossier-${sessionId}-${index}`, message.content ?? '')
+                            ? renderMessageContent(`dossier-${sessionId}-${index}`, message.content ?? '', sessionId)
                             : message.content}
                         </div>
                       </div>
