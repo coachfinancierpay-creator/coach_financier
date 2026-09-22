@@ -2,6 +2,7 @@ import type {
   AiLog,
   AIProvider,
   ChatResponse,
+  ClientQuestionProposal,
   ConversationClosure,
   ConversationData,
   FinancialSummary,
@@ -103,6 +104,21 @@ export async function sendChat(
     method: 'POST',
     body: JSON.stringify({ sessionId, message, provider, disableOutOfScopeGuard }),
   })
+}
+
+/**
+ * CLIENT AUTO (bandeau de la page coach) : l'IA joue le client et propose la question SUIVANTE à partir de
+ * l'historique de la conversation. Rien n'est envoyé au Coach : la question revient à l'IHM, qui la place dans
+ * le champ de saisie — l'utilisateur décide de l'envoyer ou non. Le mode démo est refusé par le backend (400).
+ */
+export async function fetchNextClientQuestion(
+  sessionId: string,
+  provider: AIProvider,
+): Promise<ClientQuestionProposal> {
+  return apiFetch<ClientQuestionProposal>(
+    `/conversations/${encodeURIComponent(sessionId)}/client-question`,
+    { method: 'POST', body: JSON.stringify({ provider }) },
+  )
 }
 
 export { API_BASE_URL }

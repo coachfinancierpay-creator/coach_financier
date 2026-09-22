@@ -23,7 +23,7 @@ import {
   Wallet,
   X,
 } from 'lucide-react'
-import { API_BASE_URL, closeConversation, fetchFinancialSummary, sendChat, sendConversationFeedback } from './api'
+import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, sendChat, sendConversationFeedback } from './api'
 import { playWakeCue } from './audioCue'
 import FeedbackPopup from './FeedbackPopup'
 import { renderMessageContent, stripMarkdown } from './messageFormat'
@@ -185,6 +185,15 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>(loadInitialMessages)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  /**
+   * CLIENT AUTO (bandeau) : l'IA joue le client et propose la question suivante à partir de l'historique.
+   * `clientAutoLoading` = appel en cours ; `clientAutoNotice` = explication affichée sous la barre (la
+   * proposition n'est JAMAIS envoyée toute seule : elle remplit le champ de saisie).
+   */
+  const [clientAutoLoading, setClientAutoLoading] = useState(false)
+  const [clientAutoNotice, setClientAutoNotice] = useState<string | null>(null)
+  /** Champ de saisie du chat : sa hauteur est ajustée au contenu (voir {@link resizeComposer}). */
+  const composerRef = useRef<HTMLTextAreaElement | null>(null)
   const [summary, setSummary] = useState<FinancialSummary | null>(null)
   const [error, setError] = useState<string | null>(null)
   /** Session déjà clôturée : évite un 2e dossier si l'on re-clique (terminer puis nouvelle conversation). */
@@ -644,6 +653,68 @@ function App() {
     if (window.speechSynthesis) window.speechSynthesis.cancel()
   }, [])
 
+  /**
+   * Hauteur maximale du champ de saisie (px) : au-delà, le texte défile dans le champ — la zone de
+   * conversation garde ainsi toujours sa place. Même valeur que le `max-height` de `.composer textarea`.
+   */
+  const COMPOSER_MAX_HEIGHT = 160
+
+  /**
+   * Le champ de saisie GRANDIT avec le texte : une question de plusieurs lignes (ou une question longue
+   * proposée par « Client auto ») reste lisible au lieu de n'afficher qu'une ligne. Au-delà de
+   * {@link COMPOSER_MAX_HEIGHT}, le champ arrête de grandir et le texte défile.
+   */
+  function resizeComposer() {
+    const field = composerRef.current
+    if (!field) return
+    field.style.height = 'auto'
+    const wanted = Math.min(field.scrollHeight, COMPOSER_MAX_HEIGHT)
+    field.style.height = `${wanted}px`
+    field.style.overflowY = field.scrollHeight > COMPOSER_MAX_HEIGHT ? 'auto' : 'hidden'
+  }
+
+  // Ajusté après CHAQUE changement de contenu : frappe au clavier, ligne collée, ou question remplie par
+  // le bouton « Client auto » (setInput) — les trois passent par l'état `input`.
+  useEffect(() => {
+    resizeComposer()
+  }, [input])
+
+  // La fenêtre change de largeur : le texte occupe plus ou moins de lignes, la hauteur doit suivre.
+  useEffect(() => {
+    window.addEventListener('resize', resizeComposer)
+    return () => window.removeEventListener('resize', resizeComposer)
+  }, [])
+
+  /**
+   * CLIENT AUTO : l'IA lit l'historique de la conversation et propose la question suivante du client. La
+   * proposition REMPLACE le champ de saisie (jamais envoyée d'elle-même) : l'utilisateur la relit, la
+   * corrige s'il veut, puis l'envoie — ou pas. Chaque clic avance d'une question.
+   */
+  async function proposeClientQuestion() {
+    if (clientAutoLoading || loading) return
+    setClientAutoNotice(null)
+    setError(null)
+    setClientAutoLoading(true)
+    try {
+      const proposal = await fetchNextClientQuestion(sessionId, provider)
+      const question = (proposal.question ?? '').trim()
+      if (!question) {
+        setClientAutoNotice('Le client n\'a plus de question : il n\'y a rien à ajouter.')
+        return
+      }
+      setInput(question)
+      setClientAutoNotice(
+        proposal.endConversation
+          ? 'Le client n\'a plus de question : sa phrase de clôture est proposée — à toi de l\'envoyer (ou de terminer la conversation).'
+          : 'Question suivante du client proposée : relis-la, modifie-la si besoin, puis envoie-la.',
+      )
+    } catch (clientError) {
+      setError(clientError instanceof Error ? clientError.message : 'Client auto indisponible')
+    } finally {
+      setClientAutoLoading(false)
+    }
+  }
+
   async function submitMessage(rawMessage?: string) {
     const message = (rawMessage ?? input).trim()
     if (!message || loading) return
@@ -652,6 +723,7 @@ function App() {
 
     setInput('')
     setError(null)
+    setClientAutoNotice(null)
     const userMessage: ChatMessage = {
       id: newMessageId(),
       role: 'user',
@@ -804,6 +876,18 @@ function App() {
             <span className="adv-toggle-ui" aria-hidden="true" />
             <span className="adv-toggle-label">Avancé</span>
           </label>
+          {/* CLIENT AUTO : l'IA joue le client et propose la question suivante à partir de l'historique.
+              Elle n'est jamais envoyée toute seule : elle remplit le champ de saisie. */}
+          <button
+            type="button"
+            className="client-auto-button"
+            onClick={proposeClientQuestion}
+            disabled={clientAutoLoading || loading}
+            title="Client auto : lit l'historique de la conversation et propose la question suivante du client (à relire avant de l'envoyer). Nécessite une IA réelle (DeepSeek, GPT ou modèle local)."
+          >
+            <Bot size={15} />
+            <span>{clientAutoLoading ? 'Client…' : 'Client auto'}</span>
+          </button>
           {advanced && (
             <div className="advanced-actions">
               <label className="adv-toggle" title="Activer le micro (dictée) et la lecture vocale des réponses">
@@ -1099,6 +1183,13 @@ function App() {
             )}
 
             <div className="composer-wrap">
+              {clientAutoNotice && (
+                <div className="info-banner">
+                  <Bot size={16} />
+                  <span>{clientAutoNotice}</span>
+                  <button type="button" onClick={() => setClientAutoNotice(null)}><X size={15} /></button>
+                </div>
+              )}
               {error && (
                 <div className="error-banner">
                   <CircleAlert size={16} />
@@ -1142,6 +1233,7 @@ function App() {
                 </button>
                 )}
                 <textarea
+                  ref={composerRef}
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
                   onKeyDown={(event) => {

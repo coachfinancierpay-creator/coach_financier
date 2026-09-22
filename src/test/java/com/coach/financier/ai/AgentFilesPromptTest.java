@@ -137,11 +137,11 @@ class AgentFilesPromptTest {
      * L'agent crédit conso reçoit bien le jeton de rappel (règle transverse de l'agent principal, composée
      * dans le prompt de chaque agent).
      * <p>
-     * ⚠️ La règle « lien de SOUSCRIPTION » (`url_souscription`) est de nouveau portée par
-     * `agent/credit-conso.txt` (règle « simulation », voir {@link #theSimulationRuleListsTheMandatoryFigures}) :
-     * elle avait disparu lors du retour à la version allégée du prompt. Le champ reste aussi déclaré et
-     * whitelisté côté back-office (`ProductUrlIndexTest`), pour qu'une URL de souscription citée par le Coach
-     * ne soit jamais prise pour une URL inventée.
+     * ⚠️ La règle « lien de SOUSCRIPTION » (`url_souscription`) n'est plus portée par `agent/credit-conso.txt`
+     * dans sa version réécrite en sections numérotées : elle n'est donc pas vérifiée ici (voir
+     * {@link #theSimulationRuleListsTheMandatoryFigures}). Le champ reste déclaré et whitelisté côté
+     * back-office (`ProductUrlIndexTest`), pour qu'une URL de souscription citée par le Coach ne soit jamais
+     * prise pour une URL inventée.
      */
     @Test
     void theConsumerCreditAgentOffersTheCallbackTokenToo() {
@@ -155,33 +155,34 @@ class AgentFilesPromptTest {
 
     /**
      * CONTRAT DE LA SIMULATION (agent crédit conso) : quand le client demande un chiffrage, le Coach doit
-     * présenter les HUIT informations attendues par le conseiller, un TABLEAU dès qu'il compare plusieurs
-     * durées, et donner le lien de SOUSCRIPTION (et non un lien de simulateur) une fois la simulation faite.
+     * présenter le chiffrage sous forme de TABLEAU, avec les colonnes attendues, les données réellement
+     * disponibles (taux débiteur, frais de dossier) et « non renseigné » plutôt qu'une valeur inventée.
      * <p>
-     * Cette règle a déjà été perdue une fois (retour à une version allégée du prompt) : elle est donc
-     * verrouillée ici, sur le prompt RÉELLEMENT composé pour l'agent (gabarit + principal + spécialisé).
+     * ⚠️ La règle « lien de SOUSCRIPTION » (`url_souscription`) n'est plus portée par `agent/credit-conso.txt`
+     * depuis sa réécriture en sections numérotées : elle n'est donc plus vérifiée ici. Le champ reste déclaré
+     * et whitelisté côté back-office (`ProductUrlIndexTest`), pour qu'une URL de souscription citée par le
+     * Coach ne soit jamais prise pour une URL inventée.
      */
     @Test
     void theSimulationRuleListsTheMandatoryFigures() {
         String prompt = AgentFiles.systemPromptFor("credit_conso");
+        // Les règles sont mises en forme (retours à la ligne au fil des 110 colonnes) : on compare donc sur une
+        // copie dont les espaces sont normalisés, sinon une phrase coupée entre deux lignes échapperait au test.
+        String flat = prompt.replaceAll("\\s+", " ");
 
-        assertTrue(prompt.contains("montant du crédit, durée, mensualité, taux d'intérêt débiteur annuel fixe"),
-                "les huit informations d'une simulation doivent être listées : " + prompt);
-        for (String figure : new String[]{"frais de dossier", "coût total du crédit", "montant total dû"}) {
-            assertTrue(prompt.contains(figure), "information obligatoire absente : " + figure);
+        assertTrue(flat.contains("montant du crédit, durée, mensualité, TAEG fixe, coût total du crédit, "
+                        + "montant total dû"),
+                "les colonnes d'un chiffrage doivent être listées, dans cet ordre : " + prompt);
+        for (String figure : new String[]{"taux d'intérêt débiteur annuel fixe", "frais de dossier",
+                "coût total du crédit", "montant total dû"}) {
+            assertTrue(flat.contains(figure), "information obligatoire absente : " + figure);
         }
-        assertTrue(prompt.contains("TABLEAU"),
-                "plusieurs durées ou mensualités doivent être présentées sous forme de tableau");
-        assertTrue(prompt.contains("ne répète pas les colonnes CONSTANTES"),
-                "un tableau de chiffres ne doit pas répéter les colonnes constantes (montant, taux)");
-        assertTrue(prompt.contains("4 à 5 colonnes maximum"),
-                "la taille du tableau est bornée : au-delà, il devient illisible dans la bulle de chat");
-        assertTrue(prompt.contains("url_souscription"),
-                "le lien de souscription remplace le lien de simulateur une fois la simulation faite");
-        assertTrue(prompt.contains("et NON avec un lien de simulateur"),
-                "la règle doit écarter explicitement le lien du simulateur");
-        assertTrue(prompt.contains("sans inventer d'URL"),
-                "aucune URL ne doit être inventée si l'offre ne porte pas de lien de souscription");
+        assertTrue(flat.contains("TABLEAU"),
+                "la simulation est restituée sous forme de tableau (une ligne par durée)");
+        assertTrue(flat.contains("non renseigné"),
+                "une donnée absente se déclare « non renseigné » : jamais une case vide ni une valeur inventée");
+        assertTrue(flat.contains("N'ajoute pas de colonne supplémentaire"),
+                "le tableau reste borné aux colonnes utiles (lisibilité dans la bulle de chat)");
     }
 
     /**

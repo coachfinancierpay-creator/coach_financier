@@ -67,7 +67,7 @@ controller/
   FinancialController     # GET /api/financial-summary, /api/banking-data
   LogsController          # GET /api/logs, GET /api/logs/{id}/prompt, /{id}/answer, /stats, DELETE /api/logs
   AgentPromptController   # GET /api/agents, GET/PUT /api/agents/{key}/prompt
-  ConversationController  # GET /api/conversations/{sessionId}, POST /{sessionId}/close, POST /{sessionId}/feedback
+  ConversationController  # GET /api/conversations/{sessionId}, POST /{sessionId}/close, /feedback, /client-question
   MailController          # GET /api/mail/status
   MarketingController     # GET/POST /api/marketing/**
   QualityController       # GET/POST /api/quality/**
@@ -147,6 +147,7 @@ model/
 |---|---|
 | `ChatController` | Orchestrateur : comprend → sélectionne l'agent → filtre → fait répondre → journalise |
 | `ConversationService` | Sessions en mémoire (création, messages, résumé, projet courant) |
+| `SimulatedClientService` | **Client auto** (page coach) : relit le transcript de la session et fait proposer par l'IA la question suivante du client (`agent/prompt_client.txt`) — `SimulatedClientContext` porte les **trois chiffres** que le client connaît, partagés avec l'Agent C de l'atelier |
 | `FinancialAnalysisService` | Calcule les agrégats (revenus, dépenses, soldes, taux 3 mois) |
 | `DataRequestService` | Catalogue + accès fichiers (déclaratif, cascade, tout chemin demandé du catalogue est fourni) |
 | `ProjectProductMappingService` | **Règle métier** type de projet → familles autorisées |
@@ -305,6 +306,7 @@ app.prompt-optimization.hash-salt: ${PROMPT_OPT_HASH_SALT:…}
 | DELETE | `/api/logs` | Vider les logs |
 | GET | `/api/conversations/{sessionId}` | Historique complet d'une conversation `{sessionId, summary, messages[]}` |
 | POST | `/api/conversations/{sessionId}/close` | **Fin de conversation** : dossier de suivi + email au conseiller (body optionnel `{advisorEmail, advisorName, attachmentFormat, send, provider}` ; `send=false` = dry-run) |
+| POST | `/api/conversations/{sessionId}/client-question` | **CLIENT AUTO** (bouton du bandeau de la page coach) : l'IA joue le client et propose la **question suivante** à partir de l'historique de la conversation — `{provider}` doit être un fournisseur **réel** ; réponse `{question, endConversation, reason}`. **Rien n'est envoyé** au Coach : l'IHM remplit le champ de saisie. **400** `{error, message}` si la conversation est vide/connue du serveur uniquement, ou si le fournisseur est le mode démo |
 | GET | `/api/conversations/directory` | **Annuaire des conversations** (page Centre d'appels) : conversations clôturées + score commercial + statut d'avancement. Paramètres `days` (5/10/30, `0` = tout), `category` (CREDIT_CONSO, CREDIT_IMMO, EPARGNE, ASSURANCE, AUTRE), `status` (NOUVEAU, CONTACTE, QUALIFIE, RDV, CONCLU, PERDU, CLOTURE), `q` (client, titre, projet, produit), `sort` (date, score, client, categorie, titre), `order` (asc, desc) |
 | GET | `/api/conversations/directory/{sessionId}` | Détail d'une conversation : synthèse du mail conseiller, **sa pièce jointe** (brouillon d'email client), score expliqué (raisons + critères), **statut et son historique**, actions de suivi, offres d'intérêt et transcript. **404** si aucun dossier |
 | POST | `/api/conversations/directory/{sessionId}/status` | **Suivi du dossier** `{status, comment}` (centre d'appels) → détail à jour ; le statut peut changer seul, ou avec un **message** ; un message SEUL est journalisé sans changer le statut ; **400** si le code est inconnu |
@@ -665,11 +667,23 @@ flowchart LR
 - `FinancialSummary` côté TS reflète le record Java (dont `savingsToIncomeRatio3Months`, `savingsRatePeriodLabel`) ;
 - `formatPercent` (2 décimales fr-FR) pour le taux d'épargne ; `formatMoneyCents` pour le solde ;
 - Rendu **Markdown léger** des réponses (gras `**`, italique `*`, code, liens `[URL|nom|url]`, jeton `[RAPPEL|nom]`) via segmentation React — **aucun HTML brut**, donc aucune injection possible — ;
+- **Champ de saisie qui grandit avec le texte** (`COMPOSER_MAX_HEIGHT = 160 px`, même valeur que le `max-height` CSS) : une question de plusieurs lignes — tapée, collée, ou proposée par « Client auto » — reste **entièrement visible** ; au-delà du plafond, le champ arrête de grandir et défile (`overflow-y: auto`). L'ajustement est recalculé à chaque changement de contenu (et au redimensionnement de la fenêtre), pas seulement à la frappe ;
 - **Tableaux Markdown** (`messageFormat.tsx`, partagé chat / atelier / pop-in du centre d'appels) : un bloc de lignes `| … |` est rendu comme un **vrai tableau** (sinon les barres verticales s'afficheraient en texte brut). Rendu pensé pour une bulle étroite : en-têtes autorisés à passer à la ligne, **séparateurs horizontaux uniquement** (pas de quadrillage), lignes alternées + survol, coins arrondis, et **colonnes numériques alignées à droite** — la colonne entière (en-tête compris) dès qu'une cellule porte un montant ou un pourcentage, avec chiffres à largeur fixe (`tabular-nums`) pour comparer les lignes d'un coup d'œil ; les cellules de texte long passent à la ligne (plus de défilement horizontal pour les tableaux de chiffres courants, `overflow-x` conservé en secours) ;
 - **Audio** : micro 🎤 dictée et lecture vocale 🔊 (Web Speech API), activables via le réglage « Audio » du panneau « Avancé » ;
 - **Mode auto (mains libres, façon Siri)** : en veille, l'app attend le **mot-clé** (« Chloé » par défaut, modifiable, réglage mémorisé). Quand il est reconnu, un **carillon court et montant** est joué (`audioCue.ts`, `playWakeCue()`) : il **marque le début de l'écoute** — sans lui, impossible de savoir si le mot-clé a été entendu. Le son est **synthétisé** (Web Audio API, A5→E6, ~200 ms, volume bas car le micro reste ouvert) plutôt qu'embarqué en fichier : aucun binaire à versionner, aucune requête réseau, et un carillon indisponible ne bloque jamais l'écoute (aucune exception propagée, contexte audio partagé et anti-rebond de 250 ms) ;
   - **Décompte visible** : dès l'écoute, le bandeau affiche les secondes restantes (`5`, `4`, `3`…) sous forme de badge + barre de progression, avec un rappel « envoi automatique à l'IA si vous ne parlez plus ». Le décompte **repart à chaque parole captée** (c'est donc bien « N secondes **sans** entrée de voix ») et **pulse** dans les 2 dernières secondes. Il est masqué pendant une réponse IA (rien ne peut partir à ce moment-là, le bandeau indique alors « réponse de l'IA en cours »). L'échéance est calculée en **temps réel** à partir d'un instant limite (pas par décréments successifs) pour rester juste même si le navigateur bride les timers ; `prefers-reduced-motion` désactive la pulsation ;
 - Interrupteur « Avancé » : masque/affiche fournisseur IA (GPT/DeepSeek/Mock), garde-fou hors-sujet, réponses vocales, accès Logs & Agents (onglets séparés).
+- **Bouton « Client auto »** (bandeau de la page coach, toujours visible) : appelle
+  `POST /api/conversations/{sessionId}/client-question` avec le fournisseur sélectionné, puis **remplace le
+  contenu du champ de saisie** par la question proposée. Rien n'est envoyé : un bandeau d'information rappelle
+  qu'il faut relire puis envoyer. `SimulatedClientService` transmet au modèle le **transcript complet** (le
+  client ne se répète pas), le **numéro de la question** (comptées dans les messages `user`), les **trois
+  chiffres du dossier** et un brief qui reprend la **demande initiale du client** — avec l'interdiction
+  d'inventer un autre projet. La profondeur est placée **après** la question courante : le compteur ne clôt
+  jamais la conversation ; seul un client réellement satisfait renvoie `endConversation=true` (l'IHM propose
+  alors sa phrase de clôture). Le mode démo est refusé (**400**, message actionnable) et une conversation
+  vide/absente côté serveur aussi (l'historique vit en mémoire : après un redémarrage, il faut reposer une
+  question au Coach).
 - Fournisseur IA par défaut côté UI : **DeepSeek** (préférence mémorisée en localStorage).
 
 ---

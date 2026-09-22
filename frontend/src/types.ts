@@ -63,6 +63,16 @@ export interface ChatMessage {
   agent?: string
 }
 
+/** Proposition du CLIENT AUTO (page coach) : l'IA joue le client et propose la question suivante. */
+export interface ClientQuestionProposal {
+  /** Question du client (ou sa phrase de clôture quand `endConversation` est vrai). */
+  question: string
+  /** Le client n'a plus rien à demander : la conversation peut se terminer. */
+  endConversation: boolean
+  /** Pourquoi cette question est la suite logique — interne, jamais affiché au client. */
+  reason: string
+}
+
 export interface AiLog {
   id: number
   timestamp: string

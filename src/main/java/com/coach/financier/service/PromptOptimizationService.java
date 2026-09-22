@@ -137,7 +137,9 @@ public class PromptOptimizationService {
 
         Map<String, Object> payload = new LinkedHashMap<>();
         payload.put("clientBrief", context);
-        payload.put("clientFigures", clientFigures(summary));
+        // Les trois chiffres du dossier viennent de SimulatedClientContext : la page coach (« Client auto »)
+        // et l'atelier envoient donc EXACTEMENT le même contexte au client simulé.
+        payload.put("clientFigures", SimulatedClientContext.figures(summary));
         payload.put("turnNumber", Math.max(1, turnNumber));
         payload.put("previousExchanges", thread == null ? List.of() : thread.history());
         payload.put("depth", Math.max(1, depth)); // nombre maximum de questions du client (réglé dans l'IHM)
@@ -181,7 +183,7 @@ public class PromptOptimizationService {
         payload.put("agentPrompt", agentPrompt == null ? "" : AgentFiles.stripZoneMarkers(agentPrompt));
         // Les TROIS chiffres du dossier, puis le PLAFOND que le backend en déduit : un petit modèle calcule mal,
         // on lui donne donc la limite déjà calculée (et on la vérifie derrière, quoi qu'il réponde).
-        payload.put("clientFigures", clientFigures(summary));
+        payload.put("clientFigures", SimulatedClientContext.figures(summary));
         payload.put("budgetCoherent", Map.of(
                 "plafondProjet", ceiling,
                 "devise", "EUR",
@@ -293,27 +295,6 @@ public class PromptOptimizationService {
                 .map(brief -> brief.length() <= 600 ? brief : brief.substring(0, 600) + "…")
                 .limit(10)
                 .toList();
-    }
-
-    /**
-     * Les TROIS chiffres que le client connaît (demande explicite) : solde du compte courant, épargne totale et
-     * mensualité de crédit en cours. Aucune autre donnée du dossier n'est transmise à l'agent C.
-     */
-    private static Map<String, Object> clientFigures(FinancialSummary summary) {
-        Map<String, Object> figures = new LinkedHashMap<>();
-        figures.put("compteCourant", Map.of(
-                "libelle", "Solde du compte courant",
-                "montant", summary.currentAccountBalance(),
-                "devise", "EUR"));
-        figures.put("epargne", Map.of(
-                "libelle", "Épargne disponible",
-                "montant", summary.savingsBalance(),
-                "devise", "EUR"));
-        figures.put("creditEnCours", Map.of(
-                "libelle", "Mensualité de crédit en cours",
-                "montant", summary.monthlyLoanPayments(),
-                "devise", "EUR"));
-        return figures;
     }
 
     private static String abbreviate(String text) {
