@@ -248,10 +248,10 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                   </td>
                   <td>
                     <span
-                      className={`cc-status ${statusClass(getAdvisorIntent(row.sessionId).prisRDV ? 'RDV' : row.status)}`}
+                      className={`cc-status ${statusClass(effectiveStatusCode(row.status, getAdvisorIntent(row.sessionId)))}`}
                       title={row.statusUpdatedAt ? `Statut modifié le ${formatDateTime(row.statusUpdatedAt)}` : undefined}
                     >
-                      {getAdvisorIntent(row.sessionId).prisRDV ? 'RDV planifié' : row.statusLabel}
+                      {statusLabelOf(effectiveStatusCode(row.status, getAdvisorIntent(row.sessionId)))}
                     </span>
                     {row.noteCount > 0 && (
                       <span className="cc-note-count" title={`${row.noteCount} message(s) laissé(s) sur ce dossier`}>
@@ -315,11 +315,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
       try {
         const loaded = await fetchConversationDirectoryDetail(sessionId)
         setDetail(loaded)
-        setStatusDraft(
-          loaded.row.status === 'NOUVEAU' && getAdvisorIntent(sessionId).prisRDV
-            ? 'RDV'
-            : loaded.row.status,
-        )
+        setStatusDraft(effectiveStatusCode(loaded.row.status, getAdvisorIntent(sessionId)))
         setError(null)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Dossier indisponible')
@@ -424,10 +420,10 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
               <div className="cc-status-row">
                 <span
                   className={`cc-status big ${statusClass(
-                    row?.status === 'NOUVEAU' && getAdvisorIntent(sessionId).prisRDV ? 'RDV' : row?.status ?? '',
+                    effectiveStatusCode(row?.status ?? '', getAdvisorIntent(sessionId)),
                   )}`}
                 >
-                  {row?.status === 'NOUVEAU' && getAdvisorIntent(sessionId).prisRDV ? 'RDV planifié' : row?.statusLabel}
+                  {statusLabelOf(effectiveStatusCode(row?.status ?? '', getAdvisorIntent(sessionId)))}
                 </span>
                 <select
                   aria-label="Nouveau statut"
@@ -635,6 +631,14 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
 /** Classe CSS du badge de statut d'avancement à partir du code. */
 function statusClass(status: string): string {
   return (status ?? '').toLowerCase()
+}
+
+/** Statut initial issu des actions client, sans écraser un suivi déjà saisi par le conseiller. */
+function effectiveStatusCode(status: string, intent: ReturnType<typeof getAdvisorIntent>): string {
+  if (status !== 'NOUVEAU') return status
+  if (intent.prisRDV) return 'RDV'
+  if (intent.etreRappele) return 'A_CONTACTER'
+  return status
 }
 
 /** Libellé d'un code de statut (même liste que le backend, ordre du cycle de vie). */

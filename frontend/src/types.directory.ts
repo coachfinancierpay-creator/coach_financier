@@ -17,7 +17,7 @@ export interface DirectoryRow {
   productCount: number
   topProduct: string | null
   evaluated: boolean
-  /** Statut d'avancement saisi par le centre d'appels (`NOUVEAU` par défaut). */
+  /** Statut d'avancement saisi par le centre d'appels (`NOUVEAU` ou `A_CONTACTER` par défaut). */
   status: string
   statusLabel: string
   statusUpdatedAt: string | null
@@ -103,7 +103,7 @@ export interface DirectoryQuery {
   /** Période en jours (0 = tout l'historique). */
   days: number
   category?: string
-  /** Filtre sur le statut d'avancement (`NOUVEAU`, `CONTACTE`, `QUALIFIE`, `RDV`, `CONCLU`, `PERDU`, `CLOTURE`). */
+  /** Filtre sur le statut d'avancement (`NOUVEAU`, `A_CONTACTER`, `CONTACTE`, `QUALIFIE`, `RDV`, `CONCLU`, `PERDU`, `CLOTURE`). */
   status?: string
   q?: string
   sort?: DirectorySort
@@ -113,6 +113,7 @@ export interface DirectoryQuery {
 /** Statuts d'avancement d'un dossier, dans l'ordre du cycle de vie (mêmes codes que le backend). */
 export const DOSSIER_STATUSES: DossierStatusOption[] = [
   { code: 'NOUVEAU', label: 'Nouveau' },
+  { code: 'A_CONTACTER', label: 'A contacter' },
   { code: 'CONTACTE', label: 'Contacté' },
   { code: 'QUALIFIE', label: 'Qualifié' },
   { code: 'RDV', label: 'RDV planifié' },
