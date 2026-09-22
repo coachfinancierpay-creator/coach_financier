@@ -9,6 +9,7 @@
   --panel-2: #fafafa;
   --panel-3: #f1f1f1;
   --line: #dedede;
+  --border: #d8d8d8;
   --text: #1e1e1e;
   --muted: #666666;
   --accent: #e50a30;
@@ -117,22 +118,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   font-size:12px;
 }
 .status-dot { width:7px; height:7px; border-radius:50%; background:#4caf50; box-shadow:none; }
-
-.suggestions { display:flex; flex-wrap:wrap; gap:8px; padding: 0 0 15px; }
-.suggestions button {
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:9px 12px;
-  border-radius:3px;
-  background:#fff;
-  color:#444;
-  border:1px solid #d9d9d9;
-  cursor:pointer;
-  font-size:12px;
-  transition: border-color .15s ease, color .15s ease, background .15s ease;
-}
-.suggestions button:hover { background:#fff7f8; color:var(--accent); border-color:#efb7c2; }
 
 .messages-card {
   border:1px solid #d8d8d8;
@@ -298,9 +283,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .main-content { width:calc(100% - 20px); padding:18px 0 22px; }
   .chat-heading h1 { font-size:24px; }
   .heading-description { font-size:12px; }
-  .suggestions { flex-wrap:nowrap; overflow:auto; padding-bottom:12px; scrollbar-width:none; }
-  .suggestions::-webkit-scrollbar { display:none; }
-  .suggestions button { white-space:nowrap; }
   .messages-card { min-height: calc(100vh - 280px); border-radius:4px; }
   .messages-scroll { padding:18px 13px; }
   .message-row { max-width:94%; }
@@ -316,6 +298,164 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .summary-column { grid-template-columns:1fr; }
   .summary-header, .tip-card { grid-column:auto; }
   .balance-value { font-size:27px; }
+}
+
+/* --------------------------------------------------------------------------
+   Système visuel Coach financier — direction SG-inspired
+   Palette rouge / noir / blanc, grilles éditoriales et composants anguleux.
+   Cette couche est volontairement centralisée pour garder toutes les pages
+   cohérentes sans dépendre d'assets ou de styles propriétaires externes.
+   -------------------------------------------------------------------------- */
+:root {
+  --sg-red: #e30613;
+  --sg-red-dark: #b50510;
+  --sg-red-soft: #fff1f2;
+  --sg-black: #111111;
+  --sg-gray-900: #242424;
+  --sg-gray-700: #555555;
+  --sg-gray-500: #777777;
+  --sg-gray-200: #e4e4e4;
+  --sg-gray-100: #f4f4f4;
+  --accent: var(--sg-red);
+  --accent-dark: var(--sg-red-dark);
+  --accent-soft: var(--sg-red-soft);
+  --bg: #f7f7f7;
+  --line: var(--sg-gray-200);
+  --border: var(--sg-gray-200);
+  --text: var(--sg-gray-900);
+}
+
+body { background: var(--bg); color: var(--text); }
+button, input, textarea, select { accent-color: var(--sg-red); }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--sg-red);
+  outline-offset: 2px;
+}
+
+/* Page Coach */
+.topbar {
+  height: 72px;
+  padding: 0 38px;
+  border-bottom: 3px solid var(--sg-black);
+  box-shadow: none;
+}
+.brand-wrap { gap: 12px; }
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 0;
+  background: linear-gradient(135deg, var(--sg-red) 0 50%, var(--sg-black) 50% 100%);
+}
+.brand-title { color: var(--sg-black); letter-spacing: .01em; }
+.brand-subtitle { color: var(--sg-gray-500); }
+.main-content { padding-top: 34px; }
+.chat-heading h1 { color: var(--sg-black); letter-spacing: -.03em; }
+.eyebrow { color: var(--sg-red); letter-spacing: .16em; }
+.messages-card, .balance-card, .metric-card, .health-card, .context-card, .tip-card {
+  border-color: var(--sg-gray-200);
+  border-radius: 2px;
+  box-shadow: 0 4px 18px rgba(17, 17, 17, .045);
+}
+.messages-card { box-shadow: 0 8px 24px rgba(17, 17, 17, .06); }
+.message-bubble { border-radius: 2px; }
+.message-bubble.assistant { border-left-color: var(--sg-red); background: #fff; }
+.message-bubble.user { background: var(--sg-gray-100); }
+.assistant-avatar { background: var(--sg-red); border-radius: 0; }
+.user-avatar { background: var(--sg-black); border-radius: 0; }
+.composer-wrap { background: #fff; }
+.composer { border-radius: 0; border-color: #bdbdbd; }
+.composer:focus-within { border-color: var(--sg-red); box-shadow: 0 0 0 2px rgba(227, 6, 19, .12); }
+.send-button, .close-conversation-button { background: var(--sg-red); border-radius: 0; }
+.send-button:hover:not(:disabled), .close-conversation-button:hover { background: var(--sg-red-dark); }
+.connection-pill { border-radius: 0; }
+
+/* En-tête et surface communs aux pages métier */
+.logs-shell {
+  width: min(1320px, calc(100% - 48px));
+  max-width: none;
+  margin: 0 auto;
+  padding: 28px 0 64px;
+}
+.marketing-page, .plab-page { max-width: none; }
+.logs-header {
+  border-bottom: 1px solid var(--sg-black);
+  padding: 0 0 16px;
+  margin-bottom: 22px;
+  gap: 16px;
+}
+.logs-header h1 { color: var(--sg-black); font-size: 24px; letter-spacing: -.025em; }
+.logs-back { color: var(--sg-red); font-weight: 700; }
+.logs-back:hover { color: var(--sg-red-dark); }
+.logs-status { border-radius: 0; }
+.logs-status.ok { color: #176b3a; background: #edf7f0; }
+.logs-status.ko { color: #a30d18; background: var(--sg-red-soft); }
+.status-dot { background: var(--sg-red); }
+
+.mkt-subtitle { color: var(--sg-gray-700); max-width: 900px; }
+.mkt-toolbar {
+  padding: 12px;
+  border-color: var(--sg-gray-200);
+  border-radius: 2px;
+  box-shadow: 0 2px 10px rgba(17, 17, 17, .035);
+}
+.mkt-periods { border-radius: 2px; background: var(--sg-gray-100); }
+.mkt-period { border-radius: 0; }
+.mkt-period.active { background: var(--sg-red); }
+.mkt-action { border-radius: 0; border-color: #bdbdbd; color: var(--sg-black); }
+.mkt-action:hover:not(:disabled) { color: var(--sg-red); border-color: var(--sg-red); background: #fff; }
+.mkt-card, .mkt-chart, .mkt-kpi, .logs-log {
+  border-color: var(--sg-gray-200);
+  border-radius: 2px;
+  box-shadow: 0 3px 14px rgba(17, 17, 17, .04);
+}
+.mkt-card h2, .mkt-chart h2 { color: var(--sg-black); }
+.mkt-kpi-value { color: var(--sg-black); }
+.mkt-table th { background: var(--sg-black); color: #fff; }
+.mkt-table th, .mkt-table td { border-color: var(--sg-gray-200); }
+.mkt-table tbody tr:hover { background: var(--sg-red-soft); }
+.mkt-bar { background: linear-gradient(180deg, #f45b65, var(--sg-red)); border-radius: 0; }
+.mkt-ranking-bar { border-radius: 0; background: var(--sg-red-soft); }
+.mkt-ranking-bar::after { border-radius: 0; background: var(--sg-red); }
+.mkt-drawer, .qlt-popup, .cc-popup { border-radius: 2px; }
+.mkt-drawer { border-color: var(--sg-black); }
+.qlt-popup-backdrop { background: rgba(17, 17, 17, .62); }
+.qlt-send, .callback-popup-ok, .prompt-save, .plab-actions button.plab-primary { background: var(--sg-red); border-radius: 0; }
+.qlt-send:hover:not(:disabled), .callback-popup-ok:hover, .prompt-save:hover:not(:disabled), .plab-actions button.plab-primary:hover:not(:disabled) { background: var(--sg-red-dark); }
+
+/* Logs, agents, prompts et conversation */
+.logs-log-head { background: var(--sg-gray-100); border-color: var(--sg-gray-200); }
+.logs-log, .logs-empty, .prompt-select, .prompt-textarea { border-radius: 2px; }
+.logs-prompt-btn, .chip, .logs-status-badge, .cc-chip, .cc-score { border-radius: 2px; }
+.logs-prompt-btn { color: var(--sg-red); }
+.prompt-label, .plab-field > span { color: var(--sg-black); }
+.prompt-hint, .plab-notice { background: var(--sg-red-soft); border-color: #f2bcc1; color: #6f1118; border-radius: 2px; }
+.prompt-select:focus, .prompt-textarea:focus { border-color: var(--sg-red); box-shadow: 0 0 0 2px rgba(227, 6, 19, .12); }
+.prompt-save { border-radius: 0; }
+.plab-page { gap: 22px; }
+.plab-page h2 { color: var(--sg-black); }
+.plab-box, .plab-iteration, .plab-thread-scroll, .plab-help, .plab-pre, .plab-diff { border-radius: 2px; border-color: var(--sg-gray-200); }
+.plab-progress-bar { background: var(--sg-red); }
+.plab-feedback { border-left-color: var(--sg-red); background: var(--sg-red-soft); }
+.plab-campaigns summary, .plab-help summary { color: var(--sg-red); }
+
+/* Centre d'appels */
+.cc-search, .cc-status-row select, .cc-status-message { border-radius: 2px; }
+.cc-sort { color: var(--sg-gray-700); }
+.cc-sort:hover, .cc-toggle { color: var(--sg-red); }
+.cc-status.a_contacter { background: #fff0d8; color: #7a4300; }
+.cc-status.contacte { background: #f8e5e8; color: #8f1d2b; }
+.cc-status.rdv { background: #ebe6e6; color: var(--sg-black); }
+.cc-status-box, .cc-score-box { border-radius: 2px; background: var(--sg-gray-100); }
+.cc-popup-head { border-bottom-color: var(--sg-gray-200); }
+.cc-popup-foot { border-top-color: var(--sg-gray-200); background: var(--sg-gray-100); border-radius: 0; }
+
+@media (max-width: 680px) {
+  .topbar { padding: 0 16px; }
+  .logs-shell { width: calc(100% - 28px); padding-top: 20px; }
+  .logs-header h1 { font-size: 20px; }
+  .logs-status { margin-left: 0; }
+  .mkt-toolbar { align-items: stretch; }
+  .mkt-toolbar > * { max-width: 100%; }
 }
 
 /* ---- Fin de conversation / nouvelle conversation (bouton d'action principal) ---- */

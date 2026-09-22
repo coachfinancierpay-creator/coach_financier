@@ -63,6 +63,7 @@ class ConversationClosureServiceTest {
     private ProductCatalogueService productCatalogueService;
     private BankingDataRepository bankingDataRepository;
     private FinancialAnalysisService financialAnalysisService;
+    private CallCenterStatusStore callCenterStatusStore;
 
     @BeforeEach
     void setUp() {
@@ -73,6 +74,7 @@ class ConversationClosureServiceTest {
         productCatalogueService = mock(ProductCatalogueService.class);
         bankingDataRepository = mock(BankingDataRepository.class);
         financialAnalysisService = mock(FinancialAnalysisService.class);
+        callCenterStatusStore = mock(CallCenterStatusStore.class);
 
         productUrlIndex = mock(ProductUrlIndex.class);
         when(productUrlIndex.urlFor(PRODUCT_ID)).thenReturn(PRODUCT_URL);
@@ -331,7 +333,7 @@ class ConversationClosureServiceTest {
                 financialAnalysisService, aiLogService, testObjectMapper(), marketingProperties(),
                 mock(MarketingEventStore.class), mock(MarketingExtractionService.class),
                 qualityChecks(), advisorDossiers(), new CommercialScoreService(financialAnalysisService),
-                mock(CallCenterStatusStore.class),
+                callCenterStatusStore,
                 "Conseiller SG", ADVISOR, "Jean Martin", "txt", "https://particuliers.sg.fr/vos-rendez-vous",
                 "https://particuliers.sg.fr", true, DEMO_PHONE);
     }
@@ -384,6 +386,18 @@ class ConversationClosureServiceTest {
         assertTrue(body.contains("[URL|Voir le RDV|#]"));
         assertFalse(body.contains("Voir le RDV : [URL|Voir le RDV|#]"));
         assertFalse(body.contains("Prendre rendez-vous avec un conseiller"));
+    }
+
+    @Test
+    void close_setsAContacterWhenTheClientRequestsACallback() {
+        when(aiServiceFactory.defaultProvider()).thenReturn(AIModels.AIProvider.MOCK);
+        when(aiServiceFactory.get(any())).thenReturn(new MockAIService());
+        when(conversationService.find("s1")).thenReturn(conversationWithTousRisques());
+
+        service().close("s1", new SuiviModels.CloseConversationRequest(null, null, null, false,
+                AIModels.AIProvider.MOCK, false, true));
+
+        verify(callCenterStatusStore).save("s1", "A_CONTACTER", "A contacter", "NOUVEAU", null);
     }
 
     @Test

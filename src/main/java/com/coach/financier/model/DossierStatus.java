@@ -16,12 +16,13 @@ import java.util.Locale;
  */
 public enum DossierStatus {
     NOUVEAU("Nouveau", 0),
-    CONTACTE("Contacté", 1),
-    QUALIFIE("Qualifié", 2),
-    RDV("RDV planifié", 3),
-    CONCLU("Conclu", 4),
-    PERDU("Sans suite", 4),
-    CLOTURE("Clôturé", 5);
+    A_CONTACTER("A contacter", 1),
+    CONTACTE("Contacté", 2),
+    QUALIFIE("Qualifié", 3),
+    RDV("RDV planifié", 4),
+    CONCLU("Conclu", 5),
+    PERDU("Sans suite", 5),
+    CLOTURE("Clôturé", 6);
 
     private final String label;
     private final int rank;

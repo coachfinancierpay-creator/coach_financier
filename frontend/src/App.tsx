@@ -8,7 +8,6 @@ import {
   FileText,
   Landmark,
   Menu,
-  MessageCircle,
   Mic,
   MicOff,
   PhoneCall,
@@ -61,14 +60,6 @@ const MAX_SILENCE_SECONDS = 10
  * (1 échange = 1 message client suivi de la réponse du coach → on compte les messages client).
  */
 const MIN_EXCHANGES_TO_CLOSE = 2
-
-const suggestions = [
-  'Quel est le solde de mon compte et mes dernières opérations ?',
-  'Combien puis-je épargner chaque mois ?',
-  'Est-ce que je peux acheter une voiture à 8 700 € ?',
-  'Combien puis-je emprunter pour mon projet immobilier ?',
-  'Quelle assurance habitation me faut-il ?',
-]
 
 const providerLabels: Record<AIProvider, string> = {
   GPT: 'GPT / OpenAI',
@@ -1094,15 +1085,6 @@ function App() {
               {suiviEnabled ? <Send size={16} /> : <Plus size={17} />}
               <span>{suiviEnabled ? 'Terminer la conversation' : 'Nouvelle conversation'}</span>
             </button>
-          </div>
-
-          <div className="suggestions">
-            {suggestions.map((suggestion) => (
-              <button key={suggestion} type="button" onClick={() => submitMessage(suggestion)} disabled={loading}>
-                <MessageCircle size={15} />
-                {suggestion}
-              </button>
-            ))}
           </div>
 
           <div className="messages-card">

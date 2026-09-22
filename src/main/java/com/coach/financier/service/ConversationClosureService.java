@@ -259,9 +259,12 @@ public class ConversationClosureService {
         //          le bloc d'évaluation — qui cible ce dossier — n'est pas ajouté au mail.
         if (archive) {
             advisorDossierService.persist(sessionId, result, dossierExtras(conversation, result, score));
-            if (Boolean.TRUE.equals(req.prisRDV()) && callCenterStatusStore.latestBySession(sessionId).isEmpty()) {
-                callCenterStatusStore.save(sessionId, "RDV", "RDV planifié", "NOUVEAU",
-                        null);
+            if (callCenterStatusStore.latestBySession(sessionId).isEmpty()) {
+                if (Boolean.TRUE.equals(req.prisRDV())) {
+                    callCenterStatusStore.save(sessionId, "RDV", "RDV planifié", "NOUVEAU", null);
+                } else if (Boolean.TRUE.equals(req.etreRappele())) {
+                    callCenterStatusStore.save(sessionId, "A_CONTACTER", "A contacter", "NOUVEAU", null);
+                }
             }
         }
         validated = withAdvisorLinks(validated, sessionId, score, archive,
