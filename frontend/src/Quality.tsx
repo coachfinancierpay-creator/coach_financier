@@ -19,6 +19,7 @@ import {
   runQualityBatch,
 } from './api'
 import type { QualityAggregates, QualityPeriod, QualityReport } from './types.quality'
+import { isoToday } from './dates'
 
 const PERIODS: { id: QualityPeriod; label: string }[] = [
   { id: 'today', label: "Aujourd'hui" },
@@ -74,6 +75,11 @@ export default function Quality() {
   const [to, setTo] = useState('')
   const [ratingFilter, setRatingFilter] = useState<number | ''>('')
   const [severityFilter, setSeverityFilter] = useState('')
+  /**
+   * Journée analysée par le rapport IA : choisie EXPLICITEMENT (elle ne suit pas la fin de période
+   * affichée), pour que l'analyse produite et la date affichée soient toujours la même journée.
+   */
+  const [reportDate, setReportDate] = useState(isoToday())
   const [data, setData] = useState<QualityAggregates | null>(null)
   const [report, setReport] = useState<QualityReport | null>(null)
   const [loading, setLoading] = useState(false)
@@ -89,24 +95,24 @@ export default function Quality() {
         severity: severityFilter || undefined,
       })
       setData(overview)
-      setReport(await fetchQualityReport(overview.dateTo))
+      setReport(await fetchQualityReport(reportDate))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur inconnue')
     } finally {
       setLoading(false)
     }
-  }, [period, from, to, ratingFilter, severityFilter])
+  }, [period, from, to, ratingFilter, severityFilter, reportDate])
 
   useEffect(() => {
     void load()
   }, [load])
 
   async function regenerate() {
-    if (!data) return
+    if (!reportDate) return
     setNotice(null)
     try {
-      await runQualityBatch(data.dateTo)
-      setNotice(`Agrégats et rapport IA régénérés pour le ${data.dateTo}.`)
+      await runQualityBatch(reportDate)
+      setNotice(`Agrégats et rapport IA régénérés pour le ${reportDate}.`)
       await load()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur inconnue')
@@ -193,7 +199,21 @@ export default function Quality() {
           <button type="button" className="mkt-action" onClick={() => void load()} disabled={loading}>
             <RefreshCw size={14} /> {loading ? 'Chargement…' : 'Actualiser'}
           </button>
-          <button type="button" className="mkt-action" onClick={() => void regenerate()} disabled={!data}>
+          <label className="mkt-report-date" title="Journée analysée par le rapport IA (les agrégats de ce jour sont recalculés)">
+            <span>Rapport du</span>
+            <input
+              type="date"
+              aria-label="Date du rapport IA"
+              value={reportDate}
+              onChange={(event) => setReportDate(event.target.value)}
+            />
+          </label>
+          <button
+            type="button"
+            className="mkt-action"
+            onClick={() => void regenerate()}
+            disabled={loading || !reportDate}
+          >
             <Bot size={14} /> Régénérer le rapport IA
           </button>
           <button type="button" className="mkt-action" onClick={() => void seedDemo()}>
@@ -398,15 +418,22 @@ export default function Quality() {
             <section className="mkt-card wide">
               <h2>
                 <Bot size={15} /> Analyse IA de la qualité
+                {report?.reportDate ? ` — ${report.reportDate}` : ''}
               </h2>
               <p className="mkt-hint">
                 Analyse générée à partir des statistiques calculées par le backend et des feedbacks
                 anonymisés. L&rsquo;IA n&rsquo;a calculé aucun chiffre et ne modifie rien automatiquement :
                 elle propose, l&rsquo;équipe décide.
               </p>
+              {report && reportDate && report.reportDate !== reportDate && (
+                <div className="mkt-notice warn">
+                  Aucune analyse n&rsquo;existe pour le {reportDate} : voici la plus récente
+                  {' '}({report.reportDate}). Utilisez « Régénérer le rapport IA » pour la journée choisie.
+                </div>
+              )}
               {!report ? (
                 <p className="mkt-empty">
-                  Aucun rapport IA disponible pour cette période. Utilisez « Régénérer le rapport IA ».
+                  Aucun rapport IA disponible pour le {reportDate}. Utilisez « Régénérer le rapport IA ».
                 </p>
               ) : (
                 <>

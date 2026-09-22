@@ -18,6 +18,7 @@ import type {
   MarketingReport,
   MarketingStatus,
 } from './types'
+import { isoDaysAgo, isoToday } from './dates'
 
 type SortKey = 'interestedSessions' | 'recommendedSessions' | 'interestRate' | 'score' | 'evolutionPercent'
 
@@ -28,12 +29,6 @@ const PERIODS: { key: MarketingPeriod; label: string }[] = [
   { key: '30d', label: '30 jours' },
   { key: 'custom', label: 'Personnalisé' },
 ]
-
-function isoDaysAgo(days: number): string {
-  const date = new Date()
-  date.setDate(date.getDate() - days)
-  return date.toISOString().slice(0, 10)
-}
 
 function formatNumber(value: number | null | undefined): string {
   return value == null ? '—' : value.toLocaleString('fr-FR')
@@ -107,6 +102,8 @@ export default function Marketing() {
   const [period, setPeriod] = useState<MarketingPeriod>('7d')
   const [from, setFrom] = useState(isoDaysAgo(6))
   const [to, setTo] = useState(isoDaysAgo(0))
+  /** Journée du rapport IA : choisie explicitement (elle ne dépend PAS de la période affichée). */
+  const [reportDate, setReportDate] = useState(isoToday())
   const [projectType, setProjectType] = useState('')
   const [productFamily, setProductFamily] = useState('')
   const [interestLevel, setInterestLevel] = useState('')
@@ -153,13 +150,13 @@ export default function Marketing() {
       const aggregates = await fetchMarketingOverview(period, from, to, filters)
       setData(aggregates)
       setStatus(await fetchMarketingStatus())
-      setReport(await fetchMarketingReport(aggregates.dateTo))
+      setReport(await fetchMarketingReport(reportDate))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de chargement.')
     } finally {
       setLoading(false)
     }
-  }, [period, from, to, filters])
+  }, [period, from, to, filters, reportDate])
 
   useEffect(() => {
     void load()
@@ -257,12 +254,24 @@ export default function Marketing() {
         <a className="mkt-action" href={marketingProductsCsvUrl(period, from, to)}>
           <Download size={15} /> Exporter CSV
         </a>
+        <label className="mkt-report-date" title="Journée analysée par le rapport IA (les agrégats de ce jour sont recalculés)">
+          <span>Rapport du</span>
+          <input
+            type="date"
+            aria-label="Date du rapport IA"
+            value={reportDate}
+            onChange={(e) => setReportDate(e.target.value)}
+          />
+        </label>
         <button
           type="button"
           className="mkt-action"
-          disabled={loading || working}
-          onClick={() => void runAction(() => regenerateMarketingReport(data?.dateTo ?? to), 'Rapport IA régénéré.')}
-          title="Recalcule les agrégats et régénère le rapport IA de la date"
+          disabled={loading || working || !reportDate}
+          onClick={() => void runAction(
+            () => regenerateMarketingReport(reportDate),
+            `Agrégats et rapport IA régénérés pour le ${reportDate}.`,
+          )}
+          title="Recalcule les agrégats et régénère le rapport IA de la date choisie"
         >
           <Wand2 size={15} /> Régénérer le rapport IA
         </button>
@@ -446,8 +455,16 @@ export default function Marketing() {
               analytique et non par l'IA.
               {report?.model ? ` · modèle : ${report.model}` : ''}
             </p>
+            {report && reportDate && report.reportDate !== reportDate && (
+              <div className="mkt-notice warn">
+                Aucune analyse n&rsquo;existe pour le {reportDate} : voici la plus récente
+                {' '}({report.reportDate}). Utilisez « Régénérer le rapport IA » pour la journée choisie.
+              </div>
+            )}
             {!report ? (
-              <p className="mkt-empty">Aucun rapport IA disponible. Utilisez « Régénérer le rapport IA ».</p>
+              <p className="mkt-empty">
+                Aucun rapport IA disponible pour le {reportDate}. Utilisez « Régénérer le rapport IA ».
+              </p>
             ) : (
               <>
                 {report.error && <div className="mkt-notice warn">{report.error}</div>}

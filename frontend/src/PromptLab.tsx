@@ -774,13 +774,17 @@ export default function PromptLab() {
   }
 
   /**
-   * Nouvelle conversation : le prochain cycle repart SANS mémoire (les fils précédents restent sur disque).
+   * Nouvelle conversation : le prochain cycle repart SANS mémoire (les fils précédents restent sur disque) et
+   * la CAMPAGNE affichée est oubliée en même temps — même remise à zéro que le bouton « Nouvelle campagne »,
+   * pour que la page reparte sur une configuration vierge.
    * <p>
    * Si l'une des deux cases est cochée, le scénario qui se termine est d'abord CLÔTURÉ comme une conversation
    * de la page coach : même pipeline (agent de suivi → dossier → mail conseiller → score de sens commercial),
    * et le dossier est archivé (ou non) pour la page « Centre d'appels ».
    */
   async function handleNewConversation() {
+    let closureMessage: string | null = null
+    let closureError: string | null = null
     if ((closeMail || closeArchive) && thread !== null && thread.turns.length > 0) {
       setClosing(true)
       try {
@@ -789,26 +793,24 @@ export default function PromptLab() {
           archive: closeArchive,
           provider,
         })
-        setNotice(closureNotice(result.response.status, closeMail, closeArchive, result.response.warnings ?? []))
+        closureMessage = closureNotice(result.response.status, closeMail, closeArchive, result.response.warnings ?? [])
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Clôture impossible')
+        closureError = e instanceof Error ? e.message : 'Clôture impossible'
       } finally {
         setClosing(false)
       }
     }
+    // Conversation ET campagne repartent à blanc (la clôture ci-dessus a déjà rendu son verdict).
+    resetCampaignView()
     setThread(null)
     setNextQuestion('')
-    setEditingTurn(null)
-    setThreadComparison(null)
-    setThreadTarget(null)
     // Nouveau scénario : le projet précédent n'a plus à être évité, on repart d'une page blanche.
     setClientBriefs([])
     // La remise à zéro est MÉMORISÉE : sans cela, un simple F5 faisait réapparaître le fil abandonné
     // (il est repris depuis le serveur au chargement). Un fil créé après cet instant sera, lui, repris.
     markMemoryCleared(agentId)
-    if (!closeMail && !closeArchive) {
-      setNotice("Nouvelle conversation : le prochain cycle démarrera sans historique (aucune mémoire). La conversation abandonnée ne sera plus rechargée, même après un rafraîchissement de la page.")
-    }
+    setError(closureError)
+    setNotice(closureMessage ?? "Nouvelle conversation : le prochain cycle démarrera sans historique (aucune mémoire). La conversation abandonnée ne sera plus rechargée, même après un rafraîchissement de la page.")
   }
 
   /**
@@ -1221,11 +1223,15 @@ export default function PromptLab() {
   }
 
   /**
-   * Revient à la configuration pour démarrer une NOUVELLE campagne (l'IHM ne conserve pas d'historique de
-   * CAMPAGNES : les fichiers de la campagne précédente restent sur disque, mais ne sont plus proposés).
-   * La CONVERSATION, elle, n'est pas perdue : c'est elle qui porte la mémoire des cycles suivants.
+   * REMISE À ZÉRO de la VUE de campagne : l'IHM oublie la campagne courante et referme tous ses panneaux.
+   * Les fichiers de la campagne restent sur disque (le backend clôt les campagnes précédentes dès qu'une
+   * nouvelle démarre) ; la CONVERSATION, elle, n'est pas touchée ici — c'est elle qui porte la mémoire des
+   * cycles suivants.
+   * <p>
+   * Partagée par « Nouvelle campagne » ET « Nouvelle conversation » : repartir sur une nouvelle conversation
+   * doit aussi repartir sur une page vierge, sans conserver l'affichage de la campagne précédente.
    */
-  function newCampaign() {
+  function resetCampaignView() {
     stopRef.current = true
     setDetail(null)
     setComparison(null)
@@ -1240,6 +1246,15 @@ export default function PromptLab() {
     setEditingTurn(null)
     setThreadComparison(null)
     setThreadTarget(null)
+  }
+
+  /**
+   * Revient à la configuration pour démarrer une NOUVELLE campagne (l'IHM ne conserve pas d'historique de
+   * CAMPAGNES : les fichiers de la campagne précédente restent sur disque, mais ne sont plus proposés).
+   * La CONVERSATION, elle, n'est pas perdue : c'est elle qui porte la mémoire des cycles suivants.
+   */
+  function newCampaign() {
+    resetCampaignView()
     setNotice(null)
     setError(null)
   }

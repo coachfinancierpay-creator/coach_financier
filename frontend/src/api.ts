@@ -534,7 +534,12 @@ export async function fetchAdvisorReport(date?: string): Promise<AdvisorReport |
   return (await response.json()) as AdvisorReport
 }
 
-/** Bouton « Générer l'analyse IA » (§30) : rapport de la période sélectionnée. */
+/**
+ * Bouton « Générer l'analyse IA » (§30) : rapport de la PÉRIODE demandée.
+ * <p>
+ * La page Feedback Conseillers l'appelle en période {@code custom} d'un seul jour
+ * ({@code from = to = date choisie}) : le rapport produit porte alors exactement cette date.
+ */
 export async function generateAdvisorReport(
   period: AdvisorPeriod,
   from?: string,

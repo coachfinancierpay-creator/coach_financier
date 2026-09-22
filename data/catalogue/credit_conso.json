@@ -115,6 +115,13 @@
         "taeg": 4.99,
         "depend_du_dossier": true
       },
+      "fonds": {
+        "standard_jours": 14,
+        "anticipe_jours": 8,
+        "condition_anticipation": "Sur demande expresse du client",
+        "point_depart": "Acceptation de l'offre de crédit",
+        "delai_retractation_jours": 14
+      },
       "apport_obligatoire": false,
       "flexibilite": {
         "mensualites_modulables": true,

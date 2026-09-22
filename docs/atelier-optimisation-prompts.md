@@ -179,6 +179,9 @@ question 2 → itérations → …) au lieu d'une question isolée.
   mais **jamais** un fil volontairement abandonné : « Nouvelle conversation » horodate l'abandon par agent
   (`localStorage`), et les fils modifiés **avant** cet instant ne sont plus repris (même après un F5), tandis qu'un
   fil créé **après** l'est normalement.
+  « Nouvelle conversation » remet **aussi à zéro la vue de la campagne** (même remise à zéro que le bouton
+  « Nouvelle campagne ») : la page repart sur la configuration, sans conserver l'affichage de la campagne
+  précédente — une nouvelle conversation et une nouvelle campagne vont de pair.
   Les réponses sont **mises en forme exactement comme dans la page coach** (`frontend/src/messageFormat.tsx`,
   module partagé) : `**gras**`, `*italique*`, `` `code` ``, liens `[URL|nom|url]` cliquables (http(s) uniquement),
   retours à la ligne conservés — aucun HTML brut, donc aucune injection possible.

@@ -37,6 +37,7 @@ import type {
   AdvisorProductFeedbackInput,
   AdvisorReport,
 } from './types.advisor'
+import { isoToday } from './dates'
 
 const PERIODS: { id: AdvisorPeriod; label: string }[] = [
   { id: 'today', label: "Aujourd'hui" },
@@ -89,6 +90,12 @@ export default function AdvisorFeedback() {
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [filters, setFilters] = useState<AdvisorFilters>({})
+  /**
+   * Journée analysée par le rapport IA : choisie EXPLICITEMENT (elle ne suit pas la fin de période
+   * affichée). L'analyse IA est générée pour CETTE journée : la date affichée est donc toujours celle
+   * du rapport, jamais celle de la période sélectionnée.
+   */
+  const [reportDate, setReportDate] = useState(isoToday())
   const [data, setData] = useState<AdvisorAggregates | null>(null)
   const [report, setReport] = useState<AdvisorReport | null>(null)
   const [loading, setLoading] = useState(false)
@@ -101,23 +108,28 @@ export default function AdvisorFeedback() {
     try {
       const overview = await fetchAdvisorOverview(period, from || undefined, to || undefined, filters)
       setData(overview)
-      setReport(await fetchAdvisorReport(overview.dateTo))
+      setReport(await fetchAdvisorReport(reportDate))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur inconnue')
     } finally {
       setLoading(false)
     }
-  }, [period, from, to, filters])
+  }, [period, from, to, filters, reportDate])
 
   useEffect(() => {
     void load()
   }, [load])
 
+  /**
+   * Génère le rapport IA de la JOURNÉE choisie : période « custom » d'un seul jour (from = to), afin que
+   * le rapport produit porte exactement la date demandée.
+   */
   async function generate() {
+    if (!reportDate) return
     setNotice(null)
     try {
-      setReport(await generateAdvisorReport(period, from || undefined, to || undefined))
-      setNotice('Analyse IA générée pour la période sélectionnée.')
+      setReport(await generateAdvisorReport('custom', reportDate, reportDate))
+      setNotice(`Analyse IA des retours conseillers générée pour le ${reportDate}.`)
       await load()
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erreur inconnue')
@@ -200,7 +212,16 @@ export default function AdvisorFeedback() {
         <button type="button" className="mkt-action" onClick={() => void load()} disabled={loading}>
           <RefreshCw size={14} /> {loading ? 'Chargement…' : 'Actualiser'}
         </button>
-        <button type="button" className="mkt-action" onClick={() => void generate()}>
+        <label className="mkt-report-date" title="Journée analysée par l'analyse IA (le rapport portera cette date)">
+          <span>Rapport du</span>
+          <input
+            type="date"
+            aria-label="Date du rapport IA"
+            value={reportDate}
+            onChange={(event) => setReportDate(event.target.value)}
+          />
+        </label>
+        <button type="button" className="mkt-action" onClick={() => void generate()} disabled={loading || !reportDate}>
           <Bot size={14} /> Générer l&rsquo;analyse IA
         </button>
         <button type="button" className="mkt-action" onClick={() => void seedDemo()}>
@@ -403,15 +424,22 @@ export default function AdvisorFeedback() {
       <section className="mkt-card wide">
         <h2>
           <Bot size={15} /> Analyse IA des retours conseillers
+          {report?.reportDate ? ` — ${report.reportDate}` : ''}
         </h2>
         <p className="mkt-hint">
           Analyse générée à partir des KPI calculés par le backend et de commentaires anonymisés. L&rsquo;IA
           n&rsquo;a calculé aucun chiffre et ne modifie rien : elle propose, l&rsquo;équipe décide.
         </p>
+        {report && reportDate && report.reportDate !== reportDate && (
+          <div className="mkt-notice warn">
+            Aucune analyse n&rsquo;existe pour le {reportDate} : voici la plus récente
+            {' '}({report.reportDate}). Utilisez « Générer l&rsquo;analyse IA » pour la journée choisie.
+          </div>
+        )}
         {!report ? (
           <p className="mkt-empty">
-            Aucune analyse disponible : utilisez « Générer l&rsquo;analyse IA » (la génération est manuelle
-            dans le POC).
+            Aucune analyse disponible pour le {reportDate} : utilisez « Générer l&rsquo;analyse IA »
+            (la génération est manuelle dans le POC).
           </p>
         ) : (
           <>

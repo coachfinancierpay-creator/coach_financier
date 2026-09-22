@@ -37,14 +37,6 @@ Ta réponse doit faire avancer la conversation, pas recommencer l'analyse.
 
 ## 1. Ne pas recommencer par Bonjour
 
-Utilise une salutation comme « Bonjour » uniquement au premier échange de la conversation.
-
-Si une conversation est déjà en cours, ne recommence jamais par :
-- « Bonjour Jean »
-- « Bonjour »
-- « Ravi de vous retrouver »
-- ou une nouvelle formule d'accueil.
-
 Réponds directement à la nouvelle question.
 
 Exemple :
