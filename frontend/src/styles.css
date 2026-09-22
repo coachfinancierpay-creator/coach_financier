@@ -118,22 +118,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 }
 .status-dot { width:7px; height:7px; border-radius:50%; background:#4caf50; box-shadow:none; }
 
-.suggestions { display:flex; flex-wrap:wrap; gap:8px; padding: 0 0 15px; }
-.suggestions button {
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:9px 12px;
-  border-radius:3px;
-  background:#fff;
-  color:#444;
-  border:1px solid #d9d9d9;
-  cursor:pointer;
-  font-size:12px;
-  transition: border-color .15s ease, color .15s ease, background .15s ease;
-}
-.suggestions button:hover { background:#fff7f8; color:var(--accent); border-color:#efb7c2; }
-
 .messages-card {
   border:1px solid #d8d8d8;
   background:#fff;
@@ -298,9 +282,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .main-content { width:calc(100% - 20px); padding:18px 0 22px; }
   .chat-heading h1 { font-size:24px; }
   .heading-description { font-size:12px; }
-  .suggestions { flex-wrap:nowrap; overflow:auto; padding-bottom:12px; scrollbar-width:none; }
-  .suggestions::-webkit-scrollbar { display:none; }
-  .suggestions button { white-space:nowrap; }
   .messages-card { min-height: calc(100vh - 280px); border-radius:4px; }
   .messages-scroll { padding:18px 13px; }
   .message-row { max-width:94%; }
