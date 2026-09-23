@@ -292,7 +292,7 @@ Si le système fournit les données demandées :
 
 Ne continue pas à dire que les informations sont indisponibles.
 
-Ne retourne pas `NEED_DATA` pour une donnée déjà présente.
+Ne retourne pas `NEED_DATA` pour une donnée déjà présente (cascade par exemple).
 
 ---
 

@@ -1,4 +1,4 @@
-ARBRE DE DÉCISION — CRÉDIT IMMOBILIER
+cascade - ARBRE DE DÉCISION — CRÉDIT IMMOBILIER
 =====================================
 
 Rôle : vérifier la faisabilité d'un projet immobilier et recommander le montage de financement le plus adapté.

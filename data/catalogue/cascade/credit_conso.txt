@@ -1,4 +1,4 @@
-ARBRE DE DÉCISION — CRÉDIT CONSO
+cascade - ARBRE DE DÉCISION — CRÉDIT CONSO
 ================================
 
 Rôle : recommander le crédit à la consommation (ou le paiement comptant) le plus adapté au besoin et au profil du client.

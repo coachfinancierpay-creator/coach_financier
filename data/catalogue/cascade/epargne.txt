@@ -1,4 +1,4 @@
-ARBRE DE DÉCISION — ÉPARGNE / PLACEMENT
+cascade - ARBRE DE DÉCISION — ÉPARGNE / PLACEMENT
 =======================================
 
 Rôle : recommander le produit d'épargne ou de placement le plus adapté à la situation et à l'objectif du client.

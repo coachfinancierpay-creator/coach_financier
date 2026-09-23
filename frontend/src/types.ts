@@ -82,6 +82,7 @@ export interface AiLog {
   historyCount: number
   charCount: number
   responseTimeMs: number
+  answerCharCount: number
   status: 'ANSWER' | 'NEED_DATA' | 'ERROR'
   agent?: string
   requestedData: string[]

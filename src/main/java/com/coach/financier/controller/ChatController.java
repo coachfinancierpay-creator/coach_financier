@@ -142,7 +142,7 @@ public class ChatController {
                             + "dans additionalData.providedData. Ne renvoie plus NEED_DATA. Réponds maintenant avec "
                             + "status=ANSWER en utilisant uniquement les données disponibles, sans inventer.";
                     aiStartedAt = System.nanoTime();
-                    answer = ai.answer(finalAnswerInstruction, legacy, summary, ctx.catalog(),
+                    answer = ai.answer(finalAnswerInstruction, legacy, summary, Map.of(),
                             AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
                     responseTimeMs = elapsedMillis(aiStartedAt);
                     log.info("[CHAT] relance finale : statut={}, texte={} caractère(s)", answer.status(),
@@ -169,7 +169,7 @@ public class ChatController {
             sentChars = coachContextBuilder.payloadCharCount(ctx, request.message());
             promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
             aiStartedAt = System.nanoTime();
-            answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
+            answer = ai.answer(request.message(), legacy, summary, Map.of(),
                     AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
             responseTimeMs = elapsedMillis(aiStartedAt);
             log.info("[CHAT] après chargement : statut={}, texte={} caractère(s)", answer.status(),
