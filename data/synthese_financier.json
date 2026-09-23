@@ -5,6 +5,8 @@
     "student": false,
     "nom": "Jean",
     "prenom": "Michel",
+    "mail": "Michel@gmail.com",
+    "student": false,
     "age": 30
   },
   "period": {
