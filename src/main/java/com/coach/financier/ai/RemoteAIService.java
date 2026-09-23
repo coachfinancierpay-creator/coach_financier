@@ -47,6 +47,8 @@ public abstract class RemoteAIService implements AIService {
     private final String providerName;
     /** Plafond de sortie envoyé au modèle (voir {@link #DEFAULT_MAX_OUTPUT_TOKENS}). */
     private final int maxOutputTokens;
+    /** Effort de raisonnement OpenAI ; null/blank signifie que le fournisseur applique son défaut. */
+    private final String reasoningEffort;
     /**
      * Une clé API est-elle EXIGÉE ? Vrai pour les fournisseurs distants (GPT/DeepSeek) ; faux pour un
      * serveur LOCAL (LM Studio, Ollama…) qui n'en demande aucune — l'en-tête {@code Authorization} n'est
@@ -79,14 +81,21 @@ public abstract class RemoteAIService implements AIService {
     protected RemoteAIService(ObjectMapper objectMapper, String baseUrl, String apiKey, String model,
                               String providerName, int maxOutputTokens) {
         this(objectMapper, baseUrl, apiKey, model, providerName, maxOutputTokens, true, true, false,
-                READ_TIMEOUT_MS);
+                READ_TIMEOUT_MS, null);
+    }
+
+    /** Fournisseur distant avec effort de raisonnement configurable (utilisé par OpenAI). */
+    protected RemoteAIService(ObjectMapper objectMapper, String baseUrl, String apiKey, String model,
+                              String providerName, int maxOutputTokens, String reasoningEffort) {
+        this(objectMapper, baseUrl, apiKey, model, providerName, maxOutputTokens, true, true, false,
+                READ_TIMEOUT_MS, reasoningEffort);
     }
 
     protected RemoteAIService(ObjectMapper objectMapper, String baseUrl, String apiKey, String model,
                               String providerName, int maxOutputTokens, boolean apiKeyRequired,
                               boolean jsonResponseFormat) {
         this(objectMapper, baseUrl, apiKey, model, providerName, maxOutputTokens, apiKeyRequired,
-                jsonResponseFormat, false, READ_TIMEOUT_MS);
+                jsonResponseFormat, false, READ_TIMEOUT_MS, null);
     }
 
     /**
@@ -96,11 +105,20 @@ public abstract class RemoteAIService implements AIService {
     protected RemoteAIService(ObjectMapper objectMapper, String baseUrl, String apiKey, String model,
                               String providerName, int maxOutputTokens, boolean apiKeyRequired,
                               boolean jsonResponseFormat, boolean jsonSchemaMode, int readTimeoutMs) {
+        this(objectMapper, baseUrl, apiKey, model, providerName, maxOutputTokens, apiKeyRequired,
+                jsonResponseFormat, jsonSchemaMode, readTimeoutMs, null);
+    }
+
+    protected RemoteAIService(ObjectMapper objectMapper, String baseUrl, String apiKey, String model,
+                              String providerName, int maxOutputTokens, boolean apiKeyRequired,
+                              boolean jsonResponseFormat, boolean jsonSchemaMode, int readTimeoutMs,
+                              String reasoningEffort) {
         this.objectMapper = objectMapper;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
         this.model = model;
         this.providerName = providerName;
         this.maxOutputTokens = maxOutputTokens > 0 ? maxOutputTokens : DEFAULT_MAX_OUTPUT_TOKENS;
+        this.reasoningEffort = reasoningEffort == null ? "" : reasoningEffort.trim();
         this.apiKeyRequired = apiKeyRequired;
         this.jsonResponseFormat = jsonResponseFormat;
         this.jsonSchemaMode = jsonSchemaMode;
@@ -274,6 +292,9 @@ public abstract class RemoteAIService implements AIService {
             request.put("temperature", 0.2);
         }
         request.put("GPT/OpenAI".equals(providerName) ? "max_completion_tokens" : "max_tokens", maxOutputTokens);
+        if ("GPT/OpenAI".equals(providerName) && !reasoningEffort.isBlank()) {
+            request.put("reasoning_effort", reasoningEffort);
+        }
         if (jsonSchemaMode) {
             // Schéma PERMISSIF : la FORME (objet JSON) est garantie, les CHAMPS restent décrits par le prompt.
             request.put("response_format", Map.of(

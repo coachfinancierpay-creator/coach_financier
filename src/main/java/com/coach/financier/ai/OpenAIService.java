@@ -10,7 +10,8 @@ public class OpenAIService extends RemoteAIService {
                          @Value("${app.ai.openai.base-url}") String baseUrl,
                          @Value("${app.ai.openai.api-key}") String apiKey,
                          @Value("${app.ai.openai.model}") String model,
-                         @Value("${app.ai.openai.max-tokens:16384}") int maxTokens) {
-        super(objectMapper, baseUrl, apiKey, model, "GPT/OpenAI", maxTokens);
+                         @Value("${app.ai.openai.max-tokens:16384}") int maxTokens,
+                         @Value("${app.ai.openai.reasoning-effort:low}") String reasoningEffort) {
+        super(objectMapper, baseUrl, apiKey, model, "GPT/OpenAI", maxTokens, reasoningEffort);
     }
 }

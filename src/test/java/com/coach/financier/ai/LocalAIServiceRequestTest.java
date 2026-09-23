@@ -49,8 +49,9 @@ class LocalAIServiceRequestTest {
     }
 
     private static final class OpenAIProbe extends RemoteAIService {
-        OpenAIProbe(String apiKey) {
-            super(new ObjectMapper(), "https://api.openai.com/v1", apiKey, "gpt-5.6-luna", "GPT/OpenAI", 4096);
+        OpenAIProbe(String apiKey, String reasoningEffort) {
+            super(new ObjectMapper(), "https://api.openai.com/v1", apiKey, "gpt-5.6-luna", "GPT/OpenAI", 4096,
+                    reasoningEffort);
         }
     }
 
@@ -110,11 +111,12 @@ class LocalAIServiceRequestTest {
 
     @Test
     void anOpenAiRequestUsesTheCompletionTokenParameter() {
-        Map<String, Object> body = new OpenAIProbe("cle").requestBody("s", "u");
+        Map<String, Object> body = new OpenAIProbe("cle", "low").requestBody("s", "u");
 
         assertEquals(4096, body.get("max_completion_tokens"));
         assertNull(body.get("max_tokens"));
         assertNull(body.get("temperature"), "OpenAI applique la température par défaut supportée par le modèle");
+        assertEquals("low", body.get("reasoning_effort"));
     }
 
     @Test
