@@ -156,7 +156,7 @@ app:
     openai:
       base-url: ${OPENAI_BASE_URL:https://coach-financier.openai.azure.com/openai/v1}
       api-key: ${OPENAI_API_KEY:}
-      model: ${OPENAI_MODEL:DeepSeek-V4-Pro}
+      model: ${OPENAI_MODEL:DeepSeek-V4-Flash}
       # Effort de raisonnement : none privilégie la latence ; utiliser low si la qualité de raisonnement
       # est prioritaire. La valeur vide désactive également l'envoi du paramètre.
       reasoning-effort: ${OPENAI_REASONING_EFFORT:none}
