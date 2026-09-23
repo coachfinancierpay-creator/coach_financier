@@ -28,27 +28,27 @@
     "description": "Épargne"
   },
   {
-    "path": "/data/catalogue/guide/assurance_auto_guide.json",
+    "path": "/data/catalogue/guide/assurance_auto_guide.md",
     "description": "Assurance auto"
   },
   {
-    "path": "/data/catalogue/guide/assurance_emprunteur_immo_guide.json",
+    "path": "/data/catalogue/guide/assurance_emprunteur_immo_guide.md",
     "description": "Assurance emprunteur immobilier"
   },
   {
-    "path": "/data/catalogue/guide/assurance_habitation_guide.json",
+    "path": "/data/catalogue/guide/assurance_habitation_guide.md",
     "description": "Assurance habitation"
   },
   {
-    "path": "/data/catalogue/guide/credit_conso_guide.json",
+    "path": "/data/catalogue/guide/credit_conso_guide.md",
     "description": "Crédit consommation"
   },
   {
-    "path": "/data/catalogue/guide/credit_immo_guide.json",
+    "path": "/data/catalogue/guide/credit_immo_guide.md",
     "description": "Crédit immobilier"
   },
   {
-    "path": "/data/catalogue/guide/epargne_guide.json",
+    "path": "/data/catalogue/guide/epargne_guide.md",
     "description": "Épargne"
   },
   {

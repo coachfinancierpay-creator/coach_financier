@@ -17,6 +17,22 @@
       "balance": 1516.89
     }
   ],
+  "epargne": [
+    {
+      "accountId": "LIVRET-A-001",
+      "libelle": "Livret A",
+      "type": "COMPTE_EPARGNE",
+      "currency": "EUR",
+      "solde": 12000.18
+    },
+    {
+      "accountId": "LIVRET-DEV-DURABLE-001",
+      "libelle": "Livret développement durable",
+      "type": "COMPTE_EPARGNE",
+      "currency": "EUR",
+      "solde": 4695
+    }
+  ],
   "credits": [
     {
       "produit": "crédit_immobilier",
