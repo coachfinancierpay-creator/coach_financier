@@ -84,7 +84,7 @@ public class CoachContextBuilder {
      */
     public CoachContext build(String question, IntentClassification classification, CurrentProject project,
                              List<ConversationModels.Message> history) {
-        return build(question, classification, project, history, null);
+        return build(question, classification, project, history, null, null);
     }
 
     /**
@@ -94,6 +94,13 @@ public class CoachContextBuilder {
      */
     public CoachContext build(String question, IntentClassification classification, CurrentProject project,
                              List<ConversationModels.Message> history, String forcedAgentTheme) {
+        return build(question, classification, project, history, forcedAgentTheme, null);
+    }
+
+    /** Variante de production avec l'identifiant client stable de la conversation. */
+    public CoachContext build(String question, IntentClassification classification, CurrentProject project,
+                              List<ConversationModels.Message> history, String forcedAgentTheme,
+                              String customerId) {
         FinancialSummary summary = financialAnalysisService.analyze();
 
         // Engagements existants (crédits en cours) — distincts des produits proposés.
@@ -152,7 +159,8 @@ public class CoachContextBuilder {
         Object catalog = visibleEntries;
 
         List<Map<String, Object>> providedData = new ArrayList<>();
-        financialSynthesisStore.load().ifPresent(node -> {
+        (customerId == null ? financialSynthesisStore.load() : financialSynthesisStore.loadForCustomer(customerId))
+                .ifPresent(node -> {
             Map<String, Object> synthesisEntry = new LinkedHashMap<>();
             synthesisEntry.put("description", "Synthèse financière");
             synthesisEntry.put("data", node);

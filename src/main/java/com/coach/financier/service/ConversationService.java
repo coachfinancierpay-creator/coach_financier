@@ -4,11 +4,14 @@ import com.coach.financier.model.ConversationModels;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 @Service
 public class ConversationService {
     private final ConcurrentHashMap<String, ConversationModels.Conversation> conversations = new ConcurrentHashMap<>();
+    private final Set<String> assignedCustomerIds = ConcurrentHashMap.newKeySet();
 
     /**
      * Nombre de messages d'historique transmis au coach ({@code app.chat.history-limit}) :
@@ -22,7 +25,7 @@ public class ConversationService {
 
     public ConversationModels.Conversation getOrCreate(String sessionId) {
         ConversationModels.Conversation conversation =
-                conversations.computeIfAbsent(sessionId, ConversationModels.Conversation::new);
+                conversations.computeIfAbsent(sessionId, this::newConversation);
         conversation.setHistoryLimit(historyLimit);
         return conversation;
     }
@@ -40,9 +43,19 @@ public class ConversationService {
      * centre d'appels). Le remplacement garantit qu'une clôture rejouée ne duplique pas les messages.
      */
     public ConversationModels.Conversation reset(String sessionId) {
-        ConversationModels.Conversation conversation = new ConversationModels.Conversation(sessionId);
+        ConversationModels.Conversation conversation = newConversation(sessionId);
         conversation.setHistoryLimit(historyLimit);
         conversations.put(sessionId, conversation);
+        return conversation;
+    }
+
+    private ConversationModels.Conversation newConversation(String sessionId) {
+        ConversationModels.Conversation conversation = new ConversationModels.Conversation(sessionId);
+        String customerId;
+        do {
+            customerId = "DEMO" + ThreadLocalRandom.current().nextInt(100, 1000);
+        } while (!assignedCustomerIds.add(customerId));
+        conversation.setCustomerId(customerId);
         return conversation;
     }
 }

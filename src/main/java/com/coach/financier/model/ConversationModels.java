@@ -22,6 +22,7 @@ public final class ConversationModels {
         private int historyLimit;
 
         private final String sessionId;
+        private String customerId;
         private final List<Message> messages = new ArrayList<>();
         /** Historique COMPLET (jamais tronqué) : sert à la synthèse de fin de conversation. */
         private final List<Message> transcript = new ArrayList<>();
@@ -38,6 +39,7 @@ public final class ConversationModels {
         }
 
         public String sessionId() { return sessionId; }
+        public String customerId() { return customerId; }
         public List<Message> messages() { return List.copyOf(messages); }
         /** Historique complet de la conversation (non tronqué). */
         public List<Message> transcript() { return List.copyOf(transcript); }
@@ -61,6 +63,10 @@ public final class ConversationModels {
         public synchronized void setHistoryLimit(int limit) {
             this.historyLimit = Math.max(0, limit);
             trimHistory();
+        }
+
+        public synchronized void setCustomerId(String customerId) {
+            this.customerId = customerId;
         }
 
         /** Nombre de messages d'historique transmis au coach ({@code 0} = illimité). */

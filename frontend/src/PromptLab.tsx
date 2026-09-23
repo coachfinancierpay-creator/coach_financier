@@ -288,9 +288,9 @@ export default function PromptLab() {
   const [agentId, setAgentId] = useState('')
   const [question, setQuestion] = useState('')
   const [iterations, setIterations] = useState(3)
-  const [provider, setProvider] = useState<AIProvider>('DEEPSEEK')
-  const [controllerProvider, setControllerProvider] = useState<AIProvider>('DEEPSEEK')
-  const [editorProvider, setEditorProvider] = useState<AIProvider>('DEEPSEEK')
+  const [provider, setProvider] = useState<AIProvider>('GPT')
+  const [controllerProvider, setControllerProvider] = useState<AIProvider>('GPT')
+  const [editorProvider, setEditorProvider] = useState<AIProvider>('GPT')
   const [extraIterations, setExtraIterations] = useState(3)
   const [busy, setBusy] = useState(false)
   const [closing, setClosing] = useState(false)
@@ -330,7 +330,7 @@ export default function PromptLab() {
   const [briefGenerating, setBriefGenerating] = useState(false)
   /** PROFONDEUR : nombre maximum de questions que le client simulé posera au cours du scénario. */
   const [clientDepth, setClientDepth] = useState(3)
-  const [clientProvider, setClientProvider] = useState<AIProvider>('DEEPSEEK')
+  const [clientProvider, setClientProvider] = useState<AIProvider>('GPT')
   /**
    * Qui promeut ? Décoché (défaut) : c'est VOUS qui validez chaque cycle. Coché : la dernière version du
    * cycle est promue automatiquement et le client enchaîne tout seul sa question suivante.

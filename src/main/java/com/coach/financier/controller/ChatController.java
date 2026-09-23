@@ -85,7 +85,7 @@ public class ChatController {
         //    filtré, données d'agent et debug. Construit par CoachContextBuilder, PARTAGÉ avec
         //    l'atelier d'optimisation des prompts (qui doit rejouer EXACTEMENT le même contexte).
         CoachContext ctx = coachContextBuilder.build(request.message(), classification,
-                conversation.currentProject(), conversation.messages());
+                conversation.currentProject(), conversation.messages(), null, conversation.customerId());
         FinancialSummary summary = ctx.financialSummary();
         conversation.setFinancialSummary(summary);
 

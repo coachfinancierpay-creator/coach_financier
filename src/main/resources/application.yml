@@ -154,9 +154,9 @@ app:
     from-name: ${MAIL_FROM_NAME:Coach financier}
   ai:
     openai:
-      base-url: ${OPENAI_BASE_URL:https://api.openai.com/v1}
+      base-url: ${OPENAI_BASE_URL:https://coach-financier.openai.azure.com/openai/v1}
       api-key: ${OPENAI_API_KEY:}
-      model: ${OPENAI_MODEL:gpt-4o-mini}
+      model: ${OPENAI_MODEL:gpt-5.6-luna}
       # Plafond de SORTIE demandé au modèle. Reste dans la limite documentée du modèle (gpt-4o-mini :
       # 16384) : chez OpenAI, la dépasser fait échouer l'appel. Un plafond trop BAS, lui, coupe la réponse.
       max-tokens: ${OPENAI_MAX_TOKENS:16384}

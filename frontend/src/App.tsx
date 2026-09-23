@@ -171,7 +171,7 @@ function App() {
   const [provider, setProvider] = useState<AIProvider>(() => {
     const stored = localStorage.getItem(PROVIDER_STORAGE_KEY)
     return stored === 'GPT' || stored === 'DEEPSEEK' || stored === 'LOCAL' || stored === 'MOCK'
-      ? stored : 'DEEPSEEK'
+      ? stored : 'GPT'
   })
   const [sessionId, setSessionId] = useState(() => localStorage.getItem(SESSION_STORAGE_KEY) ?? newSessionId())
   const [messages, setMessages] = useState<ChatMessage[]>(loadInitialMessages)

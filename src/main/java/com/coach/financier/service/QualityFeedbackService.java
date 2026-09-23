@@ -4,6 +4,7 @@ import com.coach.financier.config.QualityProperties;
 import com.coach.financier.model.QualityModels;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -33,15 +34,26 @@ public class QualityFeedbackService {
     private final QualityProperties properties;
     private final AnonymousIdService anonymousIdService;
     private final com.coach.financier.repository.BankingDataRepository bankingDataRepository;
+    private final ConversationService conversationService;
 
+    @Autowired
     public QualityFeedbackService(QualityFeedbackStore feedbackStore,
                                   QualityProperties properties,
                                   AnonymousIdService anonymousIdService,
                                   com.coach.financier.repository.BankingDataRepository bankingDataRepository) {
+        this(feedbackStore, properties, anonymousIdService, bankingDataRepository, null);
+    }
+
+    public QualityFeedbackService(QualityFeedbackStore feedbackStore,
+                                  QualityProperties properties,
+                                  AnonymousIdService anonymousIdService,
+                                  com.coach.financier.repository.BankingDataRepository bankingDataRepository,
+                                  ConversationService conversationService) {
         this.feedbackStore = feedbackStore;
         this.properties = properties;
         this.anonymousIdService = anonymousIdService;
         this.bankingDataRepository = bankingDataRepository;
+        this.conversationService = conversationService;
     }
 
     /** Réponse API : jamais d'erreur bloquante pour le client (§43). */
@@ -86,7 +98,7 @@ public class QualityFeedbackService {
                 feedbackId,
                 timestamp,
                 sessionId,
-                anonymousIdService.anonymize(customerReference()),
+                anonymousIdService.anonymize(customerReference(sessionId)),
                 rating,
                 reasons,
                 List.of(),
@@ -123,7 +135,11 @@ public class QualityFeedbackService {
     }
 
     /** Référence client de la fiche bancaire (jamais stockée en clair : pseudonymisée aussitôt). */
-    private String customerReference() {
+    private String customerReference(String sessionId) {
+        var conversation = conversationService == null ? null : conversationService.find(sessionId);
+        if (conversation != null && conversation.customerId() != null && !conversation.customerId().isBlank()) {
+            return conversation.customerId();
+        }
         try {
             return bankingDataRepository.loadSnapshot().rawData().path("customer").path("customerId").asText(null);
         } catch (Exception e) {

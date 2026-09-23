@@ -2,6 +2,7 @@ package com.coach.financier.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +49,20 @@ public class FinancialSynthesisStore {
             // Aucune synthèse disponible ni sur disque ni sur le classpath.
         }
         return Optional.empty();
+    }
+
+    /** Charge la synthèse et remplace uniquement l'identifiant client pour une session de démo. */
+    public Optional<JsonNode> loadForCustomer(String customerId) {
+        return load().map(node -> {
+            JsonNode copy = node.deepCopy();
+            if (copy instanceof ObjectNode root && customerId != null && !customerId.isBlank()) {
+                JsonNode customer = root.path("customer");
+                if (customer instanceof ObjectNode customerObject) {
+                    customerObject.put("customerId", customerId);
+                }
+            }
+            return copy;
+        });
     }
 
     private JsonNode readFile(Path path) {

@@ -270,8 +270,10 @@ public abstract class RemoteAIService implements AIService {
     Map<String, Object> requestBody(String system, String user) {
         Map<String, Object> request = new java.util.LinkedHashMap<>();
         request.put("model", model);
-        request.put("temperature", 0.2);
-        request.put("max_tokens", maxOutputTokens);
+        if (!"GPT/OpenAI".equals(providerName)) {
+            request.put("temperature", 0.2);
+        }
+        request.put("GPT/OpenAI".equals(providerName) ? "max_completion_tokens" : "max_tokens", maxOutputTokens);
         if (jsonSchemaMode) {
             // Schéma PERMISSIF : la FORME (objet JSON) est garantie, les CHAMPS restent décrits par le prompt.
             request.put("response_format", Map.of(

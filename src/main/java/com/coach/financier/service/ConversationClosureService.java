@@ -419,7 +419,7 @@ public class ConversationClosureService {
                                                               SuiviModels.SuiviResult result,
                                                               SuiviModels.CommercialScore score) {
         ConversationCategory category = categoryOf(conversation);
-        return new AdvisorDossierService.DossierExtras(customerReference(),
+        return new AdvisorDossierService.DossierExtras(customerReference(conversation),
                 conversationTitle(conversation, result), category.code(), category.label(), score,
                 transcriptMessages(conversation));
     }
@@ -628,7 +628,7 @@ public class ConversationClosureService {
         }
         try {
             List<MarketingModels.MarketingEvent> events = marketingExtractionService.toEvents(
-                    result.marketingEvents(), sessionId, conversation, customerReference(), provider);
+                    result.marketingEvents(), sessionId, conversation, customerReference(conversation), provider);
             return marketingEventStore.append(events).size();
         } catch (Exception e) {
             warnings.add("Signaux Marketing non persistés : " + e.getMessage());
@@ -808,7 +808,7 @@ public class ConversationClosureService {
     private Map<String, Object> buildCustomerContext(ConversationModels.Conversation conversation) {
         Map<String, Object> customerContext = new LinkedHashMap<>();
         customerContext.put("customerName", blankToNull(configuredCustomerName));
-        customerContext.put("customerReference", customerReference());
+        customerContext.put("customerReference", customerReference(conversation));
         FinancialSummary summary = conversation.financialSummary() != null
                 ? conversation.financialSummary() : financialAnalysisService.analyze();
         customerContext.put("financialSummary", summary);
@@ -856,7 +856,10 @@ public class ConversationClosureService {
         return result;
     }
 
-    private String customerReference() {
+    private String customerReference(ConversationModels.Conversation conversation) {
+        if (conversation != null && conversation.customerId() != null && !conversation.customerId().isBlank()) {
+            return conversation.customerId();
+        }
         JsonNode customer = bankingDataRepository.loadSnapshot().rawData().path("customer");
         return blankToNull(customer.path("customerId").asText(null));
     }
