@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowLeft, Bot, Braces, Database, Eye, FileSearch, History, Mail, MessageSquare, Trash2, Type } from 'lucide-react'
-import { clearLogs, fetchConversation, fetchLogAnswer, fetchLogPrompt, fetchLogs } from './api'
+import { clearLogs, fetchConversation, fetchLogAnswer, fetchLogDataSent, fetchLogPrompt, fetchLogs } from './api'
 import type { AiLog, ConversationData } from './types'
 
 /**
@@ -27,13 +27,16 @@ export default function Logs() {
   const [error, setError] = useState<string | null>(null)
   const [connected, setConnected] = useState(false)
   const [openPrompts, setOpenPrompts] = useState<Set<number>>(new Set())
+  const [openDataSent, setOpenDataSent] = useState<Set<number>>(new Set())
   const [openDebug, setOpenDebug] = useState<Set<number>>(new Set())
   const [openAnswers, setOpenAnswers] = useState<Set<number>>(new Set())
   const [openHistory, setOpenHistory] = useState<Set<number>>(new Set())
   const [prompts, setPrompts] = useState<Record<number, string>>({})
+  const [dataSent, setDataSent] = useState<Record<number, { content: string; charCount: number }>>({})
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [histories, setHistories] = useState<Record<number, ConversationData>>({})
   const [loadingPromptId, setLoadingPromptId] = useState<number | null>(null)
+  const [loadingDataSentId, setLoadingDataSentId] = useState<number | null>(null)
   const [loadingAnswerId, setLoadingAnswerId] = useState<number | null>(null)
   const [loadingHistoryId, setLoadingHistoryId] = useState<number | null>(null)
 
@@ -65,15 +68,41 @@ export default function Logs() {
       await clearLogs()
       setLogs([])
       setPrompts({})
+      setDataSent({})
       setAnswers({})
       setHistories({})
       setOpenPrompts(new Set())
+      setOpenDataSent(new Set())
       setOpenDebug(new Set())
       setOpenAnswers(new Set())
       setOpenHistory(new Set())
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur lors de la suppression des logs.')
+    }
+  }
+
+  async function toggleDataSent(id: number) {
+    if (openDataSent.has(id)) {
+      setOpenDataSent((prev) => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+      return
+    }
+    setOpenDataSent((prev) => new Set(prev).add(id))
+    if (dataSent[id] === undefined) {
+      setLoadingDataSentId(id)
+      try {
+        const value = await fetchLogDataSent(id)
+        setDataSent((prev) => ({ ...prev, [id]: value }))
+      } catch (err) {
+        const detail = err instanceof Error ? err.message : String(err)
+        setDataSent((prev) => ({ ...prev, [id]: { content: `(Impossible de charger les données jointes. ${detail})`, charCount: 0 } }))
+      } finally {
+        setLoadingDataSentId(null)
+      }
     }
   }
 
@@ -214,6 +243,16 @@ export default function Logs() {
                 <Eye size={14} />
                 {openPrompts.has(log.id) ? 'Masquer le prompt' : 'Voir le prompt'}
               </button>
+              <button
+                className="logs-prompt-btn"
+                type="button"
+                onClick={() => toggleDataSent(log.id)}
+                disabled={loadingDataSentId === log.id}
+                title="Afficher le contenu complet des données jointes envoyées à l'IA"
+              >
+                <Database size={14} />
+                {openDataSent.has(log.id) ? 'Masquer les données jointes' : 'Voir les données jointes'}
+              </button>
               {log.debug ? (
                 <button
                   className="logs-prompt-btn"
@@ -256,6 +295,10 @@ export default function Logs() {
               <div className="logs-line">
                 <Type size={15} /> <strong>Caractères envoyés&nbsp;:</strong> {log.charCount.toLocaleString('fr-FR')}
               </div>
+              <div className="logs-line">
+                <Type size={15} /> <strong>Temps de réponse IA&nbsp;:</strong>{' '}
+                {log.responseTimeMs > 0 ? `${log.responseTimeMs.toLocaleString('fr-FR')} ms` : 'non mesuré'}
+              </div>
 
               <div className="logs-sub"><Database size={15} /> Données envoyées ({log.dataSent.length})</div>
               <div className="chips">
@@ -276,6 +319,19 @@ export default function Logs() {
                   <div className="logs-prompt-loading">Chargement du prompt…</div>
                 ) : (
                   <pre className="logs-prompt">{prompts[log.id] ?? ''}</pre>
+                )}
+              </div>
+            )}
+
+            {openDataSent.has(log.id) && (
+              <div className="logs-prompt-box">
+                <div className="logs-sub">
+                  <Database size={15} /> Contenu des données jointes ({(dataSent[log.id]?.charCount ?? 0).toLocaleString('fr-FR')} caractères)
+                </div>
+                {loadingDataSentId === log.id && dataSent[log.id] === undefined ? (
+                  <div className="logs-prompt-loading">Chargement des données jointes…</div>
+                ) : (
+                  <pre className="logs-prompt">{dataSent[log.id]?.content ?? ''}</pre>
                 )}
               </div>
             )}

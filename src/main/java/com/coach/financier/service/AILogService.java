@@ -2,6 +2,7 @@ package com.coach.financier.service;
 
 import com.coach.financier.model.LogEntry;
 import com.coach.financier.model.AIModels;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -9,6 +10,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Mémoire tampon des appels IA, exposée à la page Logs (polling).
@@ -19,6 +21,7 @@ public class AILogService {
     private static final int MAX_ENTRIES = 500;
 
     private final Deque<LogEntry> entries = new ArrayDeque<>();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private long counter = 0;
 
     public synchronized void log(String sessionId, String clientMessage,
@@ -39,6 +42,26 @@ public class AILogService {
                                  AIModels.AIStatus status, List<String> requestedData,
                                  String agent, String prompt, String debug, String answer,
                                  String mailStatus) {
+        log(sessionId, clientMessage, dataSent, historyCount, charCount, status, requestedData,
+                agent, prompt, debug, answer, mailStatus, null);
+    }
+
+    public synchronized void log(String sessionId, String clientMessage,
+                                  List<String> dataSent, int historyCount, long charCount,
+                                  AIModels.AIStatus status, List<String> requestedData,
+                                  String agent, String prompt, String debug, String answer,
+                                  String mailStatus, List<Map<String, Object>> attachedData) {
+        log(sessionId, clientMessage, dataSent, historyCount, charCount, status, requestedData,
+                agent, prompt, debug, answer, 0, mailStatus, attachedData);
+    }
+
+    public synchronized void log(String sessionId, String clientMessage,
+                                  List<String> dataSent, int historyCount, long charCount,
+                                  AIModels.AIStatus status, List<String> requestedData,
+                                  String agent, String prompt, String debug, String answer,
+                                  long responseTimeMs, String mailStatus,
+                                  List<Map<String, Object>> attachedData) {
+        String attachedContent = serializeAttachedData(attachedData);
         LogEntry entry = new LogEntry(
                 ++counter,
                 Instant.now().toString(),
@@ -53,11 +76,25 @@ public class AILogService {
                 prompt == null ? "" : prompt,
                 debug == null ? "" : debug,
                 answer == null ? "" : answer,
-                mailStatus == null ? "" : mailStatus
+                mailStatus == null ? "" : mailStatus,
+                attachedContent,
+                attachedContent.length(),
+                responseTimeMs
         );
         entries.addFirst(entry);
         while (entries.size() > MAX_ENTRIES) {
             entries.removeLast();
+        }
+    }
+
+    private String serializeAttachedData(List<Map<String, Object>> attachedData) {
+        if (attachedData == null || attachedData.isEmpty()) {
+            return "[]";
+        }
+        try {
+            return objectMapper.writeValueAsString(attachedData);
+        } catch (Exception e) {
+            return String.valueOf(attachedData);
         }
     }
 
@@ -76,6 +113,15 @@ public class AILogService {
         for (LogEntry entry : entries) {
             if (entry.id() == id) {
                 return entry.answer();
+            }
+        }
+        return null;
+    }
+
+    public synchronized LogEntry dataSentOf(long id) {
+        for (LogEntry entry : entries) {
+            if (entry.id() == id) {
+                return entry;
             }
         }
         return null;

@@ -111,11 +111,13 @@ public class ChatController {
         // 5) IA Coach (avec boucle NEED_DATA existante, limitée à 3). Prompt = agent actif.
         long sentChars = coachContextBuilder.payloadCharCount(ctx, request.message());
         String promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
+        long aiStartedAt = System.nanoTime();
         AIModels.AIAnswer answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
                 AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+        long responseTimeMs = elapsedMillis(aiStartedAt);
         log.info("[CHAT] réponse initiale : statut={}, texte={} caractère(s)", answer.status(), answer.answer() == null ? 0 : answer.answer().length());
         logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
-                ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
+                ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer, responseTimeMs);
         int safetyLoop = 0;
         Set<String> requestedDataPaths = new LinkedHashSet<>();
         boolean finalAnswerRetryDone = false;
@@ -130,6 +132,7 @@ public class ChatController {
             if (newPaths.isEmpty()) {
                 if (!finalAnswerRetryDone) {
                     finalAnswerRetryDone = true;
+                    ctx.additionalData().put("disableNeedData", true);
                     ctx.additionalData().put("dataRequestResolution",
                             "Les fichiers demandés ont déjà été fournis dans additionalData.providedData. "
                                     + "Ne demande plus de données et réponds maintenant avec les informations disponibles.");
@@ -138,12 +141,14 @@ public class ChatController {
                             + "\n\nINSTRUCTION FINALE DU BACKEND : les données demandées ont déjà été chargées et sont présentes "
                             + "dans additionalData.providedData. Ne renvoie plus NEED_DATA. Réponds maintenant avec "
                             + "status=ANSWER en utilisant uniquement les données disponibles, sans inventer.";
+                    aiStartedAt = System.nanoTime();
                     answer = ai.answer(finalAnswerInstruction, legacy, summary, ctx.catalog(),
                             AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+                    responseTimeMs = elapsedMillis(aiStartedAt);
                     log.info("[CHAT] relance finale : statut={}, texte={} caractère(s)", answer.status(),
                             answer.answer() == null ? 0 : answer.answer().length());
                     logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
-                            ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
+                            ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer, responseTimeMs);
                     continue;
                 }
                 log.warn("[CHAT] NEED_DATA répétée après relance finale : arrêt de la boucle");
@@ -157,17 +162,20 @@ public class ChatController {
                 break; // l'IA ne demande rien de valide : on arrête la boucle.
             }
             ctx.providedData().addAll(fetched);
+            ctx.additionalData().put("disableNeedData", true);
             ctx.additionalData().put("dataRequestResolution",
                     "Les fichiers demandés viennent d'être fournis dans additionalData.providedData. "
                             + "Ne les redemande pas et réponds maintenant avec les informations disponibles.");
             sentChars = coachContextBuilder.payloadCharCount(ctx, request.message());
             promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
+            aiStartedAt = System.nanoTime();
             answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
                     AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+            responseTimeMs = elapsedMillis(aiStartedAt);
             log.info("[CHAT] après chargement : statut={}, texte={} caractère(s)", answer.status(),
                     answer.answer() == null ? 0 : answer.answer().length());
             logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
-                    ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
+                    ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer, responseTimeMs);
         }
 
         if (answer.status() == AIModels.AIStatus.NEED_DATA) {
@@ -227,7 +235,8 @@ public class ChatController {
 
     private void logAiCall(String sessionId, String clientMessage,
                            List<Map<String, Object>> providedData, int historyCount, long charCount,
-                           String agent, String promptSnapshot, String debug, AIModels.AIAnswer answer) {
+                           String agent, String promptSnapshot, String debug, AIModels.AIAnswer answer,
+                           long responseTimeMs) {
         List<String> dataSent = providedData.stream()
                 .map(entry -> String.valueOf(entry.get("description")))
                 .toList();
@@ -235,7 +244,12 @@ public class ChatController {
                 ? List.of()
                 : answer.dataRequest().paths().stream().map(AILogService::stem).toList();
         aiLogService.log(sessionId, clientMessage, dataSent, historyCount, charCount,
-                answer.status(), requestedData, agent, promptSnapshot, debug, answer.answer());
+                answer.status(), requestedData, agent, promptSnapshot, debug, answer.answer(), responseTimeMs,
+                null, providedData);
+    }
+
+    private static long elapsedMillis(long startedAt) {
+        return Math.max(0L, (System.nanoTime() - startedAt) / 1_000_000L);
     }
 
 }

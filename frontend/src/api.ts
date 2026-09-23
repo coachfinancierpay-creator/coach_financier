@@ -137,6 +137,10 @@ export async function fetchLogAnswer(id: number): Promise<string> {
   return data.answer
 }
 
+export async function fetchLogDataSent(id: number): Promise<{ content: string; charCount: number }> {
+  return apiFetch<{ content: string; charCount: number }>(`/logs/${id}/data-sent`)
+}
+
 export async function fetchConversation(sessionId: string): Promise<ConversationData> {
   return apiFetch<ConversationData>(`/conversations/${encodeURIComponent(sessionId)}`)
 }
