@@ -5,9 +5,7 @@
     "theme": "generic",
     "prompt": "generic.txt",
     "data": [
-      "/data/transaction/transactions_2026_08.json",
-      "/data/transaction/transactions_2026_07.json",
-      "/data/transaction/transactions_2025_09.json"
+      "/data/transaction/transactions_2026_08.json"
     ]
   },
   {

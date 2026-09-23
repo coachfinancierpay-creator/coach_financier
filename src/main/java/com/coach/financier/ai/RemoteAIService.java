@@ -288,6 +288,8 @@ public abstract class RemoteAIService implements AIService {
     Map<String, Object> requestBody(String system, String user) {
         Map<String, Object> request = new java.util.LinkedHashMap<>();
         request.put("model", model);
+        // Le Coach attend actuellement un objet JSON complet : le streaming n'est pas encore propagé par l'API.
+        request.put("stream", false);
         if (!"GPT/OpenAI".equals(providerName)) {
             request.put("temperature", 0.2);
         }
@@ -622,6 +624,7 @@ public abstract class RemoteAIService implements AIService {
 
     private String call(String system, String user) {
         Map<String, Object> request = requestBody(system, user);
+        long callStarted = System.nanoTime();
         var spec = client.post()
                 .uri("/chat/completions")
                 .contentType(MediaType.APPLICATION_JSON);
@@ -634,6 +637,9 @@ public abstract class RemoteAIService implements AIService {
         } catch (Exception e) {
             throw readFailure(e);
         }
+        long responseReceived = System.nanoTime();
+        log.info("[IA] {} : réponse complète reçue en {} ms (stream=false, modèle={})",
+                providerName, elapsedMillis(callStarted, responseReceived), model);
         if (rawResponse == null || rawResponse.isBlank()) {
             throw new IllegalStateException("Réponse IA vide");
         }
@@ -643,10 +649,17 @@ public abstract class RemoteAIService implements AIService {
             String finishReason = response.path("choices").path(0).path("finish_reason").asText("");
             // Certains modèles encadrent leur JSON par un bloc Markdown : on retire l'encadrement pour que
             // TOUS les points de parsing (coach, suivi, contrôleur, éditeur, rapports) en bénéficient.
-            return repairTruncated(stripCodeFence(content), finishReason);
+            String answer = repairTruncated(stripCodeFence(content), finishReason);
+            log.info("[IA] {} : appel total en {} ms (réception + parsing, réponse={} caractères)",
+                    providerName, elapsedMillis(callStarted, System.nanoTime()), answer.length());
+            return answer;
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la lecture de la réponse JSON de l'IA", e);
         }
+    }
+
+    private static long elapsedMillis(long startedNanos, long endedNanos) {
+        return Duration.ofNanos(Math.max(0, endedNanos - startedNanos)).toMillis();
     }
 
     /**

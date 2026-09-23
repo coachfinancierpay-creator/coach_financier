@@ -82,6 +82,7 @@ class LocalAIServiceRequestTest {
         assertNull(body.get("response_format"),
                 "LM Studio refuse response_format=json_object : on ne le demande pas");
         assertEquals("qwen3.5-9b", body.get("model"));
+        assertEquals(Boolean.FALSE, body.get("stream"));
         assertEquals(0.2, body.get("temperature"));
         assertEquals(8192, body.get("max_tokens"), "les modèles raisonneurs consomment des jetons avant la réponse");
         assertEquals(2, messages(body).size());
@@ -114,6 +115,7 @@ class LocalAIServiceRequestTest {
         Map<String, Object> body = new OpenAIProbe("cle", "low").requestBody("s", "u");
 
         assertEquals(4096, body.get("max_completion_tokens"));
+        assertEquals(Boolean.FALSE, body.get("stream"));
         assertNull(body.get("max_tokens"));
         assertNull(body.get("temperature"), "OpenAI applique la température par défaut supportée par le modèle");
         assertEquals("low", body.get("reasoning_effort"));

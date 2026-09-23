@@ -156,13 +156,13 @@ app:
     openai:
       base-url: ${OPENAI_BASE_URL:https://coach-financier.openai.azure.com/openai/v1}
       api-key: ${OPENAI_API_KEY:}
-      model: ${OPENAI_MODEL:DeepSeek-V4-Flash}
-      # Effort de raisonnement : low accélère les réponses tout en conservant un raisonnement limité.
-      # Utiliser none pour privilégier la vitesse, ou laisser vide pour ne pas envoyer le paramètre.
-      reasoning-effort: ${OPENAI_REASONING_EFFORT:low}
+      model: ${OPENAI_MODEL:gpt-5.6-luna}
+      # Effort de raisonnement : none privilégie la latence ; utiliser low si la qualité de raisonnement
+      # est prioritaire. La valeur vide désactive également l'envoi du paramètre.
+      reasoning-effort: ${OPENAI_REASONING_EFFORT:none}
       # Plafond de SORTIE demandé au modèle. Reste dans la limite documentée du modèle (gpt-4o-mini :
       # 16384) : chez OpenAI, la dépasser fait échouer l'appel. Un plafond trop BAS, lui, coupe la réponse.
-      max-tokens: ${OPENAI_MAX_TOKENS:16384}
+      max-tokens: ${OPENAI_MAX_TOKENS:8192}
     deepseek:
       base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
       api-key: ${DEEPSEEK_API_KEY:}
