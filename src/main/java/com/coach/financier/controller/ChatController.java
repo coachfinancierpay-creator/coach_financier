@@ -113,6 +113,7 @@ public class ChatController {
         String promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
         AIModels.AIAnswer answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
                 AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+        log.info("[CHAT] réponse initiale : statut={}, texte={} caractère(s)", answer.status(), answer.answer() == null ? 0 : answer.answer().length());
         logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
                 ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
         int safetyLoop = 0;
@@ -133,8 +134,14 @@ public class ChatController {
                             "Les fichiers demandés ont déjà été fournis dans additionalData.providedData. "
                                     + "Ne demande plus de données et réponds maintenant avec les informations disponibles.");
                     log.warn("[CHAT] NEED_DATA répétée : dernière relance forcée en mode réponse finale");
-                    answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
+                    String finalAnswerInstruction = request.message()
+                            + "\n\nINSTRUCTION FINALE DU BACKEND : les données demandées ont déjà été chargées et sont présentes "
+                            + "dans additionalData.providedData. Ne renvoie plus NEED_DATA. Réponds maintenant avec "
+                            + "status=ANSWER en utilisant uniquement les données disponibles, sans inventer.";
+                    answer = ai.answer(finalAnswerInstruction, legacy, summary, ctx.catalog(),
                             AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+                    log.info("[CHAT] relance finale : statut={}, texte={} caractère(s)", answer.status(),
+                            answer.answer() == null ? 0 : answer.answer().length());
                     logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
                             ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
                     continue;
@@ -157,6 +164,8 @@ public class ChatController {
             promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
             answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
                     AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+            log.info("[CHAT] après chargement : statut={}, texte={} caractère(s)", answer.status(),
+                    answer.answer() == null ? 0 : answer.answer().length());
             logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
                     ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
         }
