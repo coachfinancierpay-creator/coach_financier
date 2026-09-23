@@ -130,6 +130,7 @@ public class ChatController {
             if (newPaths.isEmpty()) {
                 if (!finalAnswerRetryDone) {
                     finalAnswerRetryDone = true;
+                    ctx.additionalData().put("disableNeedData", true);
                     ctx.additionalData().put("dataRequestResolution",
                             "Les fichiers demandés ont déjà été fournis dans additionalData.providedData. "
                                     + "Ne demande plus de données et réponds maintenant avec les informations disponibles.");
@@ -157,6 +158,7 @@ public class ChatController {
                 break; // l'IA ne demande rien de valide : on arrête la boucle.
             }
             ctx.providedData().addAll(fetched);
+            ctx.additionalData().put("disableNeedData", true);
             ctx.additionalData().put("dataRequestResolution",
                     "Les fichiers demandés viennent d'être fournis dans additionalData.providedData. "
                             + "Ne les redemande pas et réponds maintenant avec les informations disponibles.");

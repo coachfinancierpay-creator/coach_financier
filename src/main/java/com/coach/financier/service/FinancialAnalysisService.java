@@ -3,6 +3,7 @@ package com.coach.financier.service;
 import com.coach.financier.model.BankingModels;
 import com.coach.financier.model.FinancialSummary;
 import com.coach.financier.repository.BankingDataRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,12 +21,29 @@ public class FinancialAnalysisService {
     private static final DateTimeFormatter MONTH_FORMAT = DateTimeFormatter.ofPattern("MM/yyyy");
 
     private final BankingDataRepository repository;
+    private final FinancialSynthesisStore synthesisStore;
 
     public FinancialAnalysisService(BankingDataRepository repository) {
+        this(repository, null);
+    }
+
+    @Autowired
+    public FinancialAnalysisService(BankingDataRepository repository, FinancialSynthesisStore synthesisStore) {
         this.repository = repository;
+        this.synthesisStore = synthesisStore;
     }
 
     public FinancialSummary analyze() {
+        if (synthesisStore == null) {
+            return analyzeFromBankingData();
+        }
+        return synthesisStore.load()
+                .map(FinancialSummaryMapper::from)
+                .orElseGet(this::analyzeFromBankingData);
+    }
+
+    /** Fallback de régénération si la synthèse persistée est absente ou illisible. */
+    private FinancialSummary analyzeFromBankingData() {
         List<BankingModels.Transaction> tx = repository.allTransactions();
         if (tx.isEmpty()) {
             return emptySummary();

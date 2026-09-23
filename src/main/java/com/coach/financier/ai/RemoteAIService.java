@@ -197,6 +197,9 @@ public abstract class RemoteAIService implements AIService {
         // sinon l'AGENT ACTIF (générique par défaut) relu depuis ./agent à chaque appel. Le thème est
         // choisi par ChatController et transmis via additionalData."agent".
         String system = resolveSystemPrompt(systemPrompt, additionalData);
+        if (Boolean.TRUE.equals(additionalData == null ? null : additionalData.get("disableNeedData"))) {
+            system = withoutNeedDataInstruction(system);
+        }
 
         Map<String, Object> payload = new java.util.LinkedHashMap<>();
         payload.put("customerMessage", customerMessage);
@@ -266,6 +269,19 @@ public abstract class RemoteAIService implements AIService {
     protected static String resolveSystemPrompt(String systemPromptOverride, Map<String, Object> additionalData) {
         return systemPromptOverride == null || systemPromptOverride.isBlank()
                 ? AgentFiles.systemPromptFor(themeOf(additionalData)) : systemPromptOverride;
+    }
+
+    /**
+     * Retire la capacité de demander d'autres fichiers sur une relance où les données ont déjà été fournies.
+     * Le premier appel conserve le contrat NEED_DATA ; seules les relances portent l'indicateur interne.
+     */
+    static String withoutNeedDataInstruction(String systemPrompt) {
+        if (systemPrompt == null || systemPrompt.isBlank()) {
+            return systemPrompt;
+        }
+        return systemPrompt
+                .replace("ANSWER|NEED_DATA", "ANSWER")
+                .replaceAll("(?im)^.*NEED_DATA.*(?:\\R|$)", "");
     }
 
     /** Thème de l'agent actif transmis par l'appelant via {@code additionalData."agent"}. */
