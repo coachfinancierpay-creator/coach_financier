@@ -177,6 +177,7 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>(loadInitialMessages)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const messagesScrollRef = useRef<HTMLDivElement | null>(null)
   /**
    * CLIENT AUTO (bandeau) : l'IA joue le client et propose la question suivante à partir de l'historique.
    * `clientAutoLoading` = appel en cours ; `clientAutoNotice` = explication affichée sous la barre (la
@@ -253,6 +254,16 @@ function App() {
   useEffect(() => {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(messages.slice(-60)))
   }, [messages])
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      const scrollContainer = messagesScrollRef.current
+      if (scrollContainer) {
+        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' })
+      }
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [messages.length, loading])
 
   useEffect(() => {
     localStorage.setItem(PROVIDER_STORAGE_KEY, provider)
@@ -1088,7 +1099,7 @@ function App() {
           </div>
 
           <div className="messages-card">
-            <div className="messages-scroll">
+            <div ref={messagesScrollRef} className="messages-scroll">
               {messages.map((message) => (
                 <div key={message.id} className={`message-row ${message.role}`}>
                   {message.role === 'assistant' && (

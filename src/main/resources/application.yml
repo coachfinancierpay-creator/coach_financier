@@ -162,7 +162,7 @@ app:
       reasoning-effort: ${OPENAI_REASONING_EFFORT:none}
       # Plafond de SORTIE demandé au modèle. Reste dans la limite documentée du modèle (gpt-4o-mini :
       # 16384) : chez OpenAI, la dépasser fait échouer l'appel. Un plafond trop BAS, lui, coupe la réponse.
-      max-tokens: ${OPENAI_MAX_TOKENS:8192}
+      max-tokens: ${OPENAI_MAX_TOKENS:16384}
     deepseek:
       base-url: ${DEEPSEEK_BASE_URL:https://api.deepseek.com}
       api-key: ${DEEPSEEK_API_KEY:}
