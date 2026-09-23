@@ -49,6 +49,17 @@ public class LogsController {
         return Map.of("id", id, "answer", answer);
     }
 
+    /** Contenu complet des données jointes transmises à l'IA, récupéré à la demande. */
+    @GetMapping("/{id}/data-sent")
+    public Map<String, Object> dataSent(@PathVariable long id) {
+        LogEntry entry = aiLogService.dataSentOf(id);
+        if (entry == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trace inconnue : " + id);
+        }
+        return Map.of("id", id, "content", entry.attachedDataContent(),
+                "charCount", entry.attachedDataCharCount());
+    }
+
     @GetMapping("/stats")
     public Map<String, Object> stats() {
         return Map.of("total", aiLogService.latest().size());

@@ -29,5 +29,16 @@ public record LogEntry(
         @JsonIgnore String prompt,
         String debug,
         @JsonIgnore String answer,
-        String mailStatus
-) {}
+        String mailStatus,
+        @JsonIgnore String attachedDataContent,
+        int attachedDataCharCount,
+        long responseTimeMs
+) {
+    public LogEntry(long id, String timestamp, String sessionId, String clientMessage,
+                    List<String> dataSent, int historyCount, long charCount, String status,
+                    String agent, List<String> requestedData, String prompt, String debug,
+                    String answer, String mailStatus) {
+        this(id, timestamp, sessionId, clientMessage, dataSent, historyCount, charCount, status,
+                agent, requestedData, prompt, debug, answer, mailStatus, "", 0, 0);
+    }
+}
