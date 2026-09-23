@@ -17,17 +17,23 @@ import com.coach.financier.service.CoachContextBuilder;
 import com.coach.financier.service.ConversationService;
 import com.coach.financier.service.DataRequestService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
+    private static final int MAX_NEED_DATA_ATTEMPTS = 1;
+    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     private final ConversationService conversationService;
     private final DataRequestService dataRequestService;
     private final AIServiceFactory aiServiceFactory;
@@ -110,14 +116,43 @@ public class ChatController {
         logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
                 ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
         int safetyLoop = 0;
-        while (answer.status() == AIModels.AIStatus.NEED_DATA && safetyLoop < 3) {
+        Set<String> requestedDataPaths = new LinkedHashSet<>();
+        boolean finalAnswerRetryDone = false;
+        while (answer.status() == AIModels.AIStatus.NEED_DATA && safetyLoop < MAX_NEED_DATA_ATTEMPTS) {
             safetyLoop++;
-            List<String> paths = answer.dataRequest() == null ? List.of() : answer.dataRequest().paths();
-            List<Map<String, Object>> fetched = dataRequestService.fetch(paths, ctx.allowedCatalogPaths());
+            List<String> paths = answer.dataRequest() == null || answer.dataRequest().paths() == null
+                    ? List.of() : answer.dataRequest().paths();
+            log.info("[CHAT] NEED_DATA tour {} : chemins demandés={}", safetyLoop, paths);
+            List<String> newPaths = paths.stream()
+                    .filter(path -> path != null && requestedDataPaths.add(path.trim()))
+                    .toList();
+            if (newPaths.isEmpty()) {
+                if (!finalAnswerRetryDone) {
+                    finalAnswerRetryDone = true;
+                    ctx.additionalData().put("dataRequestResolution",
+                            "Les fichiers demandés ont déjà été fournis dans additionalData.providedData. "
+                                    + "Ne demande plus de données et réponds maintenant avec les informations disponibles.");
+                    log.warn("[CHAT] NEED_DATA répétée : dernière relance forcée en mode réponse finale");
+                    answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
+                            AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
+                    logAiCall(request.sessionId(), request.message(), ctx.providedData(), ctx.history().size(), sentChars,
+                            ctx.agentLibelle(), promptSnapshot, ctx.debug(), answer);
+                    continue;
+                }
+                log.warn("[CHAT] NEED_DATA répétée après relance finale : arrêt de la boucle");
+                break;
+            }
+            List<Map<String, Object>> fetched = dataRequestService.fetch(newPaths, ctx.allowedCatalogPaths());
+            log.info("[CHAT] NEED_DATA tour {} : {} entrée(s) chargée(s)", safetyLoop, fetched.size());
             if (fetched.isEmpty()) {
+                log.warn("[CHAT] NEED_DATA sans donnée récupérable : chemins={}, chemins autorisés={}",
+                        paths, ctx.allowedCatalogPaths());
                 break; // l'IA ne demande rien de valide : on arrête la boucle.
             }
             ctx.providedData().addAll(fetched);
+            ctx.additionalData().put("dataRequestResolution",
+                    "Les fichiers demandés viennent d'être fournis dans additionalData.providedData. "
+                            + "Ne les redemande pas et réponds maintenant avec les informations disponibles.");
             sentChars = coachContextBuilder.payloadCharCount(ctx, request.message());
             promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
             answer = ai.answer(request.message(), legacy, summary, ctx.catalog(),
@@ -127,9 +162,19 @@ public class ChatController {
         }
 
         if (answer.status() == AIModels.AIStatus.NEED_DATA) {
-            answer = new AIModels.AIAnswer(AIModels.AIStatus.ANSWER,
-                    "Je n'ai pas pu finaliser l'analyse demandée à partir des données disponibles.", null, Map.of(),
-                    conversation.summary(), null);
+            String usefulAnswer = answer.answer();
+            if (usefulAnswer != null && !usefulAnswer.isBlank()) {
+                log.warn("[CHAT] NEED_DATA conservé avec une réponse textuelle utile ({} caractères)",
+                        usefulAnswer.length());
+                answer = new AIModels.AIAnswer(AIModels.AIStatus.ANSWER, usefulAnswer, null, Map.of(),
+                        conversation.summary(), null);
+            } else {
+                log.warn("[CHAT] NEED_DATA sans réponse exploitable après {} tour(s) : fallback générique",
+                        safetyLoop);
+                answer = new AIModels.AIAnswer(AIModels.AIStatus.ANSWER,
+                        "Je n'ai pas pu finaliser l'analyse demandée à partir des données disponibles.", null, Map.of(),
+                        conversation.summary(), null);
+            }
         }
 
         conversation.addMessage("assistant", answer.answer());

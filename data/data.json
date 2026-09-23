@@ -52,6 +52,30 @@
     "description": "Épargne"
   },
   {
+    "path": "/data/catalogue/cascade/assurance_auto.txt",
+    "description": "Cascade de décision assurance auto"
+  },
+  {
+    "path": "/data/catalogue/cascade/assurance_emprunteur_immo.txt",
+    "description": "Cascade de décision assurance emprunteur immobilier"
+  },
+  {
+    "path": "/data/catalogue/cascade/assurance_habitation.txt",
+    "description": "Cascade de décision assurance habitation"
+  },
+  {
+    "path": "/data/catalogue/cascade/credit_conso.txt",
+    "description": "Cascade de décision crédit consommation"
+  },
+  {
+    "path": "/data/catalogue/cascade/credit_immo.txt",
+    "description": "Cascade de décision crédit immobilier"
+  },
+  {
+    "path": "/data/catalogue/cascade/epargne.txt",
+    "description": "Cascade de décision épargne"
+  },
+  {
     "path": "/data/synthese_financier.json",
     "description": "Synthèse financière"
   },
