@@ -7,8 +7,13 @@
     "prenom": "Michel",
     "mail": "Michel@gmail.com",
     "student": false,
-    "age": 30
+    "age": 30,
+    "managementAgency": {
+      "code": "65478",
+      "name": "Agence de Paris"
+    }
   },
+
   "period": {
     "from": "2025-07-01",
     "to": "2026-08-31"
