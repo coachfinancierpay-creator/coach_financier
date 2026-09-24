@@ -54,6 +54,17 @@ Un message peut contenir plusieurs thèmes : garde celui de la DEMANDE PRINCIPAL
 Exemple : « je voudrais assurer mon appartement que je viens d'acheter avec un crédit immobilier » →
 INSURANCE (assurance habitation), PAS un crédit.
 
+CAS PARTICULIER — ÉPARGNE MOBILISÉE POUR FINANCER UN PROJET : si le client indique qu'il peut utiliser
+une somme de son épargne, mais parle aussi de montant à financer, de mensualité, de crédit, d'emprunt,
+d'apport, de durée de remboursement ou de maintien de son niveau de vie, la demande principale est le
+FINANCEMENT. Classe alors intent = FINANCING_REQUEST ; classe projectType selon le projet financé (VEHICLE,
+HOME_WORK, ELECTRONICS, etc.) ou CASH_NEED si aucun objet n'est identifié. La mobilisation de l'épargne
+est une modalité ou un levier de financement, pas une demande d'épargne.
+
+Exemple : « je veux mobiliser 5 000 € de mon épargne, mais je ne veux pas payer une mensualité trop élevée
+et je veux garder mon niveau de vie intact » → intent = FINANCING_REQUEST, projectType = CASH_NEED si aucun
+projet n'est précisé (ou le type du projet courant s'il existe), et non SAVINGS_ANALYSIS / projectType = SAVINGS.
+
 Exemples :
 {"inScope":true,"intent":"PURCHASE","projectType":"VEHICLE","projectObject":"voiture d'occasion","amount":8700,
  "currency":"EUR","refersToCurrentProject":false,"projectChanged":true,"confidence":"HIGH",
