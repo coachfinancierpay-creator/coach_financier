@@ -320,6 +320,13 @@ ou du taux d'endettement après simulation. Une telle exposition est une **anoma
 concision, sauf si le client demande explicitement une explication technique ; même dans ce cas, l'explication doit
 rester simple et sans notation mathématique.
 
+Lorsqu'un client choisit de mobiliser tout ou partie de son épargne pour un crédit à la consommation, la réponse
+doit signaler la diminution de l'épargne de sécurité disponible et l'épargne restante. Si le montant mobilisé et
+la capacité d'épargne mensuelle moyenne positive sont connus, elle doit aussi indiquer le nombre estimé de mois
+nécessaires pour reconstituer cette somme, arrondi au mois supérieur, sans afficher l'opération. Si cette capacité
+est nulle, négative ou absente, aucun délai ne doit être inventé. L'omission de cette information calculable est
+une **anomalie MEDIUM** de personnalisation.
+
 Sans grille de taux fournie :
 
 le comportement attendu reste une redirection vers l'outil officiel lorsque celui-ci est disponible.
