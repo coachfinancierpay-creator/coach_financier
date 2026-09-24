@@ -344,6 +344,45 @@ Cette distinction est prioritaire.
 
 ---
 
+# 10 bis. COHÉRENCE ENTRE MENSUALITÉ, DURÉE ET TAUX D'ENDETTEMENT
+
+À revenu mensuel et mensualités de crédits existantes constants, le taux d'endettement après un nouveau crédit
+est calculé ainsi : `(mensualités existantes + nouvelle mensualité) / revenu mensuel × 100`.
+
+Par conséquent :
+
+* une nouvelle mensualité plus élevée augmente le taux d'endettement pendant la durée du crédit ;
+* une mensualité plus faible le diminue ;
+* une durée plus courte peut réduire le coût total et se terminer plus tôt, mais implique généralement une
+  mensualité plus élevée ;
+* une durée plus longue produit généralement l'effet inverse sur la mensualité et le coût total.
+
+Le taux d'endettement est un ratio à un instant donné : il ne « baisse pas plus vite » et ne devient pas
+« acceptable plus vite » du seul fait qu'une mensualité est élevée.
+
+Toute réponse qui inverse cette relation, notamment en affirmant que des mensualités plus élevées font baisser
+le taux d'endettement, est une **anomalie HIGH** de cohérence financière. Signale-la même si le reste de la
+simulation est conforme.
+
+---
+
+# 10 ter. RÉFÉRENCES D'ENDETTEMENT SELON LE TYPE DE CRÉDIT
+
+Le contrôle distingue impérativement les deux contextes :
+
+* **crédit immobilier** : le taux d'effort maximal de référence est de 35 % des revenus mensuels, assurance
+  emprunteur comprise, dans le cadre fixé par le Haut Conseil de stabilité financière (HCSF), avec des possibilités
+  de dérogation pour les banques ;
+* **crédit à la consommation** : 33 % est un repère prudent souvent utilisé et 35 % une référence courante pour
+  apprécier la capacité d'endettement. Il n'existe pas de plafond légal général à 35 % ; un taux supérieur impose
+  une analyse de solvabilité et l'application des critères de la banque, sans entraîner automatiquement un refus.
+
+Signale comme **anomalie HIGH** toute réponse qui présente 35 % comme un plafond légal général ou un refus
+automatique pour un crédit à la consommation, ou qui omet l'assurance emprunteur dans la référence immobilière.
+Signale aussi toute réponse qui promet une acceptation parce que le taux est inférieur à ces repères.
+
+---
+
 # 11. PRODUITS INADAPTÉS
 
 Un commentaire client du type :
