@@ -76,8 +76,8 @@ public class ChatController {
         }
 
         if (classification.isOutOfScope()) {
-            String response = "Je suis spécialisé dans l'accompagnement financier et budgétaire. "
-                    + "Je peux par exemple vous aider à évaluer un achat, votre capacité d'épargne ou l'impact d'un projet sur votre budget.";
+            String response = "Je continuerais avec plaisir sur ce sujet, mais si je le fais, même Ivan n'arrivera pas à terminer la démo dans le temps imparti... "
+                    + "Je peux en revanche vous aider à évaluer un achat, votre capacité d'épargne ou l'impact d'un projet sur votre budget.";
             conversation.addMessage("assistant", response);
             return new ChatModels.ChatResponse(request.sessionId(), provider, classification.toLegacyCategory(), false,
                     AIModels.AIStatus.ANSWER, response, null, conversation.summary(),

@@ -68,6 +68,26 @@ const providerLabels: Record<AIProvider, string> = {
   MOCK: 'Mode démo',
 }
 
+const loadingMessages = [
+  'Analyse en cours... ou alors je suis juste parti chercher un café ?',
+  'Si je gagnais un token à chaque fois qu’on me pose cette question, je serais déjà à la retraite...',
+  'Je consulte vos données. Aucun conseiller financier n’a été maltraité pendant ce calcul.',
+  'Je prépare une réponse claire, sans jargon ni magie noire bancaire.',
+  'Je croise les chiffres. Le hackathon mérite quand même une réponse fiable...',
+  'Je fais parler vos transactions. Elles avaient visiblement beaucoup de choses à dire.',
+  'Vos données sont analysées en Chine, le trajet peut prendre un peu de temps...',
+  'Veuillez patienter, je dois demander une rallonge de crédits IA à Denis...',
+  'Calcul en cours... Conversion de votre épargne au TJM GSCI...',
+  'Laissez-moi quelques instants, je consulte le replay du ”Capital Markets Day”',
+  'Je cherche le bon équilibre entre précision financière et réponse lisible.',
+  'Je vérifie mes calculs. Une virgule mal placée ne gagnera pas ce hackathon.',
+  'En attente du Go/NoGo, votre réponse arrive bientôt...',
+  'Pas de panique, je brode un peu pour cacher le fait que je ne sais pas répondre...',
+  'Ça prend du temps, car je n’ai pas le droit de répondre “ça dépend” sans explication...',
+  'Dernière vérification : votre question passe bien le contrôle qualité du hackathon.',
+  'Je finis ma formation “L’Art du Prompt” pour vous fournir la meilleure réponse possible',
+]
+
 function newSessionId(): string {
   return `web-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
@@ -114,12 +134,20 @@ function findWakeWord(text: string, wake: string): { found: boolean; rest: strin
 }
 
 function welcomeMessages(): ChatMessage[] {
+  const funOpeners = [
+    'J’utilise Mythos pour pirater vos données bancaires afin de répondre au mieux à vos besoins.',
+    'J’ai accès à vos données mais promis je ne juge pas… même les opérations “livraisons de pizzas pour le hackathon” des 2 derniers jours !',
+    'J’ai accès à vos données bancaires, même dans le futur. Félicitations pour votre prime “Victoire Hackathon IA RBS 2026” 🏆',
+    'J’ai étudié vos finances pour vous donner les meilleurs conseils, mais rassurez-vous, votre argent est toujours mieux protégé que votre mot de passe.',
+  ]
+  const funOpener = funOpeners[Math.floor(Math.random() * funOpeners.length)]
+
   return [
     {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. Je m’appuie sur vos données bancaires de démonstration pour répondre.',
+        `Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -129,7 +157,10 @@ function welcomeMessages(): ChatMessage[] {
 function loadInitialMessages(): ChatMessage[] {
   try {
     const raw = localStorage.getItem(HISTORY_STORAGE_KEY)
-    if (raw) return JSON.parse(raw) as ChatMessage[]
+    if (raw) {
+      const storedMessages = JSON.parse(raw) as ChatMessage[]
+      if (!(storedMessages.length === 1 && storedMessages[0]?.id === 'welcome')) return storedMessages
+    }
   } catch {
     // Ignore malformed local history.
   }
@@ -177,6 +208,7 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>(loadInitialMessages)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [loadingMessage, setLoadingMessage] = useState(loadingMessages[0])
   const messagesScrollRef = useRef<HTMLDivElement | null>(null)
   /**
    * CLIENT AUTO (bandeau) : l'IA joue le client et propose la question suivante à partir de l'historique.
@@ -264,6 +296,18 @@ function App() {
     })
     return () => window.cancelAnimationFrame(frame)
   }, [messages.length, loading])
+
+  useEffect(() => {
+    if (!loading) return undefined
+
+    let messageIndex = Math.floor(Math.random() * loadingMessages.length)
+    setLoadingMessage(loadingMessages[messageIndex])
+    const timer = window.setInterval(() => {
+      messageIndex = (messageIndex + 1) % loadingMessages.length
+      setLoadingMessage(loadingMessages[messageIndex])
+    }, 3000)
+    return () => window.clearInterval(timer)
+  }, [loading])
 
   useEffect(() => {
     localStorage.setItem(PROVIDER_STORAGE_KEY, provider)
@@ -1132,6 +1176,7 @@ function App() {
                 <div className="message-row assistant">
                   <div className="avatar assistant-avatar"><Sparkles size={17} /></div>
                   <div className="message-bubble assistant typing-bubble">
+                    <span className="loading-message">{loadingMessage}</span>
                     <div className="typing"><span /><span /><span /></div>
                   </div>
                 </div>
