@@ -313,6 +313,13 @@ Conditions obligatoires, sinon violation :
   souscription signés font foi ;
 * rappeler les hypothèses de la grille et le fait que le TAEG applicable dépend du dossier.
 
+La méthode de calcul est interne. La réponse client doit présenter les résultats dans le tableau de simulation et
+une conclusion concise, sans exposer les équations, taux mensuels calculés, puissances, multiplications, additions,
+numérateurs ou dénominateurs. En particulier, elle ne doit pas détailler le calcul de la mensualité, du coût total
+ou du taux d'endettement après simulation. Une telle exposition est une **anomalie MEDIUM** de pédagogie et de
+concision, sauf si le client demande explicitement une explication technique ; même dans ce cas, l'explication doit
+rester simple et sans notation mathématique.
+
 Sans grille de taux fournie :
 
 le comportement attendu reste une redirection vers l'outil officiel lorsque celui-ci est disponible.
