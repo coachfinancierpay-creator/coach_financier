@@ -37,6 +37,7 @@ public class ConversationDirectoryController {
      *
      * @param days     période en jours ({@code 0} = tout l'historique) ; défaut {@value ConversationDirectoryService#DEFAULT_DAYS}
      * @param category code de catégorie (CREDIT_CONSO, CREDIT_IMMO, EPARGNE, ASSURANCE, AUTRE)
+    * @param agency   code de l'agence de gestion à cinq chiffres
      * @param q        recherche libre (client, titre, projet, produit)
      * @param sort     clé de tri : date | score | client | categorie | titre
      * @param order    asc | desc
@@ -46,11 +47,12 @@ public class ConversationDirectoryController {
             @RequestParam(required = false) Integer days,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String agency,
             @RequestParam(name = "q", required = false) String query,
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) String order) {
         int period = days == null ? ConversationDirectoryService.DEFAULT_DAYS : days;
-        return directoryService.list(period, category, query, sort, order, status);
+        return directoryService.list(period, category, query, sort, order, status, agency);
     }
 
     /**

@@ -70,6 +70,7 @@ const providerLabels: Record<AIProvider, string> = {
 
 const loadingMessages = [
   'Analyse en cours... ou alors je suis juste parti chercher un café ?',
+  'C’est moi qui fais tout votre boulot, mais n’oubliez pas que l’avenir c’est vous !',
   'Si je gagnais un token à chaque fois qu’on me pose cette question, je serais déjà à la retraite...',
   'Je consulte vos données. Aucun conseiller financier n’a été maltraité pendant ce calcul.',
   'Je prépare une réponse claire, sans jargon ni magie noire bancaire.',
@@ -78,14 +79,17 @@ const loadingMessages = [
   'Vos données sont analysées en Chine, le trajet peut prendre un peu de temps...',
   'Veuillez patienter, je dois demander une rallonge de crédits IA à Denis...',
   'Calcul en cours... Conversion de votre épargne au TJM GSCI...',
+  'Récupération de votre code agence dans le RES...',
+  'Alors attendez, je sors ma calculatrice...',
   'Laissez-moi quelques instants, je consulte le replay du ”Capital Markets Day”',
   'Je cherche le bon équilibre entre précision financière et réponse lisible.',
   'Je vérifie mes calculs. Une virgule mal placée ne gagnera pas ce hackathon.',
+  'Je pourrais répondre plus vite si j’avais encore 3 jours de TT...',
   'En attente du Go/NoGo, votre réponse arrive bientôt...',
   'Pas de panique, je brode un peu pour cacher le fait que je ne sais pas répondre...',
-  'Ça prend du temps, car je n’ai pas le droit de répondre “ça dépend” sans explication...',
-  'Dernière vérification : votre question passe bien le contrôle qualité du hackathon.',
-  'Je finis ma formation “L’Art du Prompt” pour vous fournir la meilleure réponse possible',
+  'Ça prend du temps, car je n’ai plus le droit de répondre “ça dépend” sans explication...',
+  'Dernière vérification : est-ce que cette question passe bien le contrôle qualité du hackathon ?',
+  'Patientez un peu, je finis ma formation “L’Art du Prompt” pour vous fournir la meilleure réponse possible...',
 ]
 
 function newSessionId(): string {
@@ -135,7 +139,7 @@ function findWakeWord(text: string, wake: string): { found: boolean; rest: strin
 
 function welcomeMessages(): ChatMessage[] {
   const funOpeners = [
-    'J’utilise Mythos pour pirater vos données bancaires afin de répondre au mieux à vos besoins.',
+    'J’utilise Mythos pour pirater vos données bancaires sur le mainframe afin de répondre au mieux à vos besoins.',
     'J’ai accès à vos données mais promis je ne juge pas… même les opérations “livraisons de pizzas pour le hackathon” des 2 derniers jours !',
     'J’ai accès à vos données bancaires, même dans le futur. Félicitations pour votre prime “Victoire Hackathon IA RBS 2026” 🏆',
     'J’ai étudié vos finances pour vous donner les meilleurs conseils, mais rassurez-vous, votre argent est toujours mieux protégé que votre mot de passe.',

@@ -204,6 +204,21 @@ class AgentFilesPromptTest {
                 "l'agent crédit conso rappelle de ne pas nommer l'arbre de décision");
     }
 
+    /** Les acronymes bancaires sont expliqués à la première utilisation, sauf si le client les a déjà employés. */
+    @Test
+    void bankingAcronymsAreExplainedUnlessTheClientUsedThemFirst() {
+        String principal = AgentFiles.systemPromptFor(AgentFiles.GENERIC_THEME);
+
+        assertTrue(principal.contains("Acronymes bancaires — expliquer la première occurrence"),
+                "la règle de pédagogie des acronymes est présente dans l'agent principal");
+        assertTrue(principal.contains("son intitulé en toutes lettres, puis l'acronyme entre parenthèses"),
+                "un acronyme introduit par le Coach doit être développé");
+        assertTrue(principal.contains("Si le client a utilisé lui-même cet acronyme ou ce sigle avant toi"),
+                "l'exception pour un acronyme déjà utilisé par le client est explicitement documentée");
+        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("TAEG, PEA, PER, RIB ou IBAN"),
+                "la règle transverse est composée dans le prompt de l'agent crédit conso");
+    }
+
     /**
      * CONTRAT DE TON HUMAIN : le Coach ne réutilise pas la même accroche d'un tour à l'autre (ce qui fait
      * « robot ») et évite les tournures de rapport. Constaté en réel : « Bonne nouvelle : sur la base des

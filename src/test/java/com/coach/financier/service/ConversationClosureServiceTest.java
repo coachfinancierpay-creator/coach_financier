@@ -328,7 +328,7 @@ class ConversationClosureServiceTest {
     }
 
     private ConversationClosureService service() {
-        return new ConversationClosureService(conversationService, aiServiceFactory, productUrlIndex,
+                return new ConversationClosureService(conversationService, new CustomerDirectoryService(), aiServiceFactory, productUrlIndex,
                 productCatalogueService, new EmailAttachmentBuilder(), mailService, bankingDataRepository,
                 financialAnalysisService, aiLogService, testObjectMapper(), marketingProperties(),
                 mock(MarketingEventStore.class), mock(MarketingExtractionService.class),
@@ -478,7 +478,7 @@ class ConversationClosureServiceTest {
     private static com.fasterxml.jackson.databind.JsonNode customerNode() {
         try {
             return testObjectMapper().readTree(
-                    "{\"customer\":{\"customerId\":\"DEMO001\",\"mail\":\"client@demo.test\"}}");
+                                        "{\"customer\":{\"customerId\":\"QJA6874\",\"mail\":\"client@demo.test\"}}");
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

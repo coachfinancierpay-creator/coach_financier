@@ -39,6 +39,7 @@ class ConversationDirectoryServiceTest {
     private AdvisorDossierStore dossierStore;
     private AdvisorFeedbackStore feedbackStore;
     private CallCenterStatusStore statusStore;
+        private CustomerDirectoryService customerDirectory;
     private ConversationDirectoryService service;
     private ObjectMapper mapper;
 
@@ -52,21 +53,24 @@ class ConversationDirectoryServiceTest {
         when(feedbackStore.read(any(), any()))
                 .thenReturn(new AdvisorFeedbackStore.ReadResult(List.of(), 0));
         statusStore = new CallCenterStatusStore(mapper, tempDir.resolve("call-center").toString());
+        customerDirectory = new CustomerDirectoryService();
         service = new ConversationDirectoryService(dossierStore, feedbackStore,
                 new AdvisorDossierService(dossierStore, feedbackStore, properties, "http://localhost:9898"),
-                statusStore, DEMO_PHONE);
+                statusStore, customerDirectory, DEMO_PHONE);
     }
 
     @Test
     void listsClosedConversationsWithTheirScoreAndCategory() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture d'occasion", 82, 1));
-        save(dossier("s-epargne", "DEMO002", "EPARGNE", "Épargne de précaution", 41, 2));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture d'occasion", 82, 1));
+                save(dossier("s-epargne", "MXP1532", "EPARGNE", "Épargne de précaution", 41, 2));
 
         DirectoryModels.DirectoryList list = service.list(10, null, null, null, null);
 
         assertEquals(2, list.total());
         DirectoryModels.DirectoryRow credit = row(list, "s-credit");
-        assertEquals("DEMO001", credit.customerId());
+        assertEquals("QJA6874", credit.customerId());
+        assertEquals(customerDirectory.profile("QJA6874").agency().code(), credit.agencyCode());
+        assertEquals(customerDirectory.profile("QJA6874").agency().name(), credit.agencyName());
         assertEquals("Crédit conso", credit.categoryLabel());
         assertEquals(82, credit.score());
         assertEquals(SuiviModels.PRIORITY_VERY_HIGH, credit.priority());
@@ -77,8 +81,8 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void filtersByCategory() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture", 82, 1));
-        save(dossier("s-epargne", "DEMO002", "EPARGNE", "Épargne", 41, 2));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-epargne", "MXP1532", "EPARGNE", "Épargne", 41, 2));
 
         DirectoryModels.DirectoryList list = service.list(10, "EPARGNE", null, null, null);
 
@@ -89,8 +93,8 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void filtersByPeriod() {
-        save(dossier("s-recente", "DEMO001", "CREDIT_CONSO", "Projet récent", 70, 1));
-        save(dossier("s-ancienne", "DEMO002", "CREDIT_CONSO", "Projet ancien", 70, 20));
+                save(dossier("s-recente", "QJA6874", "CREDIT_CONSO", "Projet récent", 70, 1));
+                save(dossier("s-ancienne", "MXP1532", "CREDIT_CONSO", "Projet ancien", 70, 20));
         assertEquals(2, service.list(30, null, null, null, null).total());
         assertEquals(1, service.list(5, null, null, null, null).total(),
                 "La période « 5 derniers jours » exclut la conversation de 20 jours");
@@ -99,20 +103,38 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void searchesOnCustomerTitleOrProduct() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture d'occasion", 82, 1));
-        save(dossier("s-epargne", "DEMO002", "EPARGNE", "Épargne de précaution", 41, 2));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture d'occasion", 82, 1));
+                save(dossier("s-epargne", "MXP1532", "EPARGNE", "Épargne de précaution", 41, 2));
 
-        assertEquals(1, service.list(10, null, "DEMO002", null, null).total());
+                assertEquals(1, service.list(10, null, "MXP1532", null, null).total());
         assertEquals(1, service.list(10, null, "voiture", null, null).total());
         assertEquals(1, service.list(10, null, "épargne de précaution", null, null).total());
         assertEquals(0, service.list(10, null, "introuvable", null, null).total());
     }
 
+        @Test
+        void filtersByManagingAgency() {
+                String selectedCustomerId = "QJA6874";
+                String selectedAgency = customerDirectory.profile(selectedCustomerId).agency().code();
+                String otherCustomerId = List.of("MXP1532", "LTR4819").stream()
+                                .filter(candidate -> !selectedAgency.equals(customerDirectory.profile(candidate).agency().code()))
+                                .findFirst().orElseThrow();
+                save(dossier("s-selected-agency", selectedCustomerId, "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-other-agency", otherCustomerId, "EPARGNE", "Épargne", 41, 2));
+
+                DirectoryModels.DirectoryList list = service.list(10, null, null, null, null, null, selectedAgency);
+
+                assertEquals(1, list.total());
+                assertEquals("s-selected-agency", list.rows().get(0).sessionId());
+                assertEquals(selectedAgency, list.rows().get(0).agencyCode());
+                assertEquals(customerDirectory.profile(selectedCustomerId).agency().name(), list.rows().get(0).agencyName());
+        }
+
     @Test
     void sortsByScoreWhenAsked() {
-        save(dossier("s-bas", "DEMO001", "CREDIT_CONSO", "Petit projet", 22, 1));
-        save(dossier("s-haut", "DEMO002", "CREDIT_CONSO", "Gros projet", 91, 2));
-        save(dossier("s-moyen", "DEMO003", "EPARGNE", "Projet moyen", 58, 3));
+                save(dossier("s-bas", "QJA6874", "CREDIT_CONSO", "Petit projet", 22, 1));
+                save(dossier("s-haut", "MXP1532", "CREDIT_CONSO", "Gros projet", 91, 2));
+                save(dossier("s-moyen", "LTR4819", "EPARGNE", "Projet moyen", 58, 3));
 
         DirectoryModels.DirectoryList desc = service.list(10, null, null, "score", "desc");
         assertEquals(List.of("s-haut", "s-moyen", "s-bas"),
@@ -124,7 +146,7 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void detailReturnsTheAdvisorSynthesisTheScoreAndTheTranscript() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture d'occasion", 82, 1));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture d'occasion", 82, 1));
 
         DirectoryModels.DirectoryDetail detail = service.detail("s-credit").orElseThrow();
 
@@ -154,7 +176,7 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void everyDossierStartsAsNewUntilTheAdvisorMovesIt() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture", 82, 1));
 
         DirectoryModels.DirectoryRow row = row(service.list(10, null, null, null, null), "s-credit");
 
@@ -167,7 +189,7 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void theAdvisorCanMoveTheDossierForwardAndTheHistoryIsKept() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture", 82, 1));
 
         DirectoryModels.DirectoryDetail contacte = service
                 .updateStatus("s-credit", "CONTACTE", "Client joint, rappellera lundi").orElseThrow();
@@ -194,7 +216,7 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void aMessageCanBeLeftWithoutChangingTheStatus() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture", 82, 1));
 
         DirectoryModels.DirectoryDetail note = service
                 .updateStatus("s-credit", "NOUVEAU", "Client absent, rappellera demain matin").orElseThrow();
@@ -218,9 +240,9 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void theStatusIsAFilterOfTheCallCenterWorkList() {
-        save(dossier("s-nouveau", "DEMO001", "CREDIT_CONSO", "Voiture", 82, 1));
-        save(dossier("s-conclu", "DEMO002", "EPARGNE", "Épargne", 58, 2));
-        save(dossier("s-contacte", "DEMO003", "ASSURANCE", "Assurance auto", 35, 3));
+                save(dossier("s-nouveau", "QJA6874", "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-conclu", "MXP1532", "EPARGNE", "Épargne", 58, 2));
+                save(dossier("s-contacte", "LTR4819", "ASSURANCE", "Assurance auto", 35, 3));
         service.updateStatus("s-conclu", "CONCLU", null);
         service.updateStatus("s-contacte", "CONTACTE", null);
 
@@ -238,7 +260,7 @@ class ConversationDirectoryServiceTest {
 
     @Test
     void anUnknownStatusOrAnUnknownSessionIsRefused() {
-        save(dossier("s-credit", "DEMO001", "CREDIT_CONSO", "Voiture", 82, 1));
+                save(dossier("s-credit", "QJA6874", "CREDIT_CONSO", "Voiture", 82, 1));
 
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> service.updateStatus("s-credit", "EN_COURS", null));

@@ -33,9 +33,10 @@ const PERIODS: { days: number; label: string }[] = [
   { days: 0, label: 'Tout' },
 ]
 
-const COLUMNS: { key: DirectorySort | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
+const COLUMNS: { key: DirectorySort | 'agence' | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
   { key: 'categorie', label: 'Catégorie', sortable: true },
   { key: 'client', label: 'Client', sortable: true },
+  { key: 'agence', label: 'Agence', sortable: false },
   { key: 'titre', label: 'Conversation', sortable: true },
   { key: 'score', label: 'Score commercial', sortable: true },
   { key: 'statut', label: 'Statut', sortable: false },
@@ -56,6 +57,7 @@ const COLUMNS: { key: DirectorySort | 'statut' | 'rdv' | 'rappel'; label: string
 export default function CallCenter({ initialSessionId }: { initialSessionId?: string }) {
   const [days, setDays] = useState(10)
   const [category, setCategory] = useState('')
+  const [agency, setAgency] = useState('')
   const [status, setStatus] = useState('')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<DirectorySort>('date')
@@ -78,6 +80,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
       const data = await fetchConversationDirectory({
         days,
         category: category || undefined,
+        agency: agency || undefined,
         status: status || undefined,
         q: query.trim() || undefined,
         sort,
@@ -90,7 +93,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
     } finally {
       setLoading(false)
     }
-  }, [days, category, status, query, sort, order])
+  }, [days, category, agency, status, query, sort, order])
 
   useEffect(() => {
     void load()
@@ -108,6 +111,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
 
   const rows = list?.rows ?? []
   const categories = list?.categories ?? []
+  const agencies = list?.agencies ?? []
   const statuses = list?.statuses ?? []
   const byPriority = list?.byPriority ?? {}
 
@@ -154,6 +158,19 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           {categories.map((item) => (
             <option key={item.code} value={item.code}>
               {item.label} ({item.count})
+            </option>
+          ))}
+        </select>
+        <select
+          aria-label="Filtrer par agence"
+          title="Agence"
+          value={agency}
+          onChange={(event) => setAgency(event.target.value)}
+        >
+          <option value="">Toutes les agences</option>
+          {agencies.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.name} ({item.code}) ({item.count})
             </option>
           ))}
         </select>
@@ -239,6 +256,9 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     <span className="cc-chip">{row.categoryLabel}</span>
                   </td>
                   <td>{row.customerId ?? '—'}</td>
+                  <td>
+                    {row.agencyCode ? <span title={row.agencyName ?? undefined}>{row.agencyCode}</span> : '—'}
+                  </td>
                   <td className="cc-title">{row.title}</td>
                   <td>
                     <span className={`cc-score ${scoreClass(row.priority)}`}>

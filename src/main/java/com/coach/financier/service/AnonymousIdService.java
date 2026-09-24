@@ -22,7 +22,7 @@ public class AnonymousIdService {
 
     /**
      * Empreinte stable (SHA-256 tronqué, salé) d'un identifiant client :
-     * {@code DEMO001} → {@code customer_hash_5f3a...}. Retourne {@code null} si l'entrée est vide.
+        * {@code QJA6874} → {@code customer_hash_5f3a...}. Retourne {@code null} si l'entrée est vide.
      */
     public String anonymize(String customerId) {
         if (customerId == null || customerId.isBlank()) {

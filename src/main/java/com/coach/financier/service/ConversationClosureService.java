@@ -82,6 +82,7 @@ public class ConversationClosureService {
     private final AdvisorDossierService advisorDossierService;
     private final CommercialScoreService commercialScoreService;
     private final CallCenterStatusStore callCenterStatusStore;
+    private final CustomerDirectoryService customerDirectory;
 
     private final String configuredAdvisorName;
     private final String configuredAdvisorEmail;
@@ -93,6 +94,7 @@ public class ConversationClosureService {
     private final String customerPhone;
 
     public ConversationClosureService(ConversationService conversationService,
+                                      CustomerDirectoryService customerDirectory,
                                       AIServiceFactory aiServiceFactory,
                                       ProductUrlIndex productUrlIndex,
                                       ProductCatalogueService productCatalogueService,
@@ -118,6 +120,7 @@ public class ConversationClosureService {
                                       @Value("${app.suivi.advisor-mail-html:true}") boolean advisorMailHtml,
                                       @Value("${app.suivi.customer-phone:}") String customerPhone) {
         this.conversationService = conversationService;
+        this.customerDirectory = customerDirectory;
         this.aiServiceFactory = aiServiceFactory;
         this.productUrlIndex = productUrlIndex;
         this.productCatalogueService = productCatalogueService;
@@ -858,10 +861,10 @@ public class ConversationClosureService {
 
     private String customerReference(ConversationModels.Conversation conversation) {
         if (conversation != null && conversation.customerId() != null && !conversation.customerId().isBlank()) {
-            return conversation.customerId();
+            return customerDirectory.normalizeCustomerId(conversation.customerId());
         }
         JsonNode customer = bankingDataRepository.loadSnapshot().rawData().path("customer");
-        return blankToNull(customer.path("customerId").asText(null));
+        return customerDirectory.normalizeCustomerId(blankToNull(customer.path("customerId").asText(null)));
     }
 
     /** Adresse email du client, lue dans la fiche bancaire ({@code customer.mail}). */
