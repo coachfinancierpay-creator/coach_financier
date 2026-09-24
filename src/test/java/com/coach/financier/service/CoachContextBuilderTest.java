@@ -104,6 +104,23 @@ class CoachContextBuilderTest {
         assertTrue(ctx.debug().contains("[COACH]"));
     }
 
+    /** Un client non éligible BFM ne reçoit jamais une offre BFM dans le contexte transmis au Coach. */
+    @Test
+    void bfmProductsAreExcludedForAnIneligibleCustomer() {
+        IntentClassification c = classification(FinancialIntent.FINANCING_REQUEST, ProjectType.CASH_NEED,
+                new BigDecimal("1500"));
+
+        CoachContext ctx = builder.build("Je souhaite financer un besoin de trésorerie", c, project(c), List.of());
+
+        assertEquals(Map.of("bfm_eligible", false), ctx.additionalData().get("customer"));
+        assertFalse(ctx.compatibleProducts().isEmpty(), "au moins une offre non BFM reste disponible");
+        assertTrue(ctx.compatibleProducts().stream().noneMatch(product -> {
+            String id = String.valueOf(product.get("id")).toLowerCase();
+            String name = String.valueOf(product.get("name")).toLowerCase();
+            return id.contains("bfm") || name.contains("bfm");
+        }), "aucune offre BFM ne doit être transmise à l'IA");
+    }
+
     /**
      * Délai de mise à disposition des fonds : il vient du CATALOGUE, il est transmis au Coach quand il est
      * renseigné, et il est ABSENT quand le catalogue ne le documente pas — jamais de délai inventé.
@@ -241,7 +258,7 @@ class CoachContextBuilderTest {
 
         CoachContext ctx = builder.build("Je veux financer une voiture", c, p, List.of());
 
-        assertEquals(List.of("providedData", "currentProject", "existingCredits", "compatibleProducts",
+        assertEquals(List.of("providedData", "currentProject", "customer", "existingCredits", "compatibleProducts",
                         "agent", "agentLibelle"),
                 new ArrayList<>(ctx.additionalData().keySet()));
 

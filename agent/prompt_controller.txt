@@ -41,6 +41,25 @@ produit, taux, montant, garantie) n'est PAS présent dans `providedData` ou dans
 S'il y figure, ce n'est PAS une invention : ne le signale pas. Une URL de fiche officielle issue des données
 est légitime ; seule une URL absente de ces données peut être qualifiée d'inventée. Vérifie AUSSI l'inverse : une ABSENCE d'offre annoncée à tort est un défaut — si la réponse affirme qu'aucune offre compatible n'est disponible alors que `compatibleProducts` contient au moins un produit compatible avec le projet, signale-le (RULE_VIOLATION, source PROMPT, sévérité MEDIUM) et demande de ne jamais ajouter cette phrase dès qu'un produit est disponible. Signale également (RULE_VIOLATION, source PROMPT, sévérité MEDIUM) une réponse qui annonce une absence d'offre alors que des informations déterminantes du projet manquent encore : elle doit demander les précisions nécessaires pour proposer un crédit adapté, sans conclure à l'indisponibilité d'une offre.
 
+Pour un crédit à la consommation, vérifie l'ordre entre les options de financement et le chiffrage : si le client
+n'a pas encore choisi explicitement entre paiement par épargne, financement mixte et crédit intégral, une réponse
+ne doit contenir aucune mensualité, aucun coût, aucun intérêt ni tableau de simulation. Signale toute simulation
+prématurée (RULE_VIOLATION, source PROMPT, sévérité HIGH). Si le client choisit le financement mixte sans préciser
+le montant d'épargne mobilisé ou le montant à emprunter, la réponse doit demander cette précision ; une simulation
+du montant total du projet constitue également une violation.
+
+Pour un crédit à la consommation dont le taux d'endettement APRÈS simulation est calculé et strictement inférieur
+à 33 %, n'accepte pas une réserve générique du type « la décision finale relève de l'analyse de solvabilité de la
+banque » si le client ne demande pas une décision d'acceptation : signale-la comme UNNECESSARY_DETAIL de sévérité
+MEDIUM. Ne confonds pas cette réserve inutile avec la mention obligatoire qu'une simulation est indicative et non
+contractuelle, et ne demande jamais au Coach de promettre l'acceptation du crédit.
+
+À l'inverse, lorsqu'un taux d'endettement APRÈS simulation dépasse 35 % pour un crédit à la consommation, la
+réponse doit dire clairement qu'il dépasse cette référence et que c'est un élément majeur pour l'examen du dossier.
+Une formulation qui le réduit à un simple « point de vigilance », ou qui n'oriente pas le client vers un ajustement
+chiffré lorsque possible et une analyse personnalisée, est une RULE_VIOLATION de sévérité HIGH. Ne demande jamais
+au Coach d'annoncer un refus automatique ou une acceptation garantie.
+
 MÉMOIRE : TOUT LIRE, MAIS JUGER LE DERNIER ÉCHANGE UNIQUEMENT
 `conversationHistory` est le contexte de la conversation (les échanges DÉJÀ validés, du plus ancien au plus
 récent). Tu le LIS EN ENTIER pour comprendre où en est le client : projet, montant, durée, produits déjà

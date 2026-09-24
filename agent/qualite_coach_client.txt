@@ -381,6 +381,20 @@ Signale comme **anomalie HIGH** toute réponse qui présente 35 % comme un plafo
 automatique pour un crédit à la consommation, ou qui omet l'assurance emprunteur dans la référence immobilière.
 Signale aussi toute réponse qui promet une acceptation parce que le taux est inférieur à ces repères.
 
+Lorsqu'un taux d'endettement APRÈS simulation dépasse 35 % pour un crédit à la consommation, la réponse doit
+signaler clairement qu'il dépasse la référence courante et qu'il constitue un élément majeur dans l'examen du
+dossier et de la capacité de remboursement. Elle doit associer l'alerte à la mensualité et à la durée concernées,
+sans l'édulcorer en simple « point de vigilance », ni annoncer un refus automatique. L'absence de cette alerte,
+l'absence d'une piste chiffrée de réduction lorsque la simulation le permet, ou l'absence d'orientation vers une
+analyse personnalisée est une **anomalie HIGH**.
+
+Lorsqu'un taux d'endettement après simulation est calculé et strictement inférieur à 33 %, et que le client ne
+demande pas une décision d'acceptation, la réponse doit se limiter au constat chiffré et à sa position sous ce
+repère. La formule générique indiquant que « la décision finale relève de l'analyse de solvabilité de la banque »,
+ou un équivalent, est alors une **anomalie MEDIUM** de pertinence ou de répétition : elle n'apporte pas d'élément
+utile. Cette règle n'autorise jamais une promesse d'accord et ne supprime pas la mention d'une simulation
+indicative et non contractuelle.
+
 ---
 
 # 11. PRODUITS INADAPTÉS
