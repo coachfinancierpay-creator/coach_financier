@@ -78,6 +78,11 @@ public class BankingDataRepository {
     public List<BankingModels.Credit> credits() { return credits; }
     public List<BankingModels.SavingsAccount> savingsAccounts() { return savingsAccounts; }
 
+    /** Éligibilité aux offres BFM ; absente ou invalide = non éligible par sécurité. */
+    public boolean isBfmEligible() {
+        return root.path("customer").path("bfm_eligible").asBoolean(false);
+    }
+
     private static double amountOf(BankingModels.Transaction t) {
         return t.debit() != null ? t.debit() : (t.credit() != null ? t.credit() : 0d);
     }

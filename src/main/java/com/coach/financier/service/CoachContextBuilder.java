@@ -102,6 +102,7 @@ public class CoachContextBuilder {
                               List<ConversationModels.Message> history, String forcedAgentTheme,
                               String customerId) {
         FinancialSummary summary = financialAnalysisService.analyze();
+        boolean bfmEligible = bankingDataRepository.isBfmEligible();
 
         // Engagements existants (crédits en cours) — distincts des produits proposés.
         List<Map<String, Object>> existingCredits = buildExistingCredits();
@@ -118,6 +119,9 @@ public class CoachContextBuilder {
             List<BankProduct> compatible = productCatalogueService.findCompatible(
                     project.getType(), project.getAmount());
             for (BankProduct product : compatible) {
+                if (!bfmEligible && isBfmProduct(product)) {
+                    continue;
+                }
                 compatibleProducts.add(product.toCompactMap());
             }
         }
@@ -182,6 +186,7 @@ public class CoachContextBuilder {
         if (project != null) {
             additionalData.put("currentProject", currentProjectMap(project));
         }
+        additionalData.put("customer", Map.of("bfm_eligible", bfmEligible));
         additionalData.put("existingCredits", existingCredits);
         additionalData.put("compatibleProducts", compatibleProducts);
         additionalData.put("agent", agentTheme);
@@ -372,6 +377,13 @@ public class CoachContextBuilder {
         map.put("amount", project.getAmount());
         map.put("currency", project.getCurrency());
         return map;
+    }
+
+    /** Les offres BFM ne doivent jamais parvenir au modèle pour un client non éligible. */
+    private static boolean isBfmProduct(BankProduct product) {
+        String id = product.getId() == null ? "" : product.getId().toLowerCase(Locale.ROOT);
+        String name = product.getName() == null ? "" : product.getName().toLowerCase(Locale.ROOT);
+        return id.contains("bfm") || name.contains("bfm");
     }
 
     /** Log structuré [INTENT] / [PRODUCT_FILTER] / [AGENT] / [COACH] pour la démo (§38). */

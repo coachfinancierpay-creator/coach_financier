@@ -1,19 +1,12 @@
 {
   "customer": {
-    "customerId": "DEMO001",
+    "customerId": "QJA6874",
     "bfm_eligible": false,
     "student": false,
     "nom": "Jean",
     "prenom": "Michel",
-    "mail": "Michel@gmail.com",
-    "student": false,
-    "age": 30,
-    "managementAgency": {
-      "code": "65478",
-      "name": "Agence de Paris"
-    }
+    "age": 30
   },
-
   "period": {
     "from": "2025-07-01",
     "to": "2026-08-31"
