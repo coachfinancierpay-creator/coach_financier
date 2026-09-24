@@ -1,4 +1,4 @@
-ARBRE DE DÉCISION — ASSURANCE EMPRUNTEUR IMMOBILIER
+cascade - ARBRE DE DÉCISION — ASSURANCE EMPRUNTEUR IMMOBILIER
 ===================================================
 
 Rôle : déterminer si une assurance emprunteur est nécessaire et quelle couverture / quotité recommander.

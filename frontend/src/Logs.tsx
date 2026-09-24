@@ -296,6 +296,10 @@ export default function Logs() {
                 <Type size={15} /> <strong>Caractères envoyés&nbsp;:</strong> {log.charCount.toLocaleString('fr-FR')}
               </div>
               <div className="logs-line">
+                <Type size={15} /> <strong>Caractères réponse IA&nbsp;:</strong>{' '}
+                {log.answerCharCount.toLocaleString('fr-FR')}
+              </div>
+              <div className="logs-line">
                 <Type size={15} /> <strong>Temps de réponse IA&nbsp;:</strong>{' '}
                 {log.responseTimeMs > 0 ? `${log.responseTimeMs.toLocaleString('fr-FR')} ms` : 'non mesuré'}
               </div>

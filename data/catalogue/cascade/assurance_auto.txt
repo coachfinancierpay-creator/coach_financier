@@ -1,4 +1,4 @@
-ARBRE DE DÉCISION — ASSURANCE AUTO
+cascade - ARBRE DE DÉCISION — ASSURANCE AUTO
 ==================================
 
 Rôle : choisir et justifier une formule d'assurance auto adaptée au véhicule et au profil du client.

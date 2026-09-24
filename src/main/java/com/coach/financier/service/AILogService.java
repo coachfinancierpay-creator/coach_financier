@@ -79,7 +79,8 @@ public class AILogService {
                 mailStatus == null ? "" : mailStatus,
                 attachedContent,
                 attachedContent.length(),
-                responseTimeMs
+                responseTimeMs,
+                answer == null ? 0 : answer.length()
         );
         entries.addFirst(entry);
         while (entries.size() > MAX_ENTRIES) {

@@ -1,4 +1,4 @@
-ARBRE DE DÉCISION — ASSURANCE HABITATION
+cascade - ARBRE DE DÉCISION — ASSURANCE HABITATION
 ========================================
 
 Rôle : déterminer si une assurance habitation est requise et quelle formule recommander selon la situation d'occupation.
