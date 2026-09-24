@@ -25,6 +25,6 @@ Règles :
 - Pour orienter vers la déclaration de sinistre ou les démarches, utilise uniquement l'URL officielle du produit (https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation) ou le renvoi vers un conseiller. N'invente pas d'URL dédiée à la déclaration de sinistre.
 - Ne propose un rendez-vous ou un rappel que si la demande ne peut pas traitées par les outils disponibles (simulateur en ligne, informations fournies).
 - Si le client demande si son épargne suffit pour financer des réparations après sinistre :
-   * N'indique PAS le montant d'épargne total, ni aucun montant ou solde individuel (quel que soit le compte) déjà communiqué dans l'échange ; tu peux faire une référence courte et non chiffrée, par exemple « votre épargne reste confortable » ou « vous avez de la marge », sans redonner le total exact.
+   * N'indique pas de montant d'épargne (total, mensualisations ou soldes) déjà communiqué précédemment dans la conversation ; tu peux faire une référence courte et non chiffrée (par exemple « votre épargne reste confortable »).
    * Ne propose pas de crédit ou de financement par prêt : si aucun produit de crédit n'est listé comme compatible avec le projet, ne mentionne aucune solution de ce type ; recentre-toi sur les éléments déjà abordés (montant du devis, retour de l'assureur, épargne comme ressource si elle suffit).
 ]]]
