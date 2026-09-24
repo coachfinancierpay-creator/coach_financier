@@ -33,9 +33,16 @@ public class FinancialSynthesisStore {
     }
 
     public Optional<JsonNode> load() {
-        JsonNode node = readFile(filePath);
+        return loadForDataset("jdd1");
+    }
+
+    public Optional<JsonNode> loadForDataset(String dataset) {
+        Path selectedPath = "jdd2".equalsIgnoreCase(dataset)
+                ? filePath.getParent().resolve("jdd2").resolve("synthese_financier.json")
+                : filePath;
+        JsonNode node = readFile(selectedPath);
         if (node != null) {
-            log.info("Synthèse financière chargée depuis {}", filePath);
+            log.info("Synthèse financière chargée depuis {}", selectedPath);
             return Optional.of(node);
         }
         // Repli : une synthèse placée manuellement dans resources/data est aussi acceptée.
@@ -53,7 +60,11 @@ public class FinancialSynthesisStore {
 
     /** Charge la synthèse et remplace uniquement l'identifiant client pour une session de démo. */
     public Optional<JsonNode> loadForCustomer(String customerId) {
-        return load().map(node -> {
+        return loadForDatasetForCustomer("jdd1", customerId);
+    }
+
+    public Optional<JsonNode> loadForDatasetForCustomer(String dataset, String customerId) {
+        return loadForDataset(dataset).map(node -> {
             JsonNode copy = node.deepCopy();
             if (copy instanceof ObjectNode root && customerId != null && !customerId.isBlank()) {
                 JsonNode customer = root.path("customer");

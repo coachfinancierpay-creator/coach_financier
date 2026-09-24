@@ -1,0 +1,213 @@
+{
+  "customer": {
+    "customerId": "DEMO002",
+    "bfm_eligible": false,
+    "student": false,
+    "nom": "Durand",
+    "prenom": "Alex",
+    "age": 29
+  },
+  "period": {
+    "from": "2025-07-01",
+    "to": "2026-08-31"
+  },
+  "accounts": [
+    {
+      "accountId": "ACC-COURANT-JDD2",
+      "balance": 200.0
+    }
+  ],
+  "epargne": [
+    {
+      "accountId": "LIVRET-A-JDD2",
+      "libelle": "Livret A",
+      "type": "COMPTE_EPARGNE",
+      "currency": "EUR",
+      "date": "31/08/2026",
+      "solde": 2200.0
+    }
+  ],
+  "credits": [
+    {
+      "produit": "crédit_immobilier",
+      "mensualite": 350.0,
+      "fin": "2035-12-31"
+    }
+  ],
+  "savingsTotal": 2200.0,
+  "monthlySummaries": [
+    {
+      "month": "07/2025",
+      "openingBalance": 180.0,
+      "income": 1300.0,
+      "expenses": 1039.72,
+      "savings": 260.28,
+      "balance": 162.53,
+      "debitTotal": 1317.47,
+      "creditTotal": 1300.0,
+      "transactionCount": 144
+    },
+    {
+      "month": "08/2025",
+      "openingBalance": 162.53,
+      "income": 1299.97,
+      "expenses": 1093.11,
+      "savings": 206.86,
+      "balance": 200.0,
+      "debitTotal": 1262.5,
+      "creditTotal": 1299.97,
+      "transactionCount": 106
+    },
+    {
+      "month": "09/2025",
+      "openingBalance": 200.0,
+      "income": 1299.99,
+      "expenses": 942.96,
+      "savings": 357.03,
+      "balance": 200.0,
+      "debitTotal": 1299.99,
+      "creditTotal": 1299.99,
+      "transactionCount": 128
+    },
+    {
+      "month": "10/2025",
+      "openingBalance": 200.0,
+      "income": 1300.0,
+      "expenses": 1061.62,
+      "savings": 238.38,
+      "balance": 200.0,
+      "debitTotal": 1300.0,
+      "creditTotal": 1300.0,
+      "transactionCount": 124
+    },
+    {
+      "month": "11/2025",
+      "openingBalance": 200.0,
+      "income": 1300.0,
+      "expenses": 1096.5,
+      "savings": 203.5,
+      "balance": 200.0,
+      "debitTotal": 1300.0,
+      "creditTotal": 1300.0,
+      "transactionCount": 128
+    },
+    {
+      "month": "12/2025",
+      "openingBalance": 200.0,
+      "income": 1299.99,
+      "expenses": 1028.8,
+      "savings": 271.19,
+      "balance": 200.0,
+      "debitTotal": 1299.99,
+      "creditTotal": 1299.99,
+      "transactionCount": 144
+    },
+    {
+      "month": "01/2026",
+      "openingBalance": 200.0,
+      "income": 1300.02,
+      "expenses": 927.88,
+      "savings": 372.14,
+      "balance": 200.0,
+      "debitTotal": 1300.02,
+      "creditTotal": 1300.02,
+      "transactionCount": 106
+    },
+    {
+      "month": "02/2026",
+      "openingBalance": 200.0,
+      "income": 1300.01,
+      "expenses": 805.23,
+      "savings": 494.78,
+      "balance": 200.0,
+      "debitTotal": 1300.01,
+      "creditTotal": 1300.01,
+      "transactionCount": 99
+    },
+    {
+      "month": "03/2026",
+      "openingBalance": 200.0,
+      "income": 1300.02,
+      "expenses": 1066.39,
+      "savings": 233.63,
+      "balance": 200.0,
+      "debitTotal": 1300.02,
+      "creditTotal": 1300.02,
+      "transactionCount": 165
+    },
+    {
+      "month": "04/2026",
+      "openingBalance": 200.0,
+      "income": 1300.01,
+      "expenses": 1112.88,
+      "savings": 187.13,
+      "balance": 200.0,
+      "debitTotal": 1300.01,
+      "creditTotal": 1300.01,
+      "transactionCount": 156
+    },
+    {
+      "month": "05/2026",
+      "openingBalance": 200.0,
+      "income": 1300.0,
+      "expenses": 1211.93,
+      "savings": 88.07,
+      "balance": 200.0,
+      "debitTotal": 1300.0,
+      "creditTotal": 1300.0,
+      "transactionCount": 120
+    },
+    {
+      "month": "06/2026",
+      "openingBalance": 200.0,
+      "income": 1299.99,
+      "expenses": 1279.29,
+      "savings": 20.7,
+      "balance": 200.0,
+      "debitTotal": 1299.99,
+      "creditTotal": 1299.99,
+      "transactionCount": 107
+    },
+    {
+      "month": "07/2026",
+      "openingBalance": 200.0,
+      "income": 1300.02,
+      "expenses": 1296.97,
+      "savings": 3.05,
+      "balance": 200.0,
+      "debitTotal": 1300.02,
+      "creditTotal": 1300.02,
+      "transactionCount": 157
+    },
+    {
+      "month": "08/2026",
+      "openingBalance": 200.0,
+      "income": 1300.0,
+      "expenses": 1247.21,
+      "savings": 52.79,
+      "balance": 200.0,
+      "debitTotal": 1300.0,
+      "creditTotal": 1300.0,
+      "transactionCount": 134
+    }
+  ],
+  "global": {
+    "periodMonths": 14,
+    "periodStart": "2025-07-01",
+    "periodEnd": "2026-08-31",
+    "averageMonthlyIncome": 1300.0,
+    "averageMonthlyExpenses": 1086.46,
+    "averageMonthlySavings": 213.54,
+    "averageDisposableIncome": 213.54,
+    "currentAccountBalance": 200.0,
+    "savingsTotal": 2200.0,
+    "monthlyLoanPayments": 350.0,
+    "debtServiceToIncomeRatio": 0.2692,
+    "savingsToIncomeRatio": 0.1643,
+    "savingsToIncomeRatio3Months": 0.0196,
+    "savingsRatePeriodLabel": "06/2026 – 08/2026",
+    "overdraftOccurrences": 0,
+    "minimumObservedBalance": 162.53,
+    "transactionCount": 1818
+  }
+}

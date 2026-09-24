@@ -6,6 +6,7 @@ import com.coach.financier.service.FinancialAnalysisService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api")
@@ -19,8 +20,8 @@ public class FinancialController {
     }
 
     @GetMapping("/financial-summary")
-    public FinancialSummary financialSummary() {
-        return analysisService.analyze();
+    public FinancialSummary financialSummary(@RequestParam(defaultValue = "jdd1") String dataset) {
+        return analysisService.analyze(dataset);
     }
 
     @GetMapping("/banking-data")

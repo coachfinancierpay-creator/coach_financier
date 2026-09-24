@@ -34,10 +34,14 @@ public class FinancialAnalysisService {
     }
 
     public FinancialSummary analyze() {
+        return analyze("jdd1");
+    }
+
+    public FinancialSummary analyze(String dataset) {
         if (synthesisStore == null) {
             return analyzeFromBankingData();
         }
-        return synthesisStore.load()
+        return synthesisStore.loadForDataset(dataset)
                 .map(FinancialSummaryMapper::from)
                 .orElseGet(this::analyzeFromBankingData);
     }

@@ -9,7 +9,8 @@ public final class ChatModels {
             @NotBlank String sessionId,
             @NotBlank String message,
             AIModels.AIProvider provider,
-            Boolean disableOutOfScopeGuard
+            Boolean disableOutOfScopeGuard,
+            String dataset
     ) {}
 
     public record ChatResponse(

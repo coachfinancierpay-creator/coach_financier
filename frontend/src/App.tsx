@@ -23,6 +23,7 @@ import {
   X,
 } from 'lucide-react'
 import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, sendChat, sendConversationFeedback } from './api'
+import type { DemoDataset } from './api'
 import { playWakeCue } from './audioCue'
 import FeedbackPopup from './FeedbackPopup'
 import { getAdvisorIntent } from './advisorCallback'
@@ -54,6 +55,7 @@ const DEFAULT_WAKE_WORD = 'Chloé'
 const DEFAULT_SILENCE_SECONDS = 5
 const MIN_SILENCE_SECONDS = 2
 const MAX_SILENCE_SECONDS = 10
+const DATASET_STORAGE_KEY = 'financial-coach-dataset'
 
 /**
  * Nombre minimal d'échanges client ↔ IA avant de déclencher la clôture de la conversation
@@ -168,6 +170,9 @@ function formatPeriod(start: string, end: string): string {
 }
 
 function App() {
+  const [dataset, setDataset] = useState<DemoDataset>(() =>
+    localStorage.getItem(DATASET_STORAGE_KEY) === 'jdd2' ? 'jdd2' : 'jdd1',
+  )
   const [provider, setProvider] = useState<AIProvider>(() => {
     const stored = localStorage.getItem(PROVIDER_STORAGE_KEY)
     return stored === 'GPT' || stored === 'DEEPSEEK' || stored === 'LOCAL' || stored === 'MOCK'
@@ -270,6 +275,10 @@ function App() {
   }, [provider])
 
   useEffect(() => {
+    localStorage.setItem(DATASET_STORAGE_KEY, dataset)
+  }, [dataset])
+
+  useEffect(() => {
     localStorage.setItem(GUARD_STORAGE_KEY, String(guardEnabled))
   }, [guardEnabled])
 
@@ -345,7 +354,7 @@ function App() {
 
   useEffect(() => {
     let active = true
-    fetchFinancialSummary()
+    fetchFinancialSummary(dataset)
       .then((data) => {
         if (active) setSummary(data)
       })
@@ -355,7 +364,7 @@ function App() {
     return () => {
       active = false
     }
-  }, [])
+  }, [dataset])
 
   function ensureRecognition(): any {
     if (recognitionRef.current) return recognitionRef.current
@@ -737,7 +746,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await sendChat(sessionId, message, provider, !guardEnabled)
+      const response = await sendChat(sessionId, message, provider, !guardEnabled, dataset)
       setSummary(response.financialSummary ?? summary)
       const assistantMessage: ChatMessage = {
         id: newMessageId(),
@@ -876,6 +885,18 @@ function App() {
         </div>
 
         <div className="topbar-actions">
+          <div className="provider-select-wrap" title="Jeu de données utilisé pour la démonstration">
+            <Landmark size={16} />
+            <select aria-label="Jeu de données" value={dataset} onChange={(event) => {
+              setDataset(event.target.value as DemoDataset)
+              setSummary(null)
+              resetConversation()
+            }}>
+              <option value="jdd1">JDD 1 · Client standard</option>
+              <option value="jdd2">JDD 2 · Revenus modestes</option>
+            </select>
+            <ChevronDown size={14} />
+          </div>
           <label className="adv-toggle" title="Afficher les réglages avancés (fournisseur IA, garde-fou, pages Logs et Agents)">
             <input
               type="checkbox"
@@ -1267,7 +1288,7 @@ function App() {
           <div className="summary-header">
             <div>
               <p className="eyebrow">VUE D’ENSEMBLE</p>
-              <h2>Votre situation</h2>
+              <h2>Votre situation · {dataset === 'jdd2' ? 'JDD 2' : 'JDD 1'}</h2>
             </div>
             <Landmark size={21} />
           </div>

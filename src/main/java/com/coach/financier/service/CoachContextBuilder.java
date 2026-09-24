@@ -101,10 +101,18 @@ public class CoachContextBuilder {
     public CoachContext build(String question, IntentClassification classification, CurrentProject project,
                               List<ConversationModels.Message> history, String forcedAgentTheme,
                               String customerId) {
-        FinancialSummary summary = financialAnalysisService.analyze();
+        return build(question, classification, project, history, forcedAgentTheme, customerId, "jdd1");
+    }
+
+    /** Variante de production isolée par jeu de données de démonstration. */
+    public CoachContext build(String question, IntentClassification classification, CurrentProject project,
+                              List<ConversationModels.Message> history, String forcedAgentTheme,
+                              String customerId, String dataset) {
+        String selectedDataset = "jdd2".equalsIgnoreCase(dataset) ? "jdd2" : "jdd1";
+        FinancialSummary summary = financialAnalysisService.analyze(selectedDataset);
 
         // Engagements existants (crédits en cours) — distincts des produits proposés.
-        List<Map<String, Object>> existingCredits = buildExistingCredits();
+        List<Map<String, Object>> existingCredits = buildExistingCredits(selectedDataset);
 
         // Filtrage métier : produits compatibles chargés UNIQUEMENT si nécessaire.
         boolean requiresProducts = requiresProducts(classification);
@@ -159,7 +167,9 @@ public class CoachContextBuilder {
         Object catalog = visibleEntries;
 
         List<Map<String, Object>> providedData = new ArrayList<>();
-        (customerId == null ? financialSynthesisStore.load() : financialSynthesisStore.loadForCustomer(customerId))
+        (customerId == null
+                ? financialSynthesisStore.loadForDataset(selectedDataset)
+                : financialSynthesisStore.loadForDatasetForCustomer(selectedDataset, customerId))
                 .ifPresent(node -> {
             Map<String, Object> synthesisEntry = new LinkedHashMap<>();
             synthesisEntry.put("description", "Synthèse financière");
@@ -341,8 +351,16 @@ public class CoachContextBuilder {
         return new AIModels.Classification(c.inScope(), c.toLegacyCategory(), c.getReason());
     }
 
-    private List<Map<String, Object>> buildExistingCredits() {
+    private List<Map<String, Object>> buildExistingCredits(String dataset) {
         List<Map<String, Object>> result = new ArrayList<>();
+        if ("jdd2".equals(dataset)) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("type", "MORTGAGE");
+            entry.put("label", "crédit_immobilier");
+            entry.put("monthlyPayment", 350.0);
+            result.add(entry);
+            return result;
+        }
         for (BankingModels.Credit credit : bankingDataRepository.credits()) {
             if (credit.mensualite() == null) {
                 continue;

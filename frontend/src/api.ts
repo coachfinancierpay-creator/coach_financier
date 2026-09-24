@@ -62,6 +62,8 @@ function resolveApiBaseUrl(): string {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? resolveApiBaseUrl()
 
+export type DemoDataset = 'jdd1' | 'jdd2'
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
@@ -86,8 +88,8 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>
 }
 
-export async function fetchFinancialSummary(): Promise<FinancialSummary> {
-  return apiFetch<FinancialSummary>('/financial-summary')
+export async function fetchFinancialSummary(dataset: DemoDataset = 'jdd1'): Promise<FinancialSummary> {
+  return apiFetch<FinancialSummary>(`/financial-summary?dataset=${dataset}`)
 }
 
 export async function fetchHealth(): Promise<unknown> {
@@ -99,10 +101,11 @@ export async function sendChat(
   message: string,
   provider: AIProvider,
   disableOutOfScopeGuard: boolean,
+  dataset: DemoDataset = 'jdd1',
 ): Promise<ChatResponse> {
   return apiFetch<ChatResponse>('/chat', {
     method: 'POST',
-    body: JSON.stringify({ sessionId, message, provider, disableOutOfScopeGuard }),
+    body: JSON.stringify({ sessionId, message, provider, disableOutOfScopeGuard, dataset }),
   })
 }
 
