@@ -9,7 +9,7 @@ import java.util.Map;
 public final class TtsModels {
     private TtsModels() {}
 
-    public static final String DEFAULT_VOICE = "fr-FR-DeniseNeural";
+    public static final String DEFAULT_VOICE = "fr-FR-HenriNeural";
     public static final Map<String, String> FRENCH_VOICES = Map.of(
             "fr-FR-DeniseNeural", "Denise · voix féminine",
             "fr-FR-HenriNeural", "Henri · voix masculine",

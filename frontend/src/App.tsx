@@ -57,8 +57,8 @@ const DEFAULT_SILENCE_SECONDS = 5
 const MIN_SILENCE_SECONDS = 2
 const MAX_SILENCE_SECONDS = 10
 const frenchVoices = [
-  { id: 'fr-FR-DeniseNeural', label: 'Denise', detail: 'féminine' },
   { id: 'fr-FR-HenriNeural', label: 'Henri', detail: 'masculine' },
+  { id: 'fr-FR-DeniseNeural', label: 'Denise', detail: 'féminine' },
   { id: 'fr-FR-EloiseNeural', label: 'Eloise', detail: 'féminine' },
 ] as const
 
