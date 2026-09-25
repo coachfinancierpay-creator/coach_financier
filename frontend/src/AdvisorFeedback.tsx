@@ -333,32 +333,34 @@ export default function AdvisorFeedback() {
               {data.products.length === 0 ? (
                 <p className="mkt-empty">Aucun produit évalué sur la période.</p>
               ) : (
-                <table className="mkt-table compact">
-                  <thead>
-                    <tr>
-                      <th>Produit</th>
-                      <th>Éval.</th>
-                      <th>Pertinent</th>
-                      <th>Non pertinent</th>
-                      <th>Taux</th>
-                      <th>Corr.</th>
-                      <th>Ajouté</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.products.slice(0, 12).map((product) => (
-                      <tr key={product.productId}>
-                        <td className="mkt-strong">{product.productName ?? product.productId}</td>
-                        <td>{product.assessments}</td>
-                        <td>{product.relevant}</td>
-                        <td className={product.notRelevant > 0 ? 'mkt-low' : ''}>{product.notRelevant}</td>
-                        <td>{percent(product.relevanceRate)}</td>
-                        <td>{product.interestCorrections}</td>
-                        <td>{product.addedByAdvisor}</td>
+                <div className="mkt-table-scroll dashboard-table-scroll product-relevance-table">
+                  <table className="mkt-table compact">
+                    <thead>
+                      <tr>
+                        <th>Produit</th>
+                        <th>Éval.</th>
+                        <th>Pertinent</th>
+                        <th>Non pertinent</th>
+                        <th>Taux</th>
+                        <th>Corr.</th>
+                        <th>Ajouté</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.products.slice(0, 12).map((product) => (
+                        <tr key={product.productId}>
+                          <td className="mkt-strong">{product.productName ?? product.productId}</td>
+                          <td>{product.assessments}</td>
+                          <td>{product.relevant}</td>
+                          <td className={product.notRelevant > 0 ? 'mkt-low' : ''}>{product.notRelevant}</td>
+                          <td>{percent(product.relevanceRate)}</td>
+                          <td>{product.interestCorrections}</td>
+                          <td>{product.addedByAdvisor}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </section>
 
@@ -370,26 +372,28 @@ export default function AdvisorFeedback() {
                   conservées séparément lorsqu&rsquo;il y en a une.
                 </p>
               ) : (
-                <table className="mkt-table compact">
-                  <thead>
-                    <tr>
-                      <th>Produit</th>
-                      <th>IA</th>
-                      <th>Conseiller</th>
-                      <th>Cas</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.interestCorrections.slice(0, 10).map((correction) => (
-                      <tr key={`${correction.productId}-${correction.fromLevel}-${correction.toLevel}`}>
-                        <td className="mkt-strong">{correction.productName ?? correction.productId}</td>
-                        <td>{correction.fromLevel}</td>
-                        <td>{correction.toLevel}</td>
-                        <td>{correction.count}</td>
+                <div className="mkt-table-scroll dashboard-table-scroll corrected-interest-table">
+                  <table className="mkt-table compact">
+                    <thead>
+                      <tr>
+                        <th>Produit</th>
+                        <th>IA</th>
+                        <th>Conseiller</th>
+                        <th>Cas</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.interestCorrections.slice(0, 10).map((correction) => (
+                        <tr key={`${correction.productId}-${correction.fromLevel}-${correction.toLevel}`}>
+                          <td className="mkt-strong">{correction.productName ?? correction.productId}</td>
+                          <td>{correction.fromLevel}</td>
+                          <td>{correction.toLevel}</td>
+                          <td>{correction.count}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
               <h3>Qualité des emails préparés</h3>
               {data.emailQuality.length === 0 ? (

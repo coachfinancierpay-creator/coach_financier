@@ -1332,6 +1332,106 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   background: var(--sg-gray-100);
   border-radius: 0 0 7px 7px;
 }
+
+/* ---- Pages métier SG : Marketing, Qualité et Feedback Conseillers ---- */
+.marketing-page:not(.cc-page) {
+  width: min(1680px, calc(100% - 48px));
+  max-width: none;
+}
+.marketing-page:not(.cc-page) .logs-header {
+  position: relative;
+  padding-left: 18px;
+  border-bottom-color: var(--sg-gray-200);
+}
+.marketing-page:not(.cc-page) .logs-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 18px;
+  width: 4px;
+  background: var(--sg-red);
+}
+.marketing-page:not(.cc-page) .logs-back,
+.marketing-page:not(.cc-page) .mkt-action:hover:not(:disabled),
+.marketing-page:not(.cc-page) .mkt-period.active {
+  color: var(--sg-red);
+}
+.marketing-page:not(.cc-page) .mkt-toolbar,
+.marketing-page:not(.cc-page) .mkt-periods,
+.marketing-page:not(.cc-page) .mkt-period,
+.marketing-page:not(.cc-page) .mkt-action,
+.marketing-page:not(.cc-page) .mkt-card,
+.marketing-page:not(.cc-page) .mkt-chart,
+.marketing-page:not(.cc-page) .mkt-kpi,
+.marketing-page:not(.cc-page) .mkt-alert,
+.marketing-page:not(.cc-page) .mkt-notice,
+.marketing-page:not(.cc-page) .mkt-demo-banner {
+  border-radius: 2px;
+}
+.marketing-page:not(.cc-page) .mkt-toolbar {
+  border-color: var(--sg-gray-200);
+  box-shadow: 0 3px 12px rgba(17, 17, 17, .05);
+}
+.marketing-page:not(.cc-page) .mkt-periods { background: var(--sg-gray-100); }
+.marketing-page:not(.cc-page) .mkt-period.active {
+  background: var(--sg-red);
+  color: #fff;
+}
+.marketing-page:not(.cc-page) .mkt-action {
+  border-color: #bdbdbd;
+  color: var(--sg-black);
+}
+.marketing-page:not(.cc-page) .mkt-action:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--sg-red);
+}
+.marketing-page:not(.cc-page) .mkt-card,
+.marketing-page:not(.cc-page) .mkt-chart,
+.marketing-page:not(.cc-page) .mkt-kpi {
+  border-color: var(--sg-gray-200);
+  box-shadow: 0 3px 14px rgba(17, 17, 17, .04);
+}
+.marketing-page:not(.cc-page) .mkt-table th {
+  background: var(--sg-black);
+  color: #fff;
+}
+.marketing-page:not(.cc-page) .mkt-table th,
+.marketing-page:not(.cc-page) .mkt-table td { border-color: var(--sg-gray-200); }
+.marketing-page:not(.cc-page) .mkt-table tbody tr:hover { background: var(--sg-red-soft); }
+.marketing-page:not(.cc-page) .mkt-bar { background: linear-gradient(180deg, #f45b65, var(--sg-red)); }
+.marketing-page:not(.cc-page) .mkt-ranking-bar { background: var(--sg-red-soft); }
+.marketing-page:not(.cc-page) .mkt-ranking-bar::after { background: var(--sg-red); }
+.marketing-page:not(.cc-page) .mkt-card { min-width: 0; }
+.marketing-page:not(.cc-page) .dashboard-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.marketing-page:not(.cc-page) .dashboard-table-scroll .mkt-table {
+  width: 100%;
+  table-layout: auto;
+}
+.marketing-page:not(.cc-page) .quality-checks-table .mkt-table { min-width: 600px; }
+.marketing-page:not(.cc-page) .product-relevance-table .mkt-table { min-width: 700px; }
+.marketing-page:not(.cc-page) .corrected-interest-table .mkt-table { min-width: 540px; }
+.marketing-page:not(.cc-page) .dashboard-table-scroll th:not(:first-child),
+.marketing-page:not(.cc-page) .dashboard-table-scroll td:not(:first-child) {
+  white-space: nowrap;
+  text-align: center;
+}
+.marketing-page:not(.cc-page) .dashboard-table-scroll th:first-child,
+.marketing-page:not(.cc-page) .dashboard-table-scroll td:first-child {
+  min-width: 180px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 680px) {
+  .marketing-page:not(.cc-page) { width: calc(100% - 28px); }
+}
+
 .cc-search {
   display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e4e7ee; border-radius: 8px;
   padding: 5px 9px; background: #fff; color: #6b7280;
@@ -1454,4 +1554,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .phone-link { color: var(--accent); font-weight: 700; text-decoration: none; }
 .phone-link:hover { text-decoration: underline; }
 
+/* Largeur commune finale : Centre d'appels et pages métier SG. */
+.cc-page,
+.marketing-page:not(.cc-page) {
+  width: min(1680px, calc(100% - 48px));
+  max-width: none;
+}
+@media (max-width: 680px) {
+  .cc-page,
+  .marketing-page:not(.cc-page) { width: calc(100% - 28px); }
+}
 

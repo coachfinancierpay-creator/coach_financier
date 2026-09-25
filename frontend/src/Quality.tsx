@@ -346,32 +346,34 @@ export default function Quality() {
                 <h2>
                   <Gauge size={15} /> Contrôles du Coach
                 </h2>
-                <table className="mkt-table compact">
-                  <thead>
-                    <tr>
-                      <th>Contrôle</th>
-                      <th>Sévérité</th>
-                      <th>Exécutés</th>
-                      <th>Anomalies</th>
-                      <th>Évolution</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.qualityChecks.map((check) => (
-                      <tr key={check.checkType}>
-                        <td className="mkt-strong">{check.label}</td>
-                        <td>{check.severity}</td>
-                        <td>{check.checksRun}</td>
-                        <td className={check.detected > 0 ? 'mkt-low' : ''}>{check.detected}</td>
-                        <td>
-                          <span className={evolutionClass(check.evolutionPercent, true)}>
-                            {evolutionLabel(check.evolutionPercent)}
-                          </span>
-                        </td>
+                <div className="mkt-table-scroll dashboard-table-scroll quality-checks-table">
+                  <table className="mkt-table compact">
+                    <thead>
+                      <tr>
+                        <th>Contrôle</th>
+                        <th>Sévérité</th>
+                        <th>Exécutés</th>
+                        <th>Anomalies</th>
+                        <th>Évolution</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {data.qualityChecks.map((check) => (
+                        <tr key={check.checkType}>
+                          <td className="mkt-strong">{check.label}</td>
+                          <td>{check.severity}</td>
+                          <td>{check.checksRun}</td>
+                          <td className={check.detected > 0 ? 'mkt-low' : ''}>{check.detected}</td>
+                          <td>
+                            <span className={evolutionClass(check.evolutionPercent, true)}>
+                              {evolutionLabel(check.evolutionPercent)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
                 {data.notImplementedChecks.length > 0 && (
                   <p className="mkt-hint">
                     Contrôles décrits mais NON implémentés dans cette version (donc jamais affichés comme un
