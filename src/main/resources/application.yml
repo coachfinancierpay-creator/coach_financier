@@ -29,6 +29,11 @@ app:
     dir: ${DATA_DIR:./data}
     # Fichier bancaire consolidé dans le répertoire /data (racine du projet).
     banking-file: ${BANKING_FILE:./data/banking_demo_normalized.json}
+  # Synthèse vocale neuronale Azure. La région et l'endpoint sont figés côté serveur.
+  tts:
+    enabled: ${TTS_ENABLED:true}
+    api-key: ${AZURE_SPEECH_KEY:}
+    read-timeout-seconds: ${AZURE_SPEECH_TIMEOUT_SECONDS:30}
   # Conseiller destinataire du dossier de suivi de fin de conversation (SEUL destinataire automatique).
   # Par défaut : le compte mail configuré (utile pour tester la démo en local).
   advisor:
