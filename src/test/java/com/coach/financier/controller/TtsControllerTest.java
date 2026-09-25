@@ -23,7 +23,7 @@ class TtsControllerTest {
     void synthesisReturnsNonCacheableMp3Audio() {
         AzureSpeechService service = mock(AzureSpeechService.class);
         byte[] expectedAudio = {1, 2, 3};
-        when(service.synthesize(eq("Bonjour"), eq(1d))).thenReturn(expectedAudio);
+        when(service.synthesize(eq("Bonjour"), eq(1d), eq(TtsModels.DEFAULT_VOICE))).thenReturn(expectedAudio);
         TtsController controller = new TtsController(service);
 
         ResponseEntity<?> response = controller.synthesize(new TtsModels.SpeechRequest("Bonjour", 1d));
@@ -37,7 +37,7 @@ class TtsControllerTest {
     @Test
     void unavailableAzureReturnsAReadableServiceUnavailableResponse() {
         AzureSpeechService service = mock(AzureSpeechService.class);
-        when(service.synthesize(eq("Bonjour"), eq(1d)))
+        when(service.synthesize(eq("Bonjour"), eq(1d), eq(TtsModels.DEFAULT_VOICE)))
                 .thenThrow(new TextToSpeechUnavailableException("La synthèse vocale neuronale n'est pas activée."));
         TtsController controller = new TtsController(service);
 

@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /** Appel serveur-à-serveur à Azure AI Speech; la clé ne quitte jamais le backend. */
 @Service
@@ -28,6 +29,7 @@ public class AzureSpeechService {
     private static final Logger log = LoggerFactory.getLogger(AzureSpeechService.class);
     private static final String OUTPUT_FORMAT = "audio-24khz-48kbitrate-mono-mp3";
     private static final MediaType SSML_MEDIA_TYPE = MediaType.parseMediaType("application/ssml+xml;charset=UTF-8");
+    private static final Pattern MYTHOS_WORD = Pattern.compile("(?i)(?<![\\p{L}\\p{N}])mythos(?![\\p{L}\\p{N}])");
 
     private final TtsProperties properties;
     private final RestClient client;
@@ -157,7 +159,7 @@ public class AzureSpeechService {
             writer.writeAttribute("name", voice);
             writer.writeStartElement("prosody");
             writer.writeAttribute("rate", String.format(Locale.ROOT, "%+.0f%%", (rate - 1d) * 100d));
-            String spokenText = text == null ? "" : Normalizer.normalize(text, Normalizer.Form.NFC).trim();
+            String spokenText = prepareSpokenText(text);
             writer.writeCharacters(spokenText);
             writer.writeEndElement();
             writer.writeEndElement();
@@ -168,5 +170,30 @@ public class AzureSpeechService {
         } catch (XMLStreamException exception) {
             throw new TextToSpeechUnavailableException("La synthèse vocale n'a pas pu préparer la demande.", exception);
         }
+    }
+
+    static String prepareSpokenText(String text) {
+        if (text == null || text.isBlank()) return "";
+
+        String normalized = Normalizer.normalize(text, Normalizer.Form.NFC);
+        StringBuilder withoutEmoji = new StringBuilder(normalized.length());
+        normalized.codePoints()
+                .filter(codePoint -> !isEmojiCodePoint(codePoint))
+                .forEach(withoutEmoji::appendCodePoint);
+
+        return MYTHOS_WORD.matcher(withoutEmoji.toString())
+                .replaceAll("Mitoss")
+                .replaceAll("[ \\t]{2,}", " ")
+            .replaceAll("\\s+([.,])", "$1")
+                .trim();
+    }
+
+    private static boolean isEmojiCodePoint(int codePoint) {
+        return (codePoint >= 0x1F000 && codePoint <= 0x1FAFF)
+                || (codePoint >= 0x2600 && codePoint <= 0x27BF)
+                || (codePoint >= 0x2300 && codePoint <= 0x23FF)
+                || codePoint == 0x200D
+                || codePoint == 0x20E3
+                || (codePoint >= 0xFE00 && codePoint <= 0xFE0F);
     }
 }
