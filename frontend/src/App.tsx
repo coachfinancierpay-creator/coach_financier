@@ -153,6 +153,24 @@ function findWakeWord(text: string, wake: string): { found: boolean; rest: strin
   return { found: false, rest: text }
 }
 
+function isStopSpeechCommand(text: string, wake: string): boolean {
+  const hit = findWakeWord(text, wake)
+  return hit.found && normalizeForMatch(hit.rest).trim().startsWith('merci')
+}
+
+function appendSpeechText(current: string, incoming: string): string {
+  const existing = current.trim()
+  const next = incoming.trim()
+  if (!next) return existing
+  if (!existing) return next
+  const existingMatch = normalizeForMatch(existing)
+  const nextMatch = normalizeForMatch(next)
+  if (existingMatch === nextMatch || existingMatch.endsWith(nextMatch) || nextMatch.endsWith(existingMatch)) {
+    return existingMatch.length >= nextMatch.length ? existing : next
+  }
+  return `${existing} ${next}`.trim()
+}
+
 function welcomeMessages(): ChatMessage[] {
   const funOpeners = [
     'J’utilise Mythos pour pirater vos données bancaires sur le mainframe afin de répondre au mieux à vos besoins.',
@@ -308,6 +326,7 @@ function App() {
   const speakingIdRef = useRef<string | null>(null)
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null)
   const audioUrlRef = useRef<string | null>(null)
+  const welcomeSpokenRef = useRef(false)
 
   useEffect(() => {
     localStorage.setItem(SESSION_STORAGE_KEY, sessionId)
@@ -388,6 +407,16 @@ function App() {
     localStorage.setItem(SILENCE_STORAGE_KEY, String(silenceSeconds))
   }, [silenceSeconds])
 
+  // Lecture automatique du message d'accueil dès que la lecture vocale est activée.
+  useEffect(() => {
+    if (!audioEnabled || !voiceEnabled || !ttsSupported || welcomeSpokenRef.current) return
+    const welcome = messages.find((message) => message.id === 'welcome' && message.role === 'assistant')
+    if (!welcome) return
+    welcomeSpokenRef.current = true
+    void speakMessage(welcome.id, welcome.content)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioEnabled, voiceEnabled, ttsSupported, messages])
+
   // Miroirs refs pour les callbacks de reconnaissance (pas de closure obsolète).
   useEffect(() => {
     autoEnabledRef.current = autoAudio
@@ -446,7 +475,13 @@ function App() {
     }
     recognition.recognized = (_sender, event) => {
       if (event.result.reason === SpeechSDK.ResultReason.RecognizedSpeech && event.result.text) {
-        finalTextRef.current = `${finalTextRef.current} ${event.result.text}`.trim()
+        if (isStopSpeechCommand(event.result.text, wakeRef.current)) {
+          stopSpeaking()
+          finalTextRef.current = ''
+          setInput('')
+          return
+        }
+        finalTextRef.current = appendSpeechText(finalTextRef.current, event.result.text)
         setInput(finalTextRef.current)
       }
     }
@@ -527,15 +562,49 @@ function App() {
       await audioPlayer.play()
     } catch (error) {
       if (speakingIdRef.current !== id) return
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        audioPlayerRef.current = null
+        if (audioUrlRef.current) {
+          URL.revokeObjectURL(audioUrlRef.current)
+          audioUrlRef.current = null
+        }
+        if (speakWithBrowser(id, text)) return
+      }
       speakingIdRef.current = null
       setSpeakingId(null)
       setError(error instanceof Error ? error.message : 'La synthèse vocale Azure est indisponible.')
     }
   }
 
+  function speakWithBrowser(id: string, text: string): boolean {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false
+    const synthesis = window.speechSynthesis
+    const utterance = new SpeechSynthesisUtterance(stripMarkdown(text))
+    utterance.lang = 'fr-FR'
+    utterance.rate = voiceRate
+    const frenchVoice = synthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith('fr'))
+    if (frenchVoice) utterance.voice = frenchVoice
+    utterance.onend = () => {
+      if (speakingIdRef.current !== id) return
+      speakingIdRef.current = null
+      setSpeakingId(null)
+    }
+    utterance.onerror = () => {
+      if (speakingIdRef.current !== id) return
+      speakingIdRef.current = null
+      setSpeakingId(null)
+    }
+    synthesis.cancel()
+    synthesis.speak(utterance)
+    return true
+  }
+
   function stopSpeaking() {
     audioPlayerRef.current?.pause()
     audioPlayerRef.current = null
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
     if (audioUrlRef.current) {
       URL.revokeObjectURL(audioUrlRef.current)
       audioUrlRef.current = null
@@ -662,8 +731,20 @@ function App() {
       recognition.recognized = (_sender, event) => {
         if (!autoActiveRef.current || event.result.reason !== SpeechSDK.ResultReason.RecognizedSpeech) return
         const transcript = event.result.text || ''
+        if (isStopSpeechCommand(transcript, wakeRef.current)) {
+          stopSpeaking()
+          clearAutoTimer()
+          clearAutoCountdown()
+          autoPhaseRef.current = 'standby'
+          autoBufferRef.current = ''
+          setInput('')
+          setAutoState('standby')
+          return
+        }
         if (autoPhaseRef.current === 'listening') {
-          autoBufferRef.current = `${autoBufferRef.current} ${transcript}`.trim()
+          const hit = findWakeWord(transcript, wakeRef.current)
+          const spokenText = hit.found ? hit.rest : transcript
+          autoBufferRef.current = appendSpeechText(autoBufferRef.current, spokenText)
         } else {
           const hit = findWakeWord(transcript, wakeRef.current)
           if (hit.found) {
@@ -815,6 +896,9 @@ function App() {
         agent: response.agent,
       }
       setMessages((current) => [...current, assistantMessage])
+      if (audioEnabled && voiceEnabled && ttsSupported) {
+        void speakMessage(assistantMessage.id, assistantMessage.content)
+      }
     } catch (err) {
       const text = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.'
       setError(text)
