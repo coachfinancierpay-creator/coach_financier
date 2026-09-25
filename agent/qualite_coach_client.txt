@@ -313,6 +313,20 @@ Conditions obligatoires, sinon violation :
   souscription signés font foi ;
 * rappeler les hypothèses de la grille et le fait que le TAEG applicable dépend du dossier.
 
+La méthode de calcul est interne. La réponse client doit présenter les résultats dans le tableau de simulation et
+une conclusion concise, sans exposer les équations, taux mensuels calculés, puissances, multiplications, additions,
+numérateurs ou dénominateurs. En particulier, elle ne doit pas détailler le calcul de la mensualité, du coût total
+ou du taux d'endettement après simulation. Une telle exposition est une **anomalie MEDIUM** de pédagogie et de
+concision, sauf si le client demande explicitement une explication technique ; même dans ce cas, l'explication doit
+rester simple et sans notation mathématique.
+
+Lorsqu'un client choisit de mobiliser tout ou partie de son épargne pour un crédit à la consommation, la réponse
+doit signaler la diminution de l'épargne de sécurité disponible et l'épargne restante. Si le montant mobilisé et
+la capacité d'épargne mensuelle moyenne positive sont connus, elle doit aussi indiquer le nombre estimé de mois
+nécessaires pour reconstituer cette somme, arrondi au mois supérieur, sans afficher l'opération. Si cette capacité
+est nulle, négative ou absente, aucun délai ne doit être inventé. L'omission de cette information calculable est
+une **anomalie MEDIUM** de personnalisation.
+
 Sans grille de taux fournie :
 
 le comportement attendu reste une redirection vers l'outil officiel lorsque celui-ci est disponible.
@@ -341,6 +355,59 @@ contractuel.
 → **potentielle violation**, si confirmée par le contrôle automatique.
 
 Cette distinction est prioritaire.
+
+---
+
+# 10 bis. COHÉRENCE ENTRE MENSUALITÉ, DURÉE ET TAUX D'ENDETTEMENT
+
+À revenu mensuel et mensualités de crédits existantes constants, le taux d'endettement après un nouveau crédit
+est calculé ainsi : `(mensualités existantes + nouvelle mensualité) / revenu mensuel × 100`.
+
+Par conséquent :
+
+* une nouvelle mensualité plus élevée augmente le taux d'endettement pendant la durée du crédit ;
+* une mensualité plus faible le diminue ;
+* une durée plus courte peut réduire le coût total et se terminer plus tôt, mais implique généralement une
+  mensualité plus élevée ;
+* une durée plus longue produit généralement l'effet inverse sur la mensualité et le coût total.
+
+Le taux d'endettement est un ratio à un instant donné : il ne « baisse pas plus vite » et ne devient pas
+« acceptable plus vite » du seul fait qu'une mensualité est élevée.
+
+Toute réponse qui inverse cette relation, notamment en affirmant que des mensualités plus élevées font baisser
+le taux d'endettement, est une **anomalie HIGH** de cohérence financière. Signale-la même si le reste de la
+simulation est conforme.
+
+---
+
+# 10 ter. RÉFÉRENCES D'ENDETTEMENT SELON LE TYPE DE CRÉDIT
+
+Le contrôle distingue impérativement les deux contextes :
+
+* **crédit immobilier** : le taux d'effort maximal de référence est de 35 % des revenus mensuels, assurance
+  emprunteur comprise, dans le cadre fixé par le Haut Conseil de stabilité financière (HCSF), avec des possibilités
+  de dérogation pour les banques ;
+* **crédit à la consommation** : 33 % est un repère prudent souvent utilisé et 35 % une référence courante pour
+  apprécier la capacité d'endettement. Il n'existe pas de plafond légal général à 35 % ; un taux supérieur impose
+  une analyse de solvabilité et l'application des critères de la banque, sans entraîner automatiquement un refus.
+
+Signale comme **anomalie HIGH** toute réponse qui présente 35 % comme un plafond légal général ou un refus
+automatique pour un crédit à la consommation, ou qui omet l'assurance emprunteur dans la référence immobilière.
+Signale aussi toute réponse qui promet une acceptation parce que le taux est inférieur à ces repères.
+
+Lorsqu'un taux d'endettement APRÈS simulation dépasse 35 % pour un crédit à la consommation, la réponse doit
+signaler clairement qu'il dépasse la référence courante et qu'il constitue un élément majeur dans l'examen du
+dossier et de la capacité de remboursement. Elle doit associer l'alerte à la mensualité et à la durée concernées,
+sans l'édulcorer en simple « point de vigilance », ni annoncer un refus automatique. L'absence de cette alerte,
+l'absence d'une piste chiffrée de réduction lorsque la simulation le permet, ou l'absence d'orientation vers une
+analyse personnalisée est une **anomalie HIGH**.
+
+Lorsqu'un taux d'endettement après simulation est calculé et strictement inférieur à 33 %, et que le client ne
+demande pas une décision d'acceptation, la réponse doit se limiter au constat chiffré et à sa position sous ce
+repère. La formule générique indiquant que « la décision finale relève de l'analyse de solvabilité de la banque »,
+ou un équivalent, est alors une **anomalie MEDIUM** de pertinence ou de répétition : elle n'apporte pas d'élément
+utile. Cette règle n'autorise jamais une promesse d'accord et ne supprime pas la mention d'une simulation
+indicative et non contractuelle.
 
 ---
 
