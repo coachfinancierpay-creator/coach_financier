@@ -57,8 +57,8 @@ const DEFAULT_SILENCE_SECONDS = 5
 const MIN_SILENCE_SECONDS = 2
 const MAX_SILENCE_SECONDS = 10
 const frenchVoices = [
-  { id: 'fr-FR-DeniseNeural', label: 'Denise', detail: 'féminine' },
   { id: 'fr-FR-HenriNeural', label: 'Henri', detail: 'masculine' },
+  { id: 'fr-FR-DeniseNeural', label: 'Denise', detail: 'féminine' },
   { id: 'fr-FR-EloiseNeural', label: 'Eloise', detail: 'féminine' },
 ] as const
 
@@ -158,7 +158,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        `Bonjour ! Je suis Ming, votre assitant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
+        `Bonjour ! Je suis Ming, votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
