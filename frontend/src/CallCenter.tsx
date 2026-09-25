@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   ArrowLeft,
   BadgeCheck,
+  Check,
   ChevronDown,
   ChevronRight,
   History,
@@ -116,7 +117,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
   const byPriority = list?.byPriority ?? {}
 
   return (
-    <div className="logs-shell marketing-page">
+    <div className="logs-shell marketing-page cc-page">
       <header className="logs-header">
         <a className="logs-back" href="#/">
           <ArrowLeft size={16} /> Retour au chat
@@ -245,13 +246,24 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     )}
                   </th>
                 ))}
-                <th>Offres</th>
-                <th />
+                <th className="cc-offers">Offres</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.sessionId}>
+                <tr
+                  key={row.sessionId}
+                  className="cc-clickable-row"
+                  onClick={() => setOpenSession(row.sessionId)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      setOpenSession(row.sessionId)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
                   <td>
                     <span className="cc-chip">{row.categoryLabel}</span>
                   </td>
@@ -279,16 +291,23 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                       </span>
                     )}
                   </td>
-                  <td>{getAdvisorIntent(row.sessionId).prisRDV ? 'Oui' : 'Non'}</td>
-                  <td>{getAdvisorIntent(row.sessionId).etreRappele ? 'Oui' : 'Non'}</td>
-                  <td>{formatDateTime(row.closedAt)}</td>
                   <td>
-                    {row.productCount > 0 ? row.topProduct ?? `${row.productCount} offre(s)` : '—'}
+                    {getAdvisorIntent(row.sessionId).prisRDV && (
+                      <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
+                    )}
                   </td>
-                  <td className="cc-actions">
-                    <button type="button" className="mkt-action" onClick={() => setOpenSession(row.sessionId)}>
-                      Voir le détail
-                    </button>
+                  <td>
+                    {getAdvisorIntent(row.sessionId).etreRappele && (
+                      <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
+                    )}
+                  </td>
+                  <td>{formatDateTime(row.closedAt)}</td>
+                  <td className="cc-offers">
+                    {row.productCount > 0
+                      ? row.topProduct
+                        ? `${row.topProduct}${row.productCount > 1 ? ', ....' : ''}`
+                        : `${row.productCount} offre(s)`
+                      : '—'}
                   </td>
                 </tr>
               ))}

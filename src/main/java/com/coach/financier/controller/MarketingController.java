@@ -243,7 +243,7 @@ public class MarketingController {
 
     /** Génère un jeu de données de DÉMONSTRATION clairement identifié ({@code demo=true}, §49). */
     @PostMapping("/demo-data")
-    public Map<String, Object> demoData(@RequestParam(defaultValue = "7") int days,
+    public Map<String, Object> demoData(@RequestParam(defaultValue = "30") int days,
                                         @RequestParam(defaultValue = "12") int sessionsPerDay) {
         return demoDataService.generate(Math.min(Math.max(days, 1), 60), Math.min(Math.max(sessionsPerDay, 1), 200));
     }
@@ -266,8 +266,8 @@ public class MarketingController {
             case "today" -> new LocalDate[]{today, today};
             case "yesterday" -> new LocalDate[]{today.minusDays(1), today.minusDays(1)};
             case "30d" -> new LocalDate[]{today.minusDays(29), today};
-            case "custom" -> new LocalDate[]{parse(from, today.minusDays(6)), parse(to, today)};
-            default -> new LocalDate[]{today.minusDays(6), today};
+            case "custom" -> new LocalDate[]{parse(from, today.minusDays(29)), parse(to, today)};
+            default -> new LocalDate[]{today.minusDays(29), today};
         };
     }
 

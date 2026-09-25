@@ -86,7 +86,7 @@ function statusClass(status: string | undefined): string {
  * récurrentes, la pertinence produit, la qualité des emails et l'analyse IA de la période.
  */
 export default function AdvisorFeedback() {
-  const [period, setPeriod] = useState<AdvisorPeriod>('7d')
+  const [period, setPeriod] = useState<AdvisorPeriod>('30d')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [filters, setFilters] = useState<AdvisorFilters>({})

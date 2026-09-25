@@ -70,7 +70,7 @@ function statusClass(status: string | undefined): string {
  * calculable : un contrôle non implémenté est Listé à part, jamais compté comme un « 0 ».
  */
 export default function Quality() {
-  const [period, setPeriod] = useState<QualityPeriod>('7d')
+  const [period, setPeriod] = useState<QualityPeriod>('30d')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [ratingFilter, setRatingFilter] = useState<number | ''>('')

@@ -106,7 +106,7 @@ public class AdvisorFeedbackController {
 
     /** Dossiers proposés à l'évaluation (sessions récentes + produits détectés). */
     @GetMapping("/candidates")
-    public Map<String, Object> candidates(@RequestParam(defaultValue = "7") int days,
+    public Map<String, Object> candidates(@RequestParam(defaultValue = "30") int days,
                                          @RequestParam(defaultValue = "false") boolean includeEvaluated) {
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("candidates", candidatesService.candidates(days, includeEvaluated));
@@ -261,7 +261,7 @@ public class AdvisorFeedbackController {
         return value == null ? "" : String.valueOf(value);
     }
 
-    /** Résolution de période : {@code today|yesterday|7d|30d|custom} (défaut 7 jours). */
+    /** Résolution de période : {@code today|yesterday|7d|30d|custom} (défaut 30 jours). */
     private static LocalDate[] resolve(String period, String from, String to) {
         LocalDate today = LocalDate.now();
         String value = period == null ? "" : period.trim().toLowerCase();
@@ -275,7 +275,7 @@ public class AdvisorFeedbackController {
             case "7d" -> new LocalDate[]{today.minusDays(6), today};
             default -> from != null && !from.isBlank() && to != null && !to.isBlank()
                     ? new LocalDate[]{LocalDate.parse(from), LocalDate.parse(to)}
-                    : new LocalDate[]{today.minusDays(6), today};
+                    : new LocalDate[]{today.minusDays(29), today};
         };
     }
 }
