@@ -230,7 +230,7 @@ public class QualityController {
                 .body(payload);
     }
 
-    /** Résolution de période : {@code today|yesterday|7d|30d|custom} (défaut 7 jours). */
+    /** Résolution de période : {@code today|yesterday|7d|30d|custom} (défaut 30 jours). */
     private static LocalDate[] resolve(String period, String from, String to) {
         LocalDate today = LocalDate.now();
         String value = period == null ? "" : period.trim().toLowerCase();
@@ -244,7 +244,7 @@ public class QualityController {
             case "7d" -> new LocalDate[]{today.minusDays(6), today};
             default -> from != null && !from.isBlank() && to != null && !to.isBlank()
                     ? new LocalDate[]{LocalDate.parse(from), LocalDate.parse(to)}
-                    : new LocalDate[]{today.minusDays(6), today};
+                    : new LocalDate[]{today.minusDays(29), today};
         };
     }
 

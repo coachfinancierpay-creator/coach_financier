@@ -99,8 +99,8 @@ function readableLabel(map: Record<string, string>, code?: string | null): strin
 }
 
 export default function Marketing() {
-  const [period, setPeriod] = useState<MarketingPeriod>('7d')
-  const [from, setFrom] = useState(isoDaysAgo(6))
+  const [period, setPeriod] = useState<MarketingPeriod>('30d')
+  const [from, setFrom] = useState(isoDaysAgo(29))
   const [to, setTo] = useState(isoDaysAgo(0))
   /** Journée du rapport IA : choisie explicitement (elle ne dépend PAS de la période affichée). */
   const [reportDate, setReportDate] = useState(isoToday())

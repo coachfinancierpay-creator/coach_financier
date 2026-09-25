@@ -49,17 +49,20 @@ public class ConversationDirectoryService {
     private final AdvisorFeedbackStore feedbackStore;
     private final AdvisorDossierService advisorDossierService;
     private final CallCenterStatusStore statusStore;
+    private final CustomerDirectoryService customerDirectory;
     private final String contactPhone;
 
     public ConversationDirectoryService(AdvisorDossierStore dossierStore,
                                         AdvisorFeedbackStore feedbackStore,
                                         AdvisorDossierService advisorDossierService,
                                         CallCenterStatusStore statusStore,
+                                        CustomerDirectoryService customerDirectory,
                                         @Value("${app.suivi.customer-phone:}") String contactPhone) {
         this.dossierStore = dossierStore;
         this.feedbackStore = feedbackStore;
         this.advisorDossierService = advisorDossierService;
         this.statusStore = statusStore;
+        this.customerDirectory = customerDirectory;
         this.contactPhone = contactPhone == null ? "" : contactPhone.trim();
     }
 
@@ -73,7 +76,7 @@ public class ConversationDirectoryService {
      * @param order    {@code asc} ou {@code desc} (par défaut : {@code desc} sur la date, {@code asc} ailleurs)
      */
     public DirectoryModels.DirectoryList list(int days, String category, String query, String sort, String order) {
-        return list(days, category, query, sort, order, null);
+        return list(days, category, query, sort, order, null, null);
     }
 
     /**
@@ -84,6 +87,12 @@ public class ConversationDirectoryService {
      */
     public DirectoryModels.DirectoryList list(int days, String category, String query, String sort, String order,
                                               String status) {
+        return list(days, category, query, sort, order, status, null);
+    }
+
+    /** Variante avec filtre d'agence de gestion (code interne à cinq chiffres). */
+    public DirectoryModels.DirectoryList list(int days, String category, String query, String sort, String order,
+                                              String status, String agency) {
         List<AdvisorFeedbackModels.AdvisorDossier> dossiers = periodDossiers(days);
         Set<String> evaluatedSessions = evaluatedSessions(days);
         LocalDate from = days > 0 ? LocalDate.now().minusDays(days - 1L) : null;
@@ -93,15 +102,22 @@ public class ConversationDirectoryService {
         ConversationCategory filter = ConversationCategory.parse(category);
         DossierStatus wanted = DossierStatus.parse(status);
         String statusFilter = wanted == null ? null : wanted.code();
+        String agencyFilter = agency == null ? "" : agency.trim();
         String needle = normalize(query);
 
         List<DirectoryModels.DirectoryRow> rows = new ArrayList<>();
         Map<String, Integer> categoryCounts = new LinkedHashMap<>();
+        Map<String, Integer> agencyCounts = new LinkedHashMap<>();
+        Map<String, String> agencyNames = new LinkedHashMap<>();
         Map<String, Integer> byPriority = new LinkedHashMap<>();
         Map<String, Integer> byStatus = new LinkedHashMap<>();
         for (AdvisorFeedbackModels.AdvisorDossier dossier : dossiers) {
             DirectoryModels.DirectoryRow row = toRow(dossier, evaluatedSessions, statuses, noteCounts);
             categoryCounts.merge(row.category(), 1, Integer::sum);
+            if (row.agencyCode() != null) {
+                agencyCounts.merge(row.agencyCode(), 1, Integer::sum);
+                agencyNames.putIfAbsent(row.agencyCode(), row.agencyName());
+            }
             String priority = row.priority() == null ? "UNKNOWN" : row.priority();
             byPriority.merge(priority, 1, Integer::sum);
             byStatus.merge(row.status(), 1, Integer::sum);
@@ -109,6 +125,9 @@ public class ConversationDirectoryService {
                 continue;
             }
             if (statusFilter != null && !statusFilter.equals(row.status())) {
+                continue;
+            }
+            if (!agencyFilter.isEmpty() && !agencyFilter.equals(row.agencyCode())) {
                 continue;
             }
             if (!needle.isEmpty() && !matches(row, needle)) {
@@ -126,6 +145,12 @@ public class ConversationDirectoryService {
                 categories.add(new DirectoryModels.DirectoryCategory(value.code(), value.label(), count));
             }
         }
+        List<DirectoryModels.DirectoryAgency> agencies = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : agencyCounts.entrySet()) {
+            agencies.add(new DirectoryModels.DirectoryAgency(entry.getKey(), agencyNames.get(entry.getKey()),
+                    entry.getValue()));
+        }
+        agencies.sort(Comparator.comparing(DirectoryModels.DirectoryAgency::name));
         List<DirectoryModels.DirectoryCategory> statusesView = new ArrayList<>();
         for (DossierStatus value : DossierStatus.progression()) {
             Integer count = byStatus.get(value.code());
@@ -133,7 +158,7 @@ public class ConversationDirectoryService {
                 statusesView.add(new DirectoryModels.DirectoryCategory(value.code(), value.label(), count));
             }
         }
-        return new DirectoryModels.DirectoryList(List.copyOf(rows), List.copyOf(categories),
+        return new DirectoryModels.DirectoryList(List.copyOf(rows), List.copyOf(categories), List.copyOf(agencies),
                 List.copyOf(statusesView), byPriority, Math.max(0, days), sortKey(sort), orderKey(sort, order),
                 rows.size());
     }
@@ -244,11 +269,13 @@ public class ConversationDirectoryService {
         return sessions;
     }
 
-    private static DirectoryModels.DirectoryRow toRow(AdvisorFeedbackModels.AdvisorDossier dossier,
-                                                     Set<String> evaluatedSessions,
-                                                     Map<String, DirectoryModels.DossierStatusEvent> statuses,
-                                                     Map<String, Integer> noteCounts) {
+    private DirectoryModels.DirectoryRow toRow(AdvisorFeedbackModels.AdvisorDossier dossier,
+                                               Set<String> evaluatedSessions,
+                                               Map<String, DirectoryModels.DossierStatusEvent> statuses,
+                                               Map<String, Integer> noteCounts) {
         AdvisorFeedbackModels.DossierClient client = dossier.client();
+        CustomerDirectoryService.CustomerProfile customer = customerDirectory.profile(
+                client == null ? null : client.customerId());
         AdvisorFeedbackModels.DossierScore score = dossier.score();
         ConversationCategory category = ConversationCategory.parse(client == null ? null : client.category());
         String title = firstNonBlank(client == null ? null : client.title(), dossier.mainProject(),
@@ -260,7 +287,9 @@ public class ConversationDirectoryService {
                 dossier.sessionId());
         return new DirectoryModels.DirectoryRow(
                 dossier.sessionId(),
-                client == null ? null : client.customerId(),
+            customer.customerId(),
+            customer.agency() == null ? null : customer.agency().code(),
+            customer.agency() == null ? null : customer.agency().name(),
                 title,
                 dossier.mainProject(),
                 category == null ? ConversationCategory.AUTRE.code() : category.code(),
@@ -282,7 +311,7 @@ public class ConversationDirectoryService {
 
     private static boolean matches(DirectoryModels.DirectoryRow row, String needle) {
         return normalize(join(row.customerId(), row.title(), row.mainProject(), row.categoryLabel(),
-                row.topProduct(), row.sessionId())).contains(needle);
+                row.agencyCode(), row.agencyName(), row.topProduct(), row.sessionId())).contains(needle);
     }
 
     private Comparator<DirectoryModels.DirectoryRow> comparator(String sort, String order) {

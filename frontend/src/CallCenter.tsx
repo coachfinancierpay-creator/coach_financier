@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import {
   ArrowLeft,
   BadgeCheck,
+  Check,
   ChevronDown,
   ChevronRight,
   History,
@@ -33,9 +34,10 @@ const PERIODS: { days: number; label: string }[] = [
   { days: 0, label: 'Tout' },
 ]
 
-const COLUMNS: { key: DirectorySort | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
+const COLUMNS: { key: DirectorySort | 'agence' | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
   { key: 'categorie', label: 'Catégorie', sortable: true },
   { key: 'client', label: 'Client', sortable: true },
+  { key: 'agence', label: 'Agence', sortable: false },
   { key: 'titre', label: 'Conversation', sortable: true },
   { key: 'score', label: 'Score commercial', sortable: true },
   { key: 'statut', label: 'Statut', sortable: false },
@@ -56,6 +58,7 @@ const COLUMNS: { key: DirectorySort | 'statut' | 'rdv' | 'rappel'; label: string
 export default function CallCenter({ initialSessionId }: { initialSessionId?: string }) {
   const [days, setDays] = useState(10)
   const [category, setCategory] = useState('')
+  const [agency, setAgency] = useState('')
   const [status, setStatus] = useState('')
   const [query, setQuery] = useState('')
   const [sort, setSort] = useState<DirectorySort>('date')
@@ -78,6 +81,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
       const data = await fetchConversationDirectory({
         days,
         category: category || undefined,
+        agency: agency || undefined,
         status: status || undefined,
         q: query.trim() || undefined,
         sort,
@@ -90,7 +94,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
     } finally {
       setLoading(false)
     }
-  }, [days, category, status, query, sort, order])
+  }, [days, category, agency, status, query, sort, order])
 
   useEffect(() => {
     void load()
@@ -108,11 +112,12 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
 
   const rows = list?.rows ?? []
   const categories = list?.categories ?? []
+  const agencies = list?.agencies ?? []
   const statuses = list?.statuses ?? []
   const byPriority = list?.byPriority ?? {}
 
   return (
-    <div className="logs-shell marketing-page">
+    <div className="logs-shell marketing-page cc-page">
       <header className="logs-header">
         <a className="logs-back" href="#/">
           <ArrowLeft size={16} /> Retour au chat
@@ -154,6 +159,19 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           {categories.map((item) => (
             <option key={item.code} value={item.code}>
               {item.label} ({item.count})
+            </option>
+          ))}
+        </select>
+        <select
+          aria-label="Filtrer par agence"
+          title="Agence"
+          value={agency}
+          onChange={(event) => setAgency(event.target.value)}
+        >
+          <option value="">Toutes les agences</option>
+          {agencies.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.name} ({item.code}) ({item.count})
             </option>
           ))}
         </select>
@@ -228,17 +246,31 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     )}
                   </th>
                 ))}
-                <th>Offres</th>
-                <th />
+                <th className="cc-offers">Offres</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.sessionId}>
+                <tr
+                  key={row.sessionId}
+                  className="cc-clickable-row"
+                  onClick={() => setOpenSession(row.sessionId)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      setOpenSession(row.sessionId)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
                   <td>
                     <span className="cc-chip">{row.categoryLabel}</span>
                   </td>
                   <td>{row.customerId ?? '—'}</td>
+                  <td>
+                    {row.agencyCode ? <span title={row.agencyName ?? undefined}>{row.agencyCode}</span> : '—'}
+                  </td>
                   <td className="cc-title">{row.title}</td>
                   <td>
                     <span className={`cc-score ${scoreClass(row.priority)}`}>
@@ -259,16 +291,23 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                       </span>
                     )}
                   </td>
-                  <td>{getAdvisorIntent(row.sessionId).prisRDV ? 'Oui' : 'Non'}</td>
-                  <td>{getAdvisorIntent(row.sessionId).etreRappele ? 'Oui' : 'Non'}</td>
-                  <td>{formatDateTime(row.closedAt)}</td>
                   <td>
-                    {row.productCount > 0 ? row.topProduct ?? `${row.productCount} offre(s)` : '—'}
+                    {getAdvisorIntent(row.sessionId).prisRDV ? (
+                      <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
+                    ) : '-'}
                   </td>
-                  <td className="cc-actions">
-                    <button type="button" className="mkt-action" onClick={() => setOpenSession(row.sessionId)}>
-                      Voir le détail
-                    </button>
+                  <td>
+                    {getAdvisorIntent(row.sessionId).etreRappele ? (
+                      <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
+                    ) : '-'}
+                  </td>
+                  <td>{formatDateTime(row.closedAt)}</td>
+                  <td className="cc-offers">
+                    {row.productCount > 0
+                      ? row.topProduct
+                        ? `${row.topProduct}${row.productCount > 1 ? ', ....' : ''}`
+                        : `${row.productCount} offre(s)`
+                      : '—'}
                   </td>
                 </tr>
               ))}

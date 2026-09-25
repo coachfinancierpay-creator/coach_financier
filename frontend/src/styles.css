@@ -1176,6 +1176,262 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 
 /* ---- Page Centre d'appels (#/centre-appels) : annuaire des conversations + score commercial ---- */
+.cc-page {
+  width: min(1680px, calc(100% - 48px));
+  max-width: none;
+  --cc-sg-red: #e9041e;
+  --cc-sg-red-dark: #c8051a;
+  --cc-sg-red-soft: #fff3f4;
+}
+.cc-page .logs-header {
+  position: relative;
+  padding-left: 18px;
+  border-bottom-color: var(--sg-gray-200);
+}
+.cc-page .logs-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 18px;
+  width: 4px;
+  background: var(--cc-sg-red);
+}
+.cc-page .logs-header h1 { color: var(--sg-black); }
+.cc-page .logs-back,
+.cc-page .cc-toggle { color: var(--cc-sg-red); }
+.cc-page .logs-back:hover,
+.cc-page .cc-toggle:hover { color: var(--cc-sg-red-dark); }
+.cc-page .mkt-subtitle { max-width: 1040px; }
+.cc-page .logs-status.ok {
+  border: 1px solid #cce4d4;
+  background: #f2faf4;
+}
+.cc-page .cc-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.cc-page .cc-kpis > .mkt-kpi,
+.cc-page .cc-kpi {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 14px 16px;
+  border: 1px solid var(--sg-gray-200);
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(17, 17, 17, .04);
+}
+.cc-page .cc-kpis strong {
+  font-size: 28px;
+  line-height: 1;
+  color: var(--sg-black);
+}
+.cc-page .mkt-toolbar,
+.cc-page .mkt-periods,
+.cc-page .mkt-period,
+.cc-page .mkt-toolbar select,
+.cc-page .cc-search,
+.cc-page .cc-kpi,
+.cc-page .cc-chip,
+.cc-page .cc-score,
+.cc-page .cc-status,
+.cc-page .cc-note-count {
+  border-radius: 2px;
+}
+.cc-page .mkt-toolbar {
+  background: #fff;
+  border-color: var(--sg-gray-200);
+  border-radius: 7px;
+  box-shadow: 0 3px 12px rgba(17, 17, 17, .05);
+}
+.cc-page .mkt-periods { background: #f7f7f7; border-radius: 7px; }
+.cc-page .mkt-period { border-radius: 5px; }
+.cc-page .mkt-period.active { background: var(--cc-sg-red); }
+.cc-page .mkt-toolbar select,
+.cc-page .cc-search {
+  border-color: var(--sg-gray-200);
+  border-radius: 7px;
+  color: var(--sg-gray-900);
+}
+.cc-page .mkt-table-scroll {
+  border: 1px solid var(--sg-gray-200);
+  border-top: 3px solid var(--cc-sg-red);
+  background: #fff;
+  max-height: none;
+  overflow: visible;
+}
+.cc-page .mkt-table th {
+  background: var(--sg-gray-100);
+  color: var(--sg-black);
+  border-color: var(--sg-gray-200);
+  text-align: center;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+.cc-page .mkt-table th,
+.cc-page .mkt-table td { border-color: var(--sg-gray-200); }
+.cc-page .mkt-table th:nth-child(5),
+.cc-page .mkt-table td:nth-child(5),
+.cc-page .mkt-table th:nth-child(6),
+.cc-page .mkt-table td:nth-child(6),
+.cc-page .mkt-table th:nth-child(7),
+.cc-page .mkt-table td:nth-child(7),
+.cc-page .mkt-table th:nth-child(8),
+.cc-page .mkt-table td:nth-child(8),
+.cc-page .mkt-table th:nth-child(9),
+.cc-page .mkt-table td:nth-child(9) { text-align: center; }
+.cc-page .mkt-table th.cc-offers,
+.cc-page .mkt-table td.cc-offers { text-align: center; }
+.cc-page .mkt-table tbody tr:hover { background: var(--sg-red-soft); }
+.cc-page .cc-sort { color: var(--sg-black); }
+.cc-page .cc-sort:hover { color: var(--cc-sg-red); text-decoration: underline; }
+.cc-page .cc-intent-icon { display: inline-block; vertical-align: middle; }
+.cc-page .cc-intent-icon.positive {
+  width: 15px;
+  height: 15px;
+  padding: 3px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--cc-sg-red);
+  stroke-width: 3;
+}
+.cc-page .cc-title { max-width: 440px; }
+.cc-page .cc-status-box,
+.cc-page .cc-score-box {
+  background: var(--sg-gray-100);
+  border-radius: 7px;
+}
+.cc-page .cc-kpi,
+.cc-page .cc-chip,
+.cc-page .cc-score,
+.cc-page .cc-status,
+.cc-page .cc-note-count { border-radius: 5px; }
+.cc-page .cc-actions .mkt-action {
+  background: var(--cc-sg-red);
+  border-color: var(--cc-sg-red);
+  box-shadow: none;
+}
+.cc-page .cc-actions .mkt-action:hover:not(:disabled) {
+  background: var(--cc-sg-red-dark);
+  border-color: var(--cc-sg-red-dark);
+}
+.cc-page .cc-popup {
+  border: 1px solid var(--sg-black);
+  border-radius: 7px;
+  box-shadow: 0 24px 60px rgba(17, 17, 17, .28);
+}
+.cc-page .cc-popup-head,
+.cc-page .cc-popup-foot { border-color: var(--sg-gray-200); }
+.cc-page .cc-popup-foot {
+  background: var(--sg-gray-100);
+  border-radius: 0 0 7px 7px;
+}
+
+/* ---- Pages métier SG : Marketing, Qualité et Feedback Conseillers ---- */
+.marketing-page:not(.cc-page) {
+  width: min(1680px, calc(100% - 48px));
+  max-width: none;
+}
+.marketing-page:not(.cc-page) .logs-header {
+  position: relative;
+  padding-left: 18px;
+  border-bottom-color: var(--sg-gray-200);
+}
+.marketing-page:not(.cc-page) .logs-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  bottom: 18px;
+  width: 4px;
+  background: var(--sg-red);
+}
+.marketing-page:not(.cc-page) .logs-back,
+.marketing-page:not(.cc-page) .mkt-action:hover:not(:disabled),
+.marketing-page:not(.cc-page) .mkt-period.active {
+  color: var(--sg-red);
+}
+.marketing-page:not(.cc-page) .mkt-toolbar,
+.marketing-page:not(.cc-page) .mkt-periods,
+.marketing-page:not(.cc-page) .mkt-period,
+.marketing-page:not(.cc-page) .mkt-action,
+.marketing-page:not(.cc-page) .mkt-card,
+.marketing-page:not(.cc-page) .mkt-chart,
+.marketing-page:not(.cc-page) .mkt-kpi,
+.marketing-page:not(.cc-page) .mkt-alert,
+.marketing-page:not(.cc-page) .mkt-notice,
+.marketing-page:not(.cc-page) .mkt-demo-banner {
+  border-radius: 2px;
+}
+.marketing-page:not(.cc-page) .mkt-toolbar {
+  border-color: var(--sg-gray-200);
+  box-shadow: 0 3px 12px rgba(17, 17, 17, .05);
+}
+.marketing-page:not(.cc-page) .mkt-periods { background: var(--sg-gray-100); }
+.marketing-page:not(.cc-page) .mkt-period.active {
+  background: var(--sg-red);
+  color: #fff;
+}
+.marketing-page:not(.cc-page) .mkt-action {
+  border-color: #bdbdbd;
+  color: var(--sg-black);
+}
+.marketing-page:not(.cc-page) .mkt-action:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--sg-red);
+}
+.marketing-page:not(.cc-page) .mkt-card,
+.marketing-page:not(.cc-page) .mkt-chart,
+.marketing-page:not(.cc-page) .mkt-kpi {
+  border-color: var(--sg-gray-200);
+  box-shadow: 0 3px 14px rgba(17, 17, 17, .04);
+}
+.marketing-page:not(.cc-page) .mkt-table th {
+  background: var(--sg-black);
+  color: #fff;
+}
+.marketing-page:not(.cc-page) .mkt-table th,
+.marketing-page:not(.cc-page) .mkt-table td { border-color: var(--sg-gray-200); }
+.marketing-page:not(.cc-page) .mkt-table tbody tr:hover { background: var(--sg-red-soft); }
+.marketing-page:not(.cc-page) .mkt-bar { background: linear-gradient(180deg, #f45b65, var(--sg-red)); }
+.marketing-page:not(.cc-page) .mkt-ranking-bar { background: var(--sg-red-soft); }
+.marketing-page:not(.cc-page) .mkt-ranking-bar::after { background: var(--sg-red); }
+.marketing-page:not(.cc-page) .mkt-card { min-width: 0; }
+.marketing-page:not(.cc-page) .dashboard-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.marketing-page:not(.cc-page) .dashboard-table-scroll .mkt-table {
+  width: 100%;
+  table-layout: auto;
+}
+.marketing-page:not(.cc-page) .quality-checks-table .mkt-table { min-width: 600px; }
+.marketing-page:not(.cc-page) .product-relevance-table .mkt-table { min-width: 700px; }
+.marketing-page:not(.cc-page) .corrected-interest-table .mkt-table { min-width: 540px; }
+.marketing-page:not(.cc-page) .dashboard-table-scroll th:not(:first-child),
+.marketing-page:not(.cc-page) .dashboard-table-scroll td:not(:first-child) {
+  white-space: nowrap;
+  text-align: center;
+}
+.marketing-page:not(.cc-page) .dashboard-table-scroll th:first-child,
+.marketing-page:not(.cc-page) .dashboard-table-scroll td:first-child {
+  min-width: 180px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 680px) {
+  .marketing-page:not(.cc-page) { width: calc(100% - 28px); }
+}
+
 .cc-search {
   display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e4e7ee; border-radius: 8px;
   padding: 5px 9px; background: #fff; color: #6b7280;
@@ -1244,6 +1500,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   border-radius: 999px; background: #eef2ff; color: #3730a3; font-size: 10.5px; font-weight: 700;
 }
 .cc-actions { text-align: right; white-space: nowrap; }
+.cc-actions .mkt-action {
+  background: var(--sg-red);
+  border-color: var(--sg-red);
+  border-radius: 999px;
+  color: #fff;
+}
+.cc-actions .mkt-action:hover:not(:disabled) {
+  background: var(--sg-red-dark);
+  border-color: var(--sg-red-dark);
+  color: #fff;
+}
+.cc-actions .mkt-action:focus-visible {
+  outline: 2px solid var(--sg-red);
+  outline-offset: 2px;
+}
 .cc-popup {
   background: #fff; border-radius: 14px; width: min(1040px, 96vw); max-height: 92vh; display: flex;
   flex-direction: column; box-shadow: 0 24px 60px rgba(15, 20, 30, .28);
@@ -1283,4 +1554,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .phone-link { color: var(--accent); font-weight: 700; text-decoration: none; }
 .phone-link:hover { text-decoration: underline; }
 
+/* Largeur commune finale : Centre d'appels et pages métier SG. */
+.cc-page,
+.marketing-page:not(.cc-page) {
+  width: min(1680px, calc(100% - 48px));
+  max-width: none;
+}
+@media (max-width: 680px) {
+  .cc-page,
+  .marketing-page:not(.cc-page) { width: calc(100% - 28px); }
+}
 

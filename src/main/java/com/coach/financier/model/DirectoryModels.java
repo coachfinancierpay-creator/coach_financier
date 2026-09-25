@@ -19,6 +19,8 @@ public final class DirectoryModels {
     public record DirectoryRow(
             String sessionId,
             String customerId,
+            String agencyCode,
+            String agencyName,
             String title,
             String mainProject,
             String category,
@@ -41,6 +43,9 @@ public final class DirectoryModels {
     /** Catégorie proposée dans le filtre, avec son nombre de dossiers sur la période. */
     public record DirectoryCategory(String code, String label, int count) {}
 
+        /** Agence proposée dans le filtre, avec son nombre de dossiers sur la période. */
+        public record DirectoryAgency(String code, String name, int count) {}
+
     /**
      * Changement de STATUT d'un dossier, conservé en historique : c'est la trace de l'avancement du dossier
      * (du « nouveau » à la conclusion), avec son commentaire facultatif.
@@ -59,6 +64,7 @@ public final class DirectoryModels {
     public record DirectoryList(
             List<DirectoryRow> rows,
             List<DirectoryCategory> categories,
+            List<DirectoryAgency> agencies,
             List<DirectoryCategory> statuses,
             Map<String, Integer> byPriority,
             int days,

@@ -153,6 +153,7 @@ export async function fetchConversationDirectory(query: DirectoryQuery): Promise
   const params = new URLSearchParams()
   params.set('days', String(query.days))
   if (query.category) params.set('category', query.category)
+  if (query.agency) params.set('agency', query.agency)
   if (query.status) params.set('status', query.status)
   if (query.q) params.set('q', query.q)
   if (query.sort) params.set('sort', query.sort)

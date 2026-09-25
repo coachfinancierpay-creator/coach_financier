@@ -12,9 +12,7 @@ Utilisation : suivre les étapes dans l'ordre ; appliquer la première condition
 
 ÉTAPE 2 — Le client peut-il financer sans crédit ?
 - Le client peut-il payer comptant le projet tout en conservant une épargne de sécurité suffisante ?
-- SI OUI : présenter explicitement le paiement intégral par épargne, le paiement partiel par épargne puis crédit
-  du solde, et, si utile ou demandé, le financement intégral par crédit. Ne pas imposer ni retenir un scénario à
-  la place du client ; comparer les options selon la liquidité conservée et le coût du crédit.
+- SI OUI : recommander un paiement comptant (ou partiellement comptant), puis éventuellement comparer avec un crédit.
 - SI NON : passer à l'étape 3.
 
 

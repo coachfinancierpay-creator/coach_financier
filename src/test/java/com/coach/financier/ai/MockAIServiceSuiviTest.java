@@ -138,7 +138,7 @@ class MockAIServiceSuiviTest {
         context.put("conversationHistory", new ArrayList<>(history));
         Map<String, Object> customer = new LinkedHashMap<>();
         customer.put("customerName", "Jean Martin");
-        customer.put("customerReference", "DEMO001");
+        customer.put("customerReference", "QJA6874");
         customer.put("currentProjects", new ArrayList<>(projects));
         context.put("customerContext", customer);
         Map<String, Object> advisor = new LinkedHashMap<>();

@@ -62,7 +62,7 @@ Empêcher structurellement l'IA de recommander ou de mentionner un produit banca
 | `#/advisor-feedback` | **Feedback Conseillers** | Saisie rapide d'un avis conseiller par dossier, KPI de pertinence, zones corrigées, pertinence produit, corrections d'intérêt, qualité des emails préparés, analyse IA, export CSV |
 | `#/advisor-feedback/session/<sessionId>` | **Évaluation d'un dossier** | Vue ciblée ouverte par le **lien du mail conseiller** : projet, synthèse du Coach, produits et niveaux d'intérêt, suivi conseillé, email préparé, puis formulaire d'évaluation |
 | `#/conversation/<sessionId>` | **Historique d'une conversation** | Vue ciblée **en lecture seule** donnant la synthèse et la relecture des échanges client ↔ Coach, avec accès direct à l'évaluation du dossier. Le mail conseiller ne la lie plus (l'historique se relit dans la pop-in du Centre d'appels) : la page reste disponible pour un accès direct par URL. L'URL ne contient que le `sessionId` |
-| `#/centre-appels` | **Centre d'appels** | Annuaire des conversations clôturées pour l'équipe commerciale : tableau filtrable (période 5/10/30 jours, catégorie, **statut**, recherche) et triable (client, catégorie, titre, **score de sens commercial**, date), avec la pop-in de détail (score expliqué, **statut d'avancement modifiable + historique**, prochaines actions, offres d'intérêt, **synthèse envoyée au conseiller**, **pièce jointe — email client préparé** et **conversation complète** dans des blocs repliables) |
+| `#/centre-appels` | **Centre d'appels** | Annuaire des conversations clôturées pour l'équipe commerciale : tableau filtrable (période 5/10/30 jours, catégorie, **agence**, **statut**, recherche) et triable (client, catégorie, titre, **score de sens commercial**, date), avec la pop-in de détail (score expliqué, **statut d'avancement modifiable + historique**, prochaines actions, offres d'intérêt, **synthèse envoyée au conseiller**, **pièce jointe — email client préparé** et **conversation complète** dans des blocs repliables) |
 | `#/centre-appels/<sessionId>` | **Dossier d'un client** | Même page, ouverte **directement sur la pop-in du dossier** : c'est la cible du lien « Ouvrir le dossier du client » du mail conseiller. L'URL ne contient que le `sessionId` |
 | `#/prompt-lab` | **Atelier d'optimisation des prompts** | Choix de l'agent (zone optimisée **figée** au prompt de l'agent spécialisé), question de test, nombre d'itérations, fournisseur IA, puis : progression, arrêt/reprise, avis humain, comparaison des versions, diff de la zone, promotion explicite en production |
 
@@ -300,8 +300,11 @@ liste de conversations à parcourir.
   **intérêt réel** (demandes de précision, comparaison, refus), **capacité de financement** d'après les
   indicateurs disponibles, **engagement** dans l'échange. Il donne une priorité (très haute / haute / moyenne /
   faible) et **2 à 3 raisons courtes** qui l'expliquent.
-- **Tableau** : client, catégorie, titre de la conversation, score (badge + libellé), **statut d'avancement**,
-  date de clôture, offres concernées et bouton « Voir le détail ».
+- **Identité client et agence** : chaque client est identifié par un code au format `AAA0000` (trois lettres
+  majuscules puis quatre chiffres) et rattaché à une agence de gestion (code interne à cinq chiffres + nom).
+- **Tableau** : catégorie, client, **agence**, titre de la conversation, score (badge + libellé), **statut
+  d'avancement**, date de clôture, offres concernées et bouton « Voir le détail ». La colonne Agence n'affiche que
+  son code; son nom complet est disponible au survol.
 - **Statut d'avancement du dossier** (fil de travail du centre d'appels) : `Nouveau` à la clôture, puis
   `Contacté`, `Qualifié`, `RDV planifié`, `Conclu`, `Sans suite`, `Clôturé`. Il est **saisi dans la pop-in**
   (liste déroulante des statuts possibles) et **chaque changement est conservé**. Un code inconnu est refusé et
@@ -312,8 +315,8 @@ liste de conversations à parcourir.
   message entre dans le **journal de suivi** affiché dans la pop-in (date, statut inchangé ou
   `ancien → nouveau`, message) et le tableau marque d'un **compteur** les dossiers qui portent des messages.
 - **Filtres** : période (**5 / 10 / 30 derniers jours** ou tout l'historique), **catégorie** (crédit conso,
-  crédit immobilier, épargne, assurance, autre), **statut**, **recherche libre** (client, titre, projet,
-  produit).
+  crédit immobilier, épargne, assurance, autre), **agence**, **statut**, **recherche libre** (client, agence,
+  titre, projet, produit).
 - **Tri** en cliquant sur un en-tête de colonne (client, catégorie, titre, score, date) — croissant/décroissant.
 - **Pop-in de détail** : score + raisons + critères mesurés (repliables), **prochaines actions de suivi**,
   offres d'intérêt, **synthèse envoyée au conseiller**, **pièce jointe — email client préparé** (le brouillon
@@ -608,7 +611,7 @@ Toutes les données sont **fictives** et servent uniquement la démonstration.
     calculé de façon déterministe ;
 59. Le score **n'introduit aucun seuil bancaire** : le critère « capacité » ne fait que décrire les indicateurs
     réellement disponibles (et reste neutre s'ils manquent) ;
-60. L'annuaire du centre d'appels **filtre** (période, catégorie, recherche) et **trie** (dont le score) côté
+60. L'annuaire du centre d'appels **filtre** (période, catégorie, agence, recherche) et **trie** (dont le score) côté
     serveur, et le détail affiche la synthèse **et sa pièce jointe** (brouillon d'email client) ;
 61. Un dossier ancien, sans score ni identité client, reste **lisible** avec des valeurs vides (aucune valeur
     inventée) ;

@@ -2,7 +2,11 @@
   "schemaVersion": "1.0",
   "datasetType": "DEMO_BANKING_DATA",
   "customer": {
-    "customerId": "DEMO001",
+    "customerId": "QJA6874",
+    "managementAgency": {
+      "code": "65478",
+      "name": "Agence de Paris"
+    },
     "mail": "Michel@gmail.com",
     "bfm_eligible": false,
     "student": false,

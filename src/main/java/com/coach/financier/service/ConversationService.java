@@ -1,10 +1,10 @@
 package com.coach.financier.service;
 
 import com.coach.financier.model.ConversationModels;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
 
@@ -18,9 +18,17 @@ public class ConversationService {
      * {@code 0} = TOUT l'historique (défaut), une valeur &gt; 0 borne volontairement le contexte.
      */
     private final int historyLimit;
+    private final CustomerDirectoryService customerDirectory;
 
-    public ConversationService(@Value("${app.chat.history-limit:0}") int historyLimit) {
+    @Autowired
+    public ConversationService(@Value("${app.chat.history-limit:0}") int historyLimit,
+                               CustomerDirectoryService customerDirectory) {
         this.historyLimit = historyLimit;
+        this.customerDirectory = customerDirectory;
+    }
+
+    ConversationService(int historyLimit) {
+        this(historyLimit, new CustomerDirectoryService());
     }
 
     public ConversationModels.Conversation getOrCreate(String sessionId) {
@@ -51,11 +59,7 @@ public class ConversationService {
 
     private ConversationModels.Conversation newConversation(String sessionId) {
         ConversationModels.Conversation conversation = new ConversationModels.Conversation(sessionId);
-        String customerId;
-        do {
-            customerId = "DEMO" + ThreadLocalRandom.current().nextInt(100, 1000);
-        } while (!assignedCustomerIds.add(customerId));
-        conversation.setCustomerId(customerId);
+        conversation.setCustomerId(customerDirectory.nextCustomerId(assignedCustomerIds));
         return conversation;
     }
 }

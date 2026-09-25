@@ -5,6 +5,8 @@
 export interface DirectoryRow {
   sessionId: string
   customerId: string | null
+  agencyCode: string | null
+  agencyName: string | null
   title: string
   mainProject: string | null
   category: string
@@ -31,9 +33,16 @@ export interface DirectoryCategory {
   count: number
 }
 
+export interface DirectoryAgency {
+  code: string
+  name: string
+  count: number
+}
+
 export interface DirectoryList {
   rows: DirectoryRow[]
   categories: DirectoryCategory[]
+  agencies: DirectoryAgency[]
   statuses: DirectoryCategory[]
   byPriority: Record<string, number>
   days: number
@@ -103,6 +112,8 @@ export interface DirectoryQuery {
   /** Période en jours (0 = tout l'historique). */
   days: number
   category?: string
+  /** Code d'agence de gestion à cinq chiffres. */
+  agency?: string
   /** Filtre sur le statut d'avancement (`NOUVEAU`, `A_CONTACTER`, `CONTACTE`, `QUALIFIE`, `RDV`, `CONCLU`, `PERDU`, `CLOTURE`). */
   status?: string
   q?: string
