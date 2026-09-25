@@ -158,7 +158,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        `Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
+        `Bonjour ! Je suis Ming, votre assitant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -921,8 +921,7 @@ function App() {
         <div className="brand-wrap">
           <div className="brand-mark"><Sparkles size={20} /></div>
           <div>
-            <div className="brand-title">Coach financier</div>
-            <div className="brand-subtitle">Votre assistant financier personnel</div>
+            <div className="brand-title">Mon assistant dépenses et épargne</div>
           </div>
         </div>
 
@@ -1149,7 +1148,7 @@ function App() {
           <div className="chat-heading">
             <div>
               <p className="eyebrow">CONVERSATION</p>
-              <h1>Comment puis-je vous aider ?</h1>
+              <h1>Bonjour, parlons de votre argent : quel est votre projet ?</h1>
             </div>
             {/* Bouton unique (remplace l'ancien « Nouveau chat ») :
                 - suivi activé  → clôture (dossier conseiller) + vidage du chat ;
