@@ -52,7 +52,8 @@ const AUDIO_STORAGE_KEY = 'financial-coach-audio'
 const AUTO_AUDIO_STORAGE_KEY = 'financial-coach-auto-audio'
 const WAKE_WORD_STORAGE_KEY = 'financial-coach-wake-word'
 const SILENCE_STORAGE_KEY = 'financial-coach-silence-delay'
-const DEFAULT_WAKE_WORD = 'Chloé'
+const DEFAULT_WAKE_WORD = 'OK Ming'
+const LEGACY_DEFAULT_WAKE_WORD = 'Chloé'
 const DEFAULT_SILENCE_SECONDS = 5
 const MIN_SILENCE_SECONDS = 2
 const MAX_SILENCE_SECONDS = 10
@@ -129,15 +130,23 @@ function normalizeForMatch(text: string): string {
 function findWakeWord(text: string, wake: string): { found: boolean; rest: string } {
   const trimmed = (wake || '').trim()
   if (!trimmed || !text) return { found: false, rest: text ?? '' }
-  const target = normalizeForMatch(trimmed)
-  if (!target) return { found: false, rest: text }
+  const targetTokens = normalizeForMatch(trimmed).match(/[\p{L}\p{N}]+/gu) || []
+  if (!targetTokens.length) return { found: false, rest: text }
   // Découpe en mots (lettres/chiffres + marques d'accent) et séparateurs, en gardant les positions originales.
   const tokenRegex = /[\p{L}\p{M}\p{N}]+|[^\p{L}\p{M}\p{N}]+/gu
+  const wordMatches: Array<{ index: number; token: string }> = []
   let match: RegExpExecArray | null
   while ((match = tokenRegex.exec(text)) !== null) {
     const token = match[0]
-    if (/^[\p{L}\p{N}]/u.test(token) && normalizeForMatch(token) === target) {
-      const after = text.slice(match.index + token.length)
+    if (/^[\p{L}\p{N}]/u.test(token)) {
+      wordMatches.push({ index: match.index, token })
+    }
+  }
+  for (let index = 0; index <= wordMatches.length - targetTokens.length; index += 1) {
+    const candidate = wordMatches.slice(index, index + targetTokens.length)
+    if (candidate.every((word, offset) => normalizeForMatch(word.token) === targetTokens[offset])) {
+      const lastWord = candidate[candidate.length - 1]
+      const after = text.slice(lastWord.index + lastWord.token.length)
       return { found: true, rest: after.replace(/^[\s.,;:!?«»"'()\-]+/, '') }
     }
   }
@@ -254,7 +263,12 @@ function App() {
   const manualStopRef = useRef(false)
   const finalTextRef = useRef('')
   const [autoAudio, setAutoAudio] = useState(() => localStorage.getItem(AUTO_AUDIO_STORAGE_KEY) === 'true')
-  const [wakeWord, setWakeWord] = useState(() => localStorage.getItem(WAKE_WORD_STORAGE_KEY) || DEFAULT_WAKE_WORD)
+  const [wakeWord, setWakeWord] = useState(() => {
+    const stored = localStorage.getItem(WAKE_WORD_STORAGE_KEY)
+    return !stored || normalizeForMatch(stored) === normalizeForMatch(LEGACY_DEFAULT_WAKE_WORD)
+      ? DEFAULT_WAKE_WORD
+      : stored
+  })
   const [silenceSeconds, setSilenceSeconds] = useState(() => {
     const raw = Number(localStorage.getItem(SILENCE_STORAGE_KEY))
     return raw >= MIN_SILENCE_SECONDS && raw <= MAX_SILENCE_SECONDS ? raw : DEFAULT_SILENCE_SECONDS
@@ -1066,7 +1080,7 @@ function App() {
                     value={wakeWord}
                     maxLength={30}
                     aria-label="Mot-clé de réveil"
-                    placeholder="Mot-clé (ex. Chloé)"
+                    placeholder="Mot-clé (ex. OK Ming)"
                     onChange={(event) => setWakeWord(event.target.value)}
                   />
                   <select
