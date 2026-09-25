@@ -918,7 +918,7 @@ function App() {
         <div className="brand-wrap">
           <div className="brand-mark"><Sparkles size={20} /></div>
           <div>
-            <div className="brand-title">Coach financier</div>
+            <div className="brand-title">Assistant financier</div>
             <div className="brand-subtitle">Votre assistant financier personnel</div>
           </div>
         </div>
