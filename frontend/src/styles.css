@@ -1515,6 +1515,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   outline: 2px solid var(--sg-red);
   outline-offset: 2px;
 }
+.cc-export {
+  border-color: var(--cc-sg-red);
+  color: var(--cc-sg-red);
+}
+.cc-export:hover:not(:disabled) {
+  background: var(--cc-sg-red);
+  border-color: var(--cc-sg-red);
+  color: #fff;
+}
 .cc-popup {
   background: #fff; border-radius: 14px; width: min(1040px, 96vw); max-height: 92vh; display: flex;
   flex-direction: column; box-shadow: 0 24px 60px rgba(15, 20, 30, .28);

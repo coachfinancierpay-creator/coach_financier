@@ -151,7 +151,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        `Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
+        'Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat.',
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },

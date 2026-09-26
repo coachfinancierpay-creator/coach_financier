@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   ArrowLeft,
   BadgeCheck,
   Check,
   ChevronDown,
   ChevronRight,
+  Download,
   History,
   MessageSquare,
   Paperclip,
@@ -347,6 +348,8 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
   const [statusDraft, setStatusDraft] = useState('')
   const [statusComment, setStatusComment] = useState('')
   const [savingStatus, setSavingStatus] = useState(false)
+  const [exportingPdf, setExportingPdf] = useState(false)
+  const popupRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     void (async () => {
@@ -382,6 +385,81 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
     }
   }
 
+  /** Exporte le même rendu que la popup sur une seule page PDF très longue. */
+  async function downloadConversationPdf() {
+    if (!detail || exportingPdf) return
+    const previousState = { showCriteria, showSynthesis, showAttachment, showTranscript }
+    setExportingPdf(true)
+    setShowCriteria(true)
+    setShowSynthesis(true)
+    setShowAttachment(Boolean(detail.customerEmailBody))
+    setShowTranscript(true)
+
+    try {
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ])
+      // Laisser React rendre les sections avant la capture du DOM.
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 100))
+      const popup = popupRef.current
+      if (!popup) throw new Error('Popup indisponible')
+
+      const canvas = await html2canvas(popup, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        onclone: (clonedDocument) => {
+          const clonedPopup = clonedDocument.querySelector('.cc-popup') as HTMLElement | null
+          const clonedBody = clonedDocument.querySelector('.cc-popup-body') as HTMLElement | null
+          if (clonedPopup) {
+            clonedPopup.style.maxHeight = 'none'
+            clonedPopup.style.height = 'auto'
+          }
+          if (clonedBody) {
+            clonedBody.style.maxHeight = 'none'
+            clonedBody.style.overflow = 'visible'
+          }
+          clonedDocument.querySelectorAll('.cc-transcript, .cc-mail').forEach((element) => {
+            const block = element as HTMLElement
+            block.style.maxHeight = 'none'
+            block.style.overflow = 'visible'
+          })
+          const clonedFooter = clonedDocument.querySelector('.cc-popup-foot') as HTMLElement | null
+          if (clonedFooter) clonedFooter.style.display = 'none'
+        },
+      })
+
+      const margin = 10
+      const pageWidth = 210
+      const imageWidth = pageWidth - margin * 2
+      const imageHeight = (canvas.height * imageWidth) / canvas.width
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: [pageWidth, imageHeight + margin * 2],
+        compress: true,
+      })
+      const image = canvas.toDataURL('image/png')
+      pdf.addImage(image, 'PNG', margin, margin, imageWidth, imageHeight, undefined, 'FAST')
+
+      pdf.setProperties({
+        title: `Conversation ${row?.customerId ?? sessionId}`,
+        subject: 'Détail de conversation — Centre d’appels',
+      })
+      pdf.save(`conversation-${sessionId.replace(/[^a-z0-9_-]/gi, '_')}.pdf`)
+    } catch (e) {
+      setError(e instanceof Error ? `Export PDF impossible : ${e.message}` : 'Export PDF impossible')
+    } finally {
+      setShowCriteria(previousState.showCriteria)
+      setShowSynthesis(previousState.showSynthesis)
+      setShowAttachment(previousState.showAttachment)
+      setShowTranscript(previousState.showTranscript)
+      setExportingPdf(false)
+    }
+  }
+
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
@@ -395,7 +473,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
 
   return (
     <div className="qlt-popup-backdrop" role="dialog" aria-modal="true" onClick={onClose}>
-      <div className="cc-popup" onClick={(event) => event.stopPropagation()}>
+      <div ref={popupRef} className="cc-popup" onClick={(event) => event.stopPropagation()}>
         <div className="cc-popup-head">
           <div>
             <h2>{row?.title ?? 'Conversation'}</h2>
@@ -653,6 +731,14 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
         )}
 
         <div className="cc-popup-foot">
+          <button
+            type="button"
+            className="mkt-action cc-export"
+            onClick={() => void downloadConversationPdf()}
+            disabled={loading || !detail || exportingPdf}
+          >
+            <Download size={15} /> {exportingPdf ? 'Préparation du PDF…' : 'Télécharger en PDF'}
+          </button>
           {detail?.feedbackUrl ? (
             <a className="logs-back" href={`#/advisor-feedback/session/${encodeURIComponent(sessionId)}`}>
               <BadgeCheck size={15} /> {detail.evaluated ? 'Avis conseiller enregistré' : 'Évaluer le suivi'}
