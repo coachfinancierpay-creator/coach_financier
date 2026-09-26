@@ -50,9 +50,18 @@ projectObject ("assurance auto", "assurance habitation", "assurance emprunteur")
 REAL_ESTATE_PURCHASE, CASH_NEED, DEBT_RESTRUCTURING…
 - ÉPARGNE : le client veut METTRE DE CÔTÉ ou FAIRE FRUCTIFIER (livrets, PEA, assurance-vie, PER) →
 projectType = SAVINGS (épargne de précaution ou objectif) ou INVESTMENT (placement).
+PRIORITÉ EN CAS DE CO-OCCURRENCE : si la même question ou phrase contient une demande de CRÉDIT
+ou de financement ET une demande d'ÉPARGNE, privilégie toujours le CRÉDIT. Retourne alors
+intent = FINANCING_REQUEST (ou CREDIT_INFORMATION s'il s'agit d'un crédit existant) et projectType
+selon le projet financé ; traite l'épargne comme une modalité, un apport ou une mention secondaire.
+Cette règle s'applique même si le client cite d'abord l'épargne. Elle ne s'applique pas lorsque « crédit »
+est seulement une mention contextuelle sans demande de financement (par exemple une assurance liée à un crédit).
 Un message peut contenir plusieurs thèmes : garde celui de la DEMANDE PRINCIPALE, pas la mention secondaire.
 Exemple : « je voudrais assurer mon appartement que je viens d'acheter avec un crédit immobilier » →
 INSURANCE (assurance habitation), PAS un crédit.
+
+Exemple de priorité : « Je veux utiliser mon épargne pour financer un projet et savoir quel crédit choisir »
+→ intent = FINANCING_REQUEST, projectType = CASH_NEED si aucun projet n'est identifié, et non SAVINGS_ANALYSIS.
 
 CAS PARTICULIER — ÉPARGNE MOBILISÉE POUR FINANCER UN PROJET : si le client indique qu'il peut utiliser
 une somme de son épargne, mais parle aussi de montant à financer, de mensualité, de crédit, d'emprunt,

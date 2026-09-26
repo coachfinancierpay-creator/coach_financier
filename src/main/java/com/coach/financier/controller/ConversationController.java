@@ -59,6 +59,23 @@ public class ConversationController {
         return out;
     }
 
+    /** Retourne une conversation juste avant la question client sélectionnée par l'utilisateur. */
+    @PostMapping("/{sessionId}/rewind")
+    public Map<String, Object> rewind(@PathVariable String sessionId, @RequestBody RewindRequest request) {
+        ConversationModels.Conversation conversation = conversationService.find(sessionId);
+        if (conversation == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation inconnue : " + sessionId);
+        }
+        if (request == null || request.messageCount() == null) {
+            throw new IllegalArgumentException("Le nombre de messages est obligatoire");
+        }
+        conversation.rewind(request.messageCount());
+        return Map.of("sessionId", sessionId, "messageCount", conversation.transcript().size());
+    }
+
+    public record RewindRequest(Integer messageCount) {
+    }
+
     /**
      * Clôture d'une conversation : génère le dossier de suivi (email conseiller + brouillon
      * client en pièce jointe) et envoie UNIQUEMENT l'email au conseiller.

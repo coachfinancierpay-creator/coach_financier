@@ -3,6 +3,7 @@ package com.coach.financier.model;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -57,5 +58,25 @@ class ConversationModelsTest {
 
         assertEquals(2, conversation.messages().size());
         assertTrue(conversation.historyLimit() >= 0);
+    }
+
+    @Test
+    void rewindKeepsTheCurrentProjectForTheReplayedQuestion() {
+        ConversationModels.Conversation conversation = new ConversationModels.Conversation("s1");
+        CurrentProject project = new CurrentProject();
+        project.setType(ProjectType.VEHICLE);
+        project.setObject("voiture");
+        conversation.setCurrentProject(project);
+        conversation.addMessage("user", "Je veux financer une voiture");
+        conversation.addMessage("assistant", "Quel montant envisagez-vous ?");
+        conversation.addMessage("user", "Je veux 15000 euros");
+        conversation.addMessage("assistant", "Voici une proposition");
+
+        conversation.rewind(2);
+
+        assertEquals(2, conversation.transcript().size());
+        assertNotNull(conversation.currentProject(), "le projet sert à classifier la question rejouée");
+        assertEquals(ProjectType.VEHICLE, conversation.currentProject().getType());
+        assertEquals("voiture", conversation.currentProject().getObject());
     }
 }

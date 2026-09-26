@@ -22,7 +22,7 @@ import {
   Wallet,
   X,
 } from 'lucide-react'
-import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, sendChat, sendConversationFeedback } from './api'
+import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, rewindConversation, sendChat, sendConversationFeedback } from './api'
 import { playWakeCue } from './audioCue'
 import FeedbackPopup from './FeedbackPopup'
 import { getAdvisorIntent } from './advisorCallback'
@@ -151,7 +151,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat.',
+        'Bonjour ! Je suis votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat.',
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -212,6 +212,7 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>(loadInitialMessages)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [rewinding, setRewinding] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState(loadingMessages[0])
   const messagesScrollRef = useRef<HTMLDivElement | null>(null)
   /**
@@ -742,7 +743,7 @@ function App() {
    * corrige s'il veut, puis l'envoie — ou pas. Chaque clic avance d'une question.
    */
   async function proposeClientQuestion() {
-    if (clientAutoLoading || loading) return
+    if (clientAutoLoading || loading || rewinding) return
     setClientAutoNotice(null)
     setError(null)
     setClientAutoLoading(true)
@@ -766,9 +767,37 @@ function App() {
     }
   }
 
+  async function rewindToMessage(messageId: string) {
+    if (loading || clientAutoLoading || rewinding) return
+    const messageIndex = messages.findIndex((message) => message.id === messageId && message.role === 'user')
+    if (messageIndex < 0) return
+    const message = messages[messageIndex]
+    const serverMessageCount = messages
+      .slice(0, messageIndex)
+      .filter((item) => item.id !== 'welcome').length
+
+    stopSpeaking()
+    setError(null)
+    setRewinding(true)
+    try {
+      // Le serveur doit suivre le même retour que l'IHM, sinon la nouvelle question serait ajoutée
+      // après l'ancienne branche dans son historique.
+      await rewindConversation(sessionId, serverMessageCount)
+      setMessages((current) => current.slice(0, messageIndex))
+      setInput(message.content)
+      setSummary(null)
+      setClientAutoNotice('Retour avant cette question : modifie-la si besoin, puis envoie-la.')
+      window.setTimeout(() => composerRef.current?.focus(), 0)
+    } catch (rewindError) {
+      setError(rewindError instanceof Error ? rewindError.message : 'Impossible de revenir à cette question.')
+    } finally {
+      setRewinding(false)
+    }
+  }
+
   async function submitMessage(rawMessage?: string) {
     const message = (rawMessage ?? input).trim()
-    if (!message || loading) return
+    if (!message || loading || rewinding) return
 
     stopSpeaking()
 
@@ -918,8 +947,7 @@ function App() {
         <div className="brand-wrap">
           <div className="brand-mark"><Sparkles size={20} /></div>
           <div>
-            <div className="brand-title">Coach financier</div>
-            <div className="brand-subtitle">Votre assistant financier personnel</div>
+            <div className="brand-title">Mon assistant dépenses et épargne</div>
           </div>
         </div>
 
@@ -1155,7 +1183,6 @@ function App() {
                   )}
                   <div className={`message-bubble ${message.role}`}>
                     <div className="message-meta">
-                      {message.role === 'user' && <span>Vous</span>}
                       {message.role === 'assistant' && audioEnabled && ttsSupported && (
                         <button
                           type="button"
@@ -1173,7 +1200,18 @@ function App() {
                       {renderMessageContent(message.id, message.content, sessionId)}
                     </div>
                   </div>
-                  {message.role === 'user' && <div className="avatar user-avatar">V</div>}
+                  {message.role === 'user' && (
+                    <button
+                      className="avatar user-avatar"
+                      type="button"
+                      title="Revenir avant cette question et la reposer"
+                      aria-label="Revenir avant cette question et la reposer"
+                      onClick={() => void rewindToMessage(message.id)}
+                      disabled={loading || clientAutoLoading || rewinding}
+                    >
+                      V
+                    </button>
+                  )}
                 </div>
               ))}
               {loading && (

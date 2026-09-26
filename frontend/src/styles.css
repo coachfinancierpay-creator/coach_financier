@@ -136,7 +136,9 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .message-row.user { margin-left:auto; justify-content:flex-end; }
 .avatar { width:34px; height:34px; flex:0 0 34px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:12px; }
 .assistant-avatar { background:var(--accent); color:#fff; }
-.user-avatar { background:#222; color:#fff; }
+.user-avatar { background:#222; color:#fff; border:0; padding:0; cursor:pointer; transition:transform .15s ease, background .15s ease; }
+.user-avatar:hover:not(:disabled), .user-avatar:focus-visible { background:#e50930; transform:scale(1.08); outline:2px solid rgba(229,9,48,.28); outline-offset:2px; }
+.user-avatar:disabled { cursor:wait; opacity:.65; }
 .message-bubble { border-radius:4px; padding:13px 15px; border:1px solid #dddddd; }
 .message-bubble.assistant { background:#fafafa; border-left:3px solid var(--accent); }
 .message-bubble.user { background:#f1f1f1; color:#1f1f1f; border-color:#dfdfdf; }

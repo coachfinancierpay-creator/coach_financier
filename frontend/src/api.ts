@@ -121,6 +121,13 @@ export async function fetchNextClientQuestion(
   )
 }
 
+export async function rewindConversation(sessionId: string, messageCount: number): Promise<void> {
+  await apiFetch(`/conversations/${encodeURIComponent(sessionId)}/rewind`, {
+    method: 'POST',
+    body: JSON.stringify({ messageCount }),
+  })
+}
+
 export { API_BASE_URL }
 
 export async function fetchLogs(): Promise<AiLog[]> {

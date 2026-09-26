@@ -57,6 +57,28 @@ public final class ConversationModels {
         }
 
         /**
+         * Supprime la branche de conversation située après {@code messageCount} messages.
+         * Le compteur porte sur le transcript complet, pas seulement sur la fenêtre d'historique envoyée à l'IA.
+         */
+        public synchronized void rewind(int messageCount) {
+            if (messageCount < 0 || messageCount > transcript.size()) {
+                throw new IllegalArgumentException("Position de retour invalide : " + messageCount);
+            }
+            transcript.subList(messageCount, transcript.size()).clear();
+            messages.clear();
+            messages.addAll(transcript);
+            trimHistory();
+            // Le projet courant est le contexte métier utilisé par le classifieur au tour suivant.
+            // Le supprimer ici ferait perdre, par exemple, le fait que la question concerne déjà un véhicule
+            // et provoquerait à nouveau la demande générique « à quoi servira cet argent ? ».
+            // Les champs issus de la branche supprimée sont néanmoins invalidés ; ils seront recalculés au prochain tour.
+            summary = null;
+            financialSummary = null;
+            previousProjects.clear();
+            discussedProducts.clear();
+        }
+
+        /**
          * Borne l'historique envoyé au coach. {@code 0} (ou une valeur négative) = aucun bornage : tout
          * l'historique est transmis à l'IA à chaque appel.
          */
