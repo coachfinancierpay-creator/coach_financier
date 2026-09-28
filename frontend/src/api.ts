@@ -94,6 +94,32 @@ export async function fetchHealth(): Promise<unknown> {
   return apiFetch('/health')
 }
 
+export async function fetchSpeechToken(): Promise<{ token: string; region: string }> {
+  return apiFetch<{ token: string; region: string }>('/tts/token', { method: 'POST' })
+}
+
+export async function synthesizeSpeech(text: string, rate: number, voice: string): Promise<Blob> {
+  const response = await fetch(`${API_BASE_URL}/tts/synthesize`, {
+    method: 'POST',
+    headers: {
+      Accept: 'audio/mpeg',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text, rate, voice }),
+  })
+  if (!response.ok) {
+    let detail = `Erreur HTTP ${response.status}`
+    try {
+      const body = await response.json()
+      detail = body?.message ?? body?.error ?? detail
+    } catch {
+      // Keep the generic HTTP error.
+    }
+    throw new Error(detail)
+  }
+  return response.blob()
+}
+
 export async function sendChat(
   sessionId: string,
   message: string,
@@ -104,6 +130,10 @@ export async function sendChat(
     method: 'POST',
     body: JSON.stringify({ sessionId, message, provider, disableOutOfScopeGuard }),
   })
+}
+
+export async function fetchTtsStatus(): Promise<{ provider: 'AZURE'; status: string }> {
+  return apiFetch<{ provider: 'AZURE'; status: string }>('/tts/status')
 }
 
 /**

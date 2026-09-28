@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk'
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -22,7 +23,7 @@ import {
   Wallet,
   X,
 } from 'lucide-react'
-import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, sendChat, sendConversationFeedback } from './api'
+import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, fetchSpeechToken, sendChat, sendConversationFeedback, synthesizeSpeech } from './api'
 import { playWakeCue } from './audioCue'
 import FeedbackPopup from './FeedbackPopup'
 import { getAdvisorIntent } from './advisorCallback'
@@ -45,15 +46,22 @@ const SUIVI_STORAGE_KEY = 'financial-coach-suivi-v2'
 const LEGACY_SUIVI_STORAGE_KEY = 'financial-coach-suivi'
 const ADVANCED_STORAGE_KEY = 'financial-coach-advanced'
 const VOICE_STORAGE_KEY = 'financial-coach-voice'
+const VOICE_MODEL_STORAGE_KEY = 'financial-coach-voice-model'
 const VOICE_RATE_STORAGE_KEY = 'financial-coach-voice-rate'
 const AUDIO_STORAGE_KEY = 'financial-coach-audio'
 const AUTO_AUDIO_STORAGE_KEY = 'financial-coach-auto-audio'
 const WAKE_WORD_STORAGE_KEY = 'financial-coach-wake-word'
 const SILENCE_STORAGE_KEY = 'financial-coach-silence-delay'
-const DEFAULT_WAKE_WORD = 'Chloé'
+const DEFAULT_WAKE_WORD = 'OK Ming'
+const LEGACY_DEFAULT_WAKE_WORD = 'Chloé'
 const DEFAULT_SILENCE_SECONDS = 5
 const MIN_SILENCE_SECONDS = 2
 const MAX_SILENCE_SECONDS = 10
+const frenchVoices = [
+  { id: 'fr-FR-HenriNeural', label: 'Henri', detail: 'masculine' },
+  { id: 'fr-FR-DeniseNeural', label: 'Denise', detail: 'féminine' },
+  { id: 'fr-FR-EloiseNeural', label: 'Eloise', detail: 'féminine' },
+] as const
 
 /**
  * Nombre minimal d'échanges client ↔ IA avant de déclencher la clôture de la conversation
@@ -122,19 +130,45 @@ function normalizeForMatch(text: string): string {
 function findWakeWord(text: string, wake: string): { found: boolean; rest: string } {
   const trimmed = (wake || '').trim()
   if (!trimmed || !text) return { found: false, rest: text ?? '' }
-  const target = normalizeForMatch(trimmed)
-  if (!target) return { found: false, rest: text }
+  const targetTokens = normalizeForMatch(trimmed).match(/[\p{L}\p{N}]+/gu) || []
+  if (!targetTokens.length) return { found: false, rest: text }
   // Découpe en mots (lettres/chiffres + marques d'accent) et séparateurs, en gardant les positions originales.
   const tokenRegex = /[\p{L}\p{M}\p{N}]+|[^\p{L}\p{M}\p{N}]+/gu
+  const wordMatches: Array<{ index: number; token: string }> = []
   let match: RegExpExecArray | null
   while ((match = tokenRegex.exec(text)) !== null) {
     const token = match[0]
-    if (/^[\p{L}\p{N}]/u.test(token) && normalizeForMatch(token) === target) {
-      const after = text.slice(match.index + token.length)
+    if (/^[\p{L}\p{N}]/u.test(token)) {
+      wordMatches.push({ index: match.index, token })
+    }
+  }
+  for (let index = 0; index <= wordMatches.length - targetTokens.length; index += 1) {
+    const candidate = wordMatches.slice(index, index + targetTokens.length)
+    if (candidate.every((word, offset) => normalizeForMatch(word.token) === targetTokens[offset])) {
+      const lastWord = candidate[candidate.length - 1]
+      const after = text.slice(lastWord.index + lastWord.token.length)
       return { found: true, rest: after.replace(/^[\s.,;:!?«»"'()\-]+/, '') }
     }
   }
   return { found: false, rest: text }
+}
+
+function isStopSpeechCommand(text: string, wake: string): boolean {
+  const hit = findWakeWord(text, wake)
+  return hit.found && normalizeForMatch(hit.rest).trim().startsWith('merci')
+}
+
+function appendSpeechText(current: string, incoming: string): string {
+  const existing = current.trim()
+  const next = incoming.trim()
+  if (!next) return existing
+  if (!existing) return next
+  const existingMatch = normalizeForMatch(existing)
+  const nextMatch = normalizeForMatch(next)
+  if (existingMatch === nextMatch || existingMatch.endsWith(nextMatch) || nextMatch.endsWith(existingMatch)) {
+    return existingMatch.length >= nextMatch.length ? existing : next
+  }
+  return `${existing} ${next}`.trim()
 }
 
 function welcomeMessages(): ChatMessage[] {
@@ -151,7 +185,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        `Bonjour ! Je suis votre coach financier. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
+        `Bonjour ! Je suis Ming, votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -240,14 +274,19 @@ function App() {
   const [listening, setListening] = useState(false)
   const [speechSupported] = useState<boolean>(
     () => typeof window !== 'undefined'
-      && Boolean((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition),
+      && Boolean(navigator.mediaDevices?.getUserMedia),
   )
   const recognitionRef = useRef<any>(null)
   const listeningRef = useRef(false)
   const manualStopRef = useRef(false)
   const finalTextRef = useRef('')
   const [autoAudio, setAutoAudio] = useState(() => localStorage.getItem(AUTO_AUDIO_STORAGE_KEY) === 'true')
-  const [wakeWord, setWakeWord] = useState(() => localStorage.getItem(WAKE_WORD_STORAGE_KEY) || DEFAULT_WAKE_WORD)
+  const [wakeWord, setWakeWord] = useState(() => {
+    const stored = localStorage.getItem(WAKE_WORD_STORAGE_KEY)
+    return !stored || normalizeForMatch(stored) === normalizeForMatch(LEGACY_DEFAULT_WAKE_WORD)
+      ? DEFAULT_WAKE_WORD
+      : stored
+  })
   const [silenceSeconds, setSilenceSeconds] = useState(() => {
     const raw = Number(localStorage.getItem(SILENCE_STORAGE_KEY))
     return raw >= MIN_SILENCE_SECONDS && raw <= MAX_SILENCE_SECONDS ? raw : DEFAULT_SILENCE_SECONDS
@@ -273,15 +312,21 @@ function App() {
   const loadingRef = useRef(false)
   const submitRef = useRef<(text: string) => void>(() => {})
   const [voiceEnabled, setVoiceEnabled] = useState(() => localStorage.getItem(VOICE_STORAGE_KEY) !== 'false')
+  const [voiceModel, setVoiceModel] = useState(() => {
+    const stored = localStorage.getItem(VOICE_MODEL_STORAGE_KEY)
+    return frenchVoices.some((voice) => voice.id === stored) ? stored! : frenchVoices[0].id
+  })
   const [voiceRate, setVoiceRate] = useState(() => {
     const raw = Number(localStorage.getItem(VOICE_RATE_STORAGE_KEY))
     return raw >= 0.5 && raw <= 2 ? raw : 1
   })
   const [audioEnabled, setAudioEnabled] = useState(() => localStorage.getItem(AUDIO_STORAGE_KEY) === 'true')
-  const [ttsSupported] = useState<boolean>(() => typeof window !== 'undefined'
-    && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
+  const [ttsSupported] = useState<boolean>(() => typeof window !== 'undefined' && 'fetch' in window)
   const [speakingId, setSpeakingId] = useState<string | null>(null)
   const speakingIdRef = useRef<string | null>(null)
+  const audioPlayerRef = useRef<HTMLAudioElement | null>(null)
+  const audioUrlRef = useRef<string | null>(null)
+  const welcomeSpokenRef = useRef(false)
 
   useEffect(() => {
     localStorage.setItem(SESSION_STORAGE_KEY, sessionId)
@@ -339,6 +384,10 @@ function App() {
   }, [voiceEnabled])
 
   useEffect(() => {
+    localStorage.setItem(VOICE_MODEL_STORAGE_KEY, voiceModel)
+  }, [voiceModel])
+
+  useEffect(() => {
     localStorage.setItem(VOICE_RATE_STORAGE_KEY, String(voiceRate))
   }, [voiceRate])
 
@@ -357,6 +406,16 @@ function App() {
   useEffect(() => {
     localStorage.setItem(SILENCE_STORAGE_KEY, String(silenceSeconds))
   }, [silenceSeconds])
+
+  // Lecture automatique du message d'accueil dès que la lecture vocale est activée.
+  useEffect(() => {
+    if (!audioEnabled || !voiceEnabled || !ttsSupported || welcomeSpokenRef.current) return
+    const welcome = messages.find((message) => message.id === 'welcome' && message.role === 'assistant')
+    if (!welcome) return
+    welcomeSpokenRef.current = true
+    void speakMessage(welcome.id, welcome.content)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioEnabled, voiceEnabled, ttsSupported, messages])
 
   // Miroirs refs pour les callbacks de reconnaissance (pas de closure obsolète).
   useEffect(() => {
@@ -405,66 +464,54 @@ function App() {
     }
   }, [])
 
-  function ensureRecognition(): any {
+  async function ensureRecognition(): Promise<any> {
     if (recognitionRef.current) return recognitionRef.current
-    const SpeechRecognitionCtor =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SpeechRecognitionCtor) return null
-    const recognition = new SpeechRecognitionCtor()
-    recognition.lang = 'fr-FR'
-    recognition.interimResults = true
-    recognition.continuous = true
-    recognition.onresult = (event: any) => {
-      let interim = ''
-      for (let index = event.resultIndex; index < event.results.length; index++) {
-        const result = event.results[index]
-        if (result.isFinal) finalTextRef.current += ` ${result[0].transcript}`.trim()
-        else interim += result[0].transcript
-      }
-      setInput(`${finalTextRef.current} ${interim}`.trim())
+    const credentials = await fetchSpeechToken()
+    const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(credentials.token, credentials.region)
+    speechConfig.speechRecognitionLanguage = 'fr-FR'
+    const recognition = new SpeechSDK.SpeechRecognizer(speechConfig, SpeechSDK.AudioConfig.fromDefaultMicrophoneInput())
+    recognition.recognizing = (_sender, event) => {
+      setInput(`${finalTextRef.current} ${event.result.text}`.trim())
     }
-    recognition.onerror = (event: any) => {
-      if (event?.error === 'not-allowed' || event?.error === 'service-not-allowed') {
+    recognition.recognized = (_sender, event) => {
+      if (event.result.reason === SpeechSDK.ResultReason.RecognizedSpeech && event.result.text) {
+        if (isStopSpeechCommand(event.result.text, wakeRef.current)) {
+          stopSpeaking()
+          finalTextRef.current = ''
+          setInput('')
+          return
+        }
+        finalTextRef.current = appendSpeechText(finalTextRef.current, event.result.text)
+        setInput(finalTextRef.current)
+      }
+    }
+    recognition.canceled = (_sender, event) => {
+      if (event.reason === SpeechSDK.CancellationReason.Error) {
         listeningRef.current = false
         setListening(false)
-        setError('Micro refusé. Cliquez sur l’icône 🔒/ⓘ à gauche de l’URL → « Microphone » → « Autoriser », puis rechargez la page. Vérifiez aussi l’autorisation micro dans les Paramètres Windows (Confidentialité → Microphone).')
+        setError(`Reconnaissance Azure indisponible${event.errorDetails ? ` : ${event.errorDetails}` : '.'}`)
       }
     }
-    recognition.onend = () => {
+    recognition.sessionStopped = () => {
       if (manualStopRef.current) {
-        // Arrêt demandé par le bouton : on envoie la question transcrite.
         manualStopRef.current = false
         listeningRef.current = false
         setListening(false)
         const text = finalTextRef.current.trim()
         if (text) submitMessage(text)
         else setInput('')
-        return
-      }
-      // Fin non demandée (pause/réinitialisation) : on continue d'écouter si le bouton est actif.
-      if (listeningRef.current) {
-        try {
-          recognition.start()
-        } catch {
-          // ignore
-        }
       }
     }
     recognitionRef.current = recognition
     return recognition
   }
 
-  function toggleMic() {
-    const recognition = ensureRecognition()
-    if (!recognition) {
-      setError('Votre navigateur ne supporte pas la reconnaissance vocale (Chrome/Edge recommandé).')
-      return
-    }
+  async function toggleMic() {
     if (listeningRef.current) {
       // Fin de la question : arrêt + envoi automatique.
       manualStopRef.current = true
       try {
-        recognition.stop()
+        await recognitionRef.current?.stopContinuousRecognitionAsync()
       } catch {
         // ignore
       }
@@ -476,35 +523,92 @@ function App() {
     setError(null)
     setInput('')
     try {
-      recognition.start()
-    } catch {
+      const recognition = await ensureRecognition()
+      await recognition.startContinuousRecognitionAsync()
+    } catch (error) {
       listeningRef.current = false
       setListening(false)
-      setError('Impossible de démarrer le micro. Autorisez l’accès : icône 🔒/ⓘ à gauche de l’URL → « Microphone » → « Autoriser », puis rechargez la page et réessayez.')
+      setError(error instanceof Error ? error.message : 'Impossible de démarrer la reconnaissance Azure.')
     }
   }
 
-  function speakMessage(id: string, text: string) {
-    if (!audioEnabled || !window.speechSynthesis || !text) return
-    window.speechSynthesis.cancel()
+  async function speakMessage(id: string, text: string) {
+    if (!audioEnabled || !text) return
+    stopSpeaking()
     speakingIdRef.current = id
     setSpeakingId(id)
+    try {
+      const audioBlob = await synthesizeSpeech(stripMarkdown(text), voiceRate, voiceModel)
+      if (speakingIdRef.current !== id) return
+      const audioUrl = URL.createObjectURL(audioBlob)
+      audioUrlRef.current = audioUrl
+      const audioPlayer = new Audio(audioUrl)
+      audioPlayerRef.current = audioPlayer
+      audioPlayer.onended = () => {
+        URL.revokeObjectURL(audioUrl)
+        audioUrlRef.current = null
+        audioPlayerRef.current = null
+        speakingIdRef.current = null
+        setSpeakingId(null)
+      }
+      audioPlayer.onerror = () => {
+        URL.revokeObjectURL(audioUrl)
+        audioUrlRef.current = null
+        audioPlayerRef.current = null
+        speakingIdRef.current = null
+        setSpeakingId(null)
+        setError('La lecture audio Azure est indisponible.')
+      }
+      await audioPlayer.play()
+    } catch (error) {
+      if (speakingIdRef.current !== id) return
+      if (error instanceof Error && error.name === 'NotAllowedError') {
+        audioPlayerRef.current = null
+        if (audioUrlRef.current) {
+          URL.revokeObjectURL(audioUrlRef.current)
+          audioUrlRef.current = null
+        }
+        if (speakWithBrowser(id, text)) return
+      }
+      speakingIdRef.current = null
+      setSpeakingId(null)
+      setError(error instanceof Error ? error.message : 'La synthèse vocale Azure est indisponible.')
+    }
+  }
+
+  function speakWithBrowser(id: string, text: string): boolean {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false
+    const synthesis = window.speechSynthesis
     const utterance = new SpeechSynthesisUtterance(stripMarkdown(text))
     utterance.lang = 'fr-FR'
     utterance.rate = voiceRate
+    const frenchVoice = synthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith('fr'))
+    if (frenchVoice) utterance.voice = frenchVoice
     utterance.onend = () => {
+      if (speakingIdRef.current !== id) return
       speakingIdRef.current = null
       setSpeakingId(null)
     }
     utterance.onerror = () => {
+      if (speakingIdRef.current !== id) return
       speakingIdRef.current = null
       setSpeakingId(null)
     }
-    window.speechSynthesis.speak(utterance)
+    synthesis.cancel()
+    synthesis.speak(utterance)
+    return true
   }
 
   function stopSpeaking() {
-    if (window.speechSynthesis) window.speechSynthesis.cancel()
+    audioPlayerRef.current?.pause()
+    audioPlayerRef.current = null
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel()
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current)
+      audioUrlRef.current = null
+    }
     speakingIdRef.current = null
     setSpeakingId(null)
   }
@@ -595,7 +699,7 @@ function App() {
     setAutoState('idle')
   }
 
-  function startAutoAudio() {
+  async function startAutoAudio() {
     if (autoActiveRef.current || !speechSupported) return
     // Un seul SpeechRecognition actif à la fois : on coupe le push-to-talk s'il tournait.
     try {
@@ -605,81 +709,76 @@ function App() {
     }
     listeningRef.current = false
     setListening(false)
-    const SpeechRecognitionCtor =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
-    if (!SpeechRecognitionCtor) return
-    const recognition = new SpeechRecognitionCtor()
-    recognition.lang = 'fr-FR'
-    recognition.interimResults = true
-    recognition.continuous = true
-    autoActiveRef.current = true
-    autoPhaseRef.current = 'standby'
-    autoBufferRef.current = ''
-    autoRecognitionRef.current = recognition
-    setAutoState('standby')
+    try {
+      const credentials = await fetchSpeechToken()
+      if (!autoAudio) return
+      const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(credentials.token, credentials.region)
+      speechConfig.speechRecognitionLanguage = 'fr-FR'
+      const recognition = new SpeechSDK.SpeechRecognizer(speechConfig, SpeechSDK.AudioConfig.fromDefaultMicrophoneInput())
+      autoActiveRef.current = true
+      autoPhaseRef.current = 'standby'
+      autoBufferRef.current = ''
+      autoRecognitionRef.current = recognition
+      setAutoState('standby')
 
-    recognition.onresult = (event: any) => {
-      if (!autoActiveRef.current) return
-      let interim = ''
-      for (let index = event.resultIndex; index < event.results.length; index++) {
-        const result = event.results[index]
-        const transcript = (result[0]?.transcript as string) || ''
-        if (result.isFinal) {
-          if (autoPhaseRef.current === 'listening') {
-            autoBufferRef.current = `${autoBufferRef.current} ${transcript}`.trim()
-          } else {
-            // Veille : on attend le mot-clé (ignore tout le reste).
-            const hit = findWakeWord(transcript, wakeRef.current)
-            if (hit.found) {
-              // Barge-in : le mot-clé interrompt immédiatement la lecture vocale en cours,
-              // puis on écoute la nouvelle question.
-              stopSpeaking()
-              // Repère SONORE (façon Siri) : le mot-clé est reconnu, l'écoute commence. Sans lui,
-              // l'utilisateur ne peut pas savoir si « Chloé » a été entendu et parle dans le vide.
-              playWakeCue()
-              autoPhaseRef.current = 'listening'
-              autoBufferRef.current = hit.rest || ''
-              setAutoState('listening')
-            }
-          }
-        } else if (autoPhaseRef.current === 'listening') {
-          interim = transcript
-        }
-      }
-      if (autoPhaseRef.current === 'listening') {
-        setInput(`${autoBufferRef.current} ${interim}`.trim())
+      recognition.recognizing = (_sender, event) => {
+        if (!autoActiveRef.current || autoPhaseRef.current !== 'listening') return
+        setInput(`${autoBufferRef.current} ${event.result.text}`.trim())
         clearAutoTimer()
         autoTimerRef.current = window.setTimeout(onAutoSilence, silenceRef.current * 1000)
-        // Chaque parole (même partielle) relance le décompte : il ne s'écoule que pendant le SILENCE.
         startAutoCountdown()
       }
-    }
-    recognition.onerror = (event: any) => {
-      if (!autoActiveRef.current) return
-      if (event?.error === 'not-allowed' || event?.error === 'service-not-allowed') {
-        stopAutoAudio()
-        setAutoState('idle')
-        setError('Micro refusé (mode auto). Autorisez l’accès au micro puis réactivez le mode auto.')
-      }
-      // 'no-speech' / 'aborted' : silencieux, on relance via onend.
-    }
-    recognition.onend = () => {
-      if (autoActiveRef.current) {
-        window.setTimeout(() => {
-          if (autoActiveRef.current) {
-            try {
-              recognition.start()
-            } catch {
-              // ignore
-            }
+      recognition.recognized = (_sender, event) => {
+        if (!autoActiveRef.current || event.result.reason !== SpeechSDK.ResultReason.RecognizedSpeech) return
+        const transcript = event.result.text || ''
+        if (isStopSpeechCommand(transcript, wakeRef.current)) {
+          stopSpeaking()
+          clearAutoTimer()
+          clearAutoCountdown()
+          autoPhaseRef.current = 'standby'
+          autoBufferRef.current = ''
+          setInput('')
+          setAutoState('standby')
+          return
+        }
+        if (autoPhaseRef.current === 'listening') {
+          const hit = findWakeWord(transcript, wakeRef.current)
+          const spokenText = hit.found ? hit.rest : transcript
+          autoBufferRef.current = appendSpeechText(autoBufferRef.current, spokenText)
+        } else {
+          const hit = findWakeWord(transcript, wakeRef.current)
+          if (hit.found) {
+            stopSpeaking()
+            playWakeCue()
+            autoPhaseRef.current = 'listening'
+            autoBufferRef.current = hit.rest || ''
+            setAutoState('listening')
           }
-        }, 150)
+        }
+      if (autoPhaseRef.current === 'listening') {
+        setInput(autoBufferRef.current)
+        clearAutoTimer()
+        autoTimerRef.current = window.setTimeout(onAutoSilence, silenceRef.current * 1000)
+        startAutoCountdown()
       }
-    }
-    try {
-      recognition.start()
-    } catch {
-      stopAutoAudio()
+      }
+      recognition.canceled = (_sender, event) => {
+        if (autoActiveRef.current && event.reason === SpeechSDK.CancellationReason.Error) {
+          stopAutoAudio()
+          setError(`Reconnaissance Azure indisponible${event.errorDetails ? ` : ${event.errorDetails}` : '.'}`)
+        }
+      }
+      recognition.sessionStopped = () => {
+        if (autoActiveRef.current) {
+          recognition.startContinuousRecognitionAsync()
+        }
+      }
+      await recognition.startContinuousRecognitionAsync()
+    } catch (error) {
+      if (autoActiveRef.current) {
+        stopAutoAudio()
+        setError(error instanceof Error ? error.message : 'Impossible de démarrer la reconnaissance Azure.')
+      }
     }
   }
 
@@ -701,7 +800,7 @@ function App() {
     } catch {
       // ignore
     }
-    if (window.speechSynthesis) window.speechSynthesis.cancel()
+    stopSpeaking()
   }, [])
 
   /**
@@ -797,7 +896,9 @@ function App() {
         agent: response.agent,
       }
       setMessages((current) => [...current, assistantMessage])
-      if (audioEnabled && voiceEnabled && ttsSupported) speakMessage(assistantMessage.id, assistantMessage.content)
+      if (audioEnabled && voiceEnabled && ttsSupported) {
+        void speakMessage(assistantMessage.id, assistantMessage.content)
+      }
     } catch (err) {
       const text = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.'
       setError(text)
@@ -918,8 +1019,7 @@ function App() {
         <div className="brand-wrap">
           <div className="brand-mark"><Sparkles size={20} /></div>
           <div>
-            <div className="brand-title">Coach financier</div>
-            <div className="brand-subtitle">Votre assistant financier personnel</div>
+            <div className="brand-title">Mon assistant dépenses et épargne</div>
           </div>
         </div>
 
@@ -1010,31 +1110,51 @@ function App() {
               </label>
               <label
                 className="guard-toggle"
-                title="Lire automatiquement les réponses de l'IA à voix haute (synthèse vocale)"
+                title="Afficher les commandes de lecture volontaire des réponses du Coach"
               >
                 <input
                   type="checkbox"
                   checked={voiceEnabled}
-                  onChange={(event) => setVoiceEnabled(event.target.checked)}
+                  onChange={(event) => {
+                    setVoiceEnabled(event.target.checked)
+                    if (!event.target.checked) stopSpeaking()
+                  }}
                   disabled={!ttsSupported}
                 />
-                <span>Réponses vocales</span>
+                <span>Lecture vocale</span>
               </label>
               {ttsSupported && audioEnabled && (
-                <select
-                  className="voice-rate-select"
-                  value={voiceRate}
-                  aria-label="Vitesse de la voix"
-                  title="Vitesse de lecture des réponses"
-                  onChange={(event) => setVoiceRate(Number(event.target.value))}
-                >
-                  <option value={0.5}>🐢 0,5×</option>
-                  <option value={0.75}>0,75×</option>
-                  <option value={1}>1×</option>
-                  <option value={1.25}>1,25×</option>
-                  <option value={1.5}>1,5×</option>
-                  <option value={2}>🐇 2×</option>
-                </select>
+                <>
+                  <label className="voice-model-control" title="Modèle vocal français utilisé pour lire les réponses">
+                    <span>Voix</span>
+                    <select
+                      className="voice-model-select"
+                      value={voiceModel}
+                      aria-label="Modèle de voix française"
+                      onChange={(event) => setVoiceModel(event.target.value)}
+                    >
+                      {frenchVoices.map((voice) => (
+                        <option key={voice.id} value={voice.id}>
+                          {voice.label} · {voice.detail}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <select
+                    className="voice-rate-select"
+                    value={voiceRate}
+                    aria-label="Vitesse de la voix"
+                    title="Vitesse de lecture des réponses"
+                    onChange={(event) => setVoiceRate(Number(event.target.value))}
+                  >
+                    <option value={0.5}>0,5×</option>
+                    <option value={0.75}>0,75×</option>
+                    <option value={1}>1×</option>
+                    <option value={1.25}>1,25×</option>
+                    <option value={1.5}>1,5×</option>
+                    <option value={2}>2×</option>
+                  </select>
+                </>
               )}
               {autoAudio && audioEnabled && speechSupported && (
                 <span className="auto-config" title="Configuration du mode auto">
@@ -1044,7 +1164,7 @@ function App() {
                     value={wakeWord}
                     maxLength={30}
                     aria-label="Mot-clé de réveil"
-                    placeholder="Mot-clé (ex. Chloé)"
+                    placeholder="Mot-clé (ex. OK Ming)"
                     onChange={(event) => setWakeWord(event.target.value)}
                   />
                   <select
@@ -1126,7 +1246,7 @@ function App() {
           <div className="chat-heading">
             <div>
               <p className="eyebrow">CONVERSATION</p>
-              <h1>Comment puis-je vous aider ?</h1>
+              <h1>Bonjour, parlons de votre argent : quel est votre projet ?</h1>
             </div>
             {/* Bouton unique (remplace l'ancien « Nouveau chat ») :
                 - suivi activé  → clôture (dossier conseiller) + vidage du chat ;
@@ -1156,7 +1276,7 @@ function App() {
                   <div className={`message-bubble ${message.role}`}>
                     <div className="message-meta">
                       {message.role === 'user' && <span>Vous</span>}
-                      {message.role === 'assistant' && audioEnabled && ttsSupported && (
+                      {message.role === 'assistant' && audioEnabled && voiceEnabled && ttsSupported && (
                         <button
                           type="button"
                           className={`message-speak${speakingId === message.id ? ' active' : ''}`}
@@ -1264,7 +1384,7 @@ function App() {
                   {listening ? <MicOff size={19} /> : <Mic size={19} />}
                 </button>
                 )}
-                {audioEnabled && (
+                {audioEnabled && voiceEnabled && (
                 <button
                   className={`composer-icon mic-button speak-button${speakingId ? ' active' : ''}`}
                   type="button"

@@ -1,7 +1,7 @@
 /**
  * Repères SONORES du mode audio (mains libres), façon Siri.
  * <p>
- * « En veille — dites “Chloé” puis votre question » : sans repère sonore, l'utilisateur ne sait pas si le
+ * « En veille — dites “OK Ming” puis votre question » : sans repère sonore, l'utilisateur ne sait pas si le
  * mot-clé a été entendu, ni quand l'application a commencé à écouter. Un **carillon court et montant**
  * joué au moment de la reconnaissance marque ce début d'écoute — comme le « ding » de Siri sur iPhone.
  * <p>

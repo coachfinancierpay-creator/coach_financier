@@ -19,6 +19,9 @@ mvnw spring-boot:run          # Linux/macOS
 mvnw.cmd spring-boot:run      # Windows
 # clés facultatives :
 #   export DEEPSEEK_API_KEY=sk-...   (ou OPENAI_API_KEY)
+# lecture vocale Azure (région francecentral, endpoint et activation déjà configurés dans application.yml) :
+#   export AZURE_SPEECH_KEY=...
+#   export AZURE_SPEECH_VOICE=fr-FR-DeniseNeural
 
 # Frontend (port 9898)
 cd frontend

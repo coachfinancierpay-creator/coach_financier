@@ -292,14 +292,14 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     )}
                   </td>
                   <td>
-                    {getAdvisorIntent(row.sessionId).prisRDV && (
+                    {getAdvisorIntent(row.sessionId).prisRDV ? (
                       <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
-                    )}
+                    ) : '-'}
                   </td>
                   <td>
-                    {getAdvisorIntent(row.sessionId).etreRappele && (
+                    {getAdvisorIntent(row.sessionId).etreRappele ? (
                       <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
-                    )}
+                    ) : '-'}
                   </td>
                   <td>{formatDateTime(row.closedAt)}</td>
                   <td className="cc-offers">
