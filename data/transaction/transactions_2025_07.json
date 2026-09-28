@@ -14,7 +14,7 @@
     },
     {
       "date": "01/07/2025",
-      "nature_operation": "CARTE X9103 30/06 AUCHAN SUPERMAR",
+      "nature_operation": "CARTE X1234 30/06 AUCHAN SUPERMAR",
       "debit": 15.93,
       "credit": null,
       "transactionId": "TX-00730",
@@ -22,7 +22,7 @@
     },
     {
       "date": "01/07/2025",
-      "nature_operation": "CARTE X9103 30/06 ADEO*LEROY MERLIN",
+      "nature_operation": "CARTE X1234 30/06 ADEO*LEROY MERLIN",
       "debit": 99.97,
       "credit": null,
       "transactionId": "TX-00731",
@@ -30,7 +30,7 @@
     },
     {
       "date": "01/07/2025",
-      "nature_operation": "CARTE X9103 30/06 AUCHAN SUPERMAR",
+      "nature_operation": "CARTE X1234 30/06 AUCHAN SUPERMAR",
       "debit": 33.21,
       "credit": null,
       "transactionId": "TX-00732",
@@ -38,7 +38,7 @@
     },
     {
       "date": "01/07/2025",
-      "nature_operation": "CARTE X9103 30/06 AUCHAN DAC",
+      "nature_operation": "CARTE X1234 30/06 AUCHAN DAC",
       "debit": 67.6,
       "credit": null,
       "transactionId": "TX-00733",
@@ -54,7 +54,7 @@
     },
     {
       "date": "02/07/2025",
-      "nature_operation": "CARTE X9103 01/07 S5c7DsX49HA2X COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 01/07 S5c7DsX49HA2X COMMERCE ELECTRONIQUE",
       "debit": 0.46,
       "credit": null,
       "transactionId": "TX-00735",
@@ -62,7 +62,7 @@
     },
     {
       "date": "02/07/2025",
-      "nature_operation": "CARTE X9819 01/07 SG SAKURA",
+      "nature_operation": "CARTE X5678 01/07 SG SAKURA",
       "debit": 23.56,
       "credit": null,
       "transactionId": "TX-00736",
@@ -70,7 +70,7 @@
     },
     {
       "date": "02/07/2025",
-      "nature_operation": "CARTE X9103 01/07 CASTORAMA",
+      "nature_operation": "CARTE X1234 01/07 CASTORAMA",
       "debit": 46.16,
       "credit": null,
       "transactionId": "TX-00737",
@@ -78,7 +78,7 @@
     },
     {
       "date": "03/07/2025",
-      "nature_operation": "CARTE X9103 02/07 AUCHAN SUPERMAR,",
+      "nature_operation": "CARTE X1234 02/07 AUCHAN SUPERMAR,",
       "debit": 23.76,
       "credit": null,
       "transactionId": "TX-00738",
@@ -86,7 +86,7 @@
     },
     {
       "date": "03/07/2025",
-      "nature_operation": "CARTE X9103 02/07 LEROY MERLIN",
+      "nature_operation": "CARTE X1234 02/07 LEROY MERLIN",
       "debit": 45.28,
       "credit": null,
       "transactionId": "TX-00739",
@@ -102,7 +102,7 @@
     },
     {
       "date": "04/07/2025",
-      "nature_operation": "CARTE X9103 03/07 CASTORAMA",
+      "nature_operation": "CARTE X1234 03/07 CASTORAMA",
       "debit": 22.25,
       "credit": null,
       "transactionId": "TX-00741",
@@ -118,7 +118,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 04/07 CRF MASSY",
+      "nature_operation": "CARTE X5678 04/07 CRF MASSY",
       "debit": 4.72,
       "credit": null,
       "transactionId": "TX-00743",
@@ -126,7 +126,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 04/07 Cyrillus SAS COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 04/07 Cyrillus SAS COMMERCE ELECTRONIQUE",
       "debit": 9.1,
       "credit": null,
       "transactionId": "TX-00744",
@@ -134,7 +134,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9103 04/07 AUCHAN DAC",
+      "nature_operation": "CARTE X1234 04/07 AUCHAN DAC",
       "debit": 35.81,
       "credit": null,
       "transactionId": "TX-00745",
@@ -142,7 +142,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 04/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 04/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
       "debit": 49.82,
       "credit": null,
       "transactionId": "TX-00746",
@@ -150,7 +150,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9103 04/07 ADEO*LEROY MERLIN",
+      "nature_operation": "CARTE X1234 04/07 ADEO*LEROY MERLIN",
       "debit": 44.67,
       "credit": null,
       "transactionId": "TX-00747",
@@ -158,7 +158,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9103 04/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 04/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
       "debit": 201.57,
       "credit": null,
       "transactionId": "TX-00748",
@@ -166,7 +166,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 05/07 UEP*SUPER U",
+      "nature_operation": "CARTE X5678 05/07 UEP*SUPER U",
       "debit": 2.56,
       "credit": null,
       "transactionId": "TX-00749",
@@ -174,7 +174,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 05/07 COFIROUTE TOURS-C/MONNAI",
+      "nature_operation": "CARTE X5678 05/07 COFIROUTE TOURS-C/MONNAI",
       "debit": 28.9,
       "credit": null,
       "transactionId": "TX-00750",
@@ -182,7 +182,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 05/07 ASF-SAINTES",
+      "nature_operation": "CARTE X5678 05/07 ASF-SAINTES",
       "debit": 33.83,
       "credit": null,
       "transactionId": "TX-00751",
@@ -190,7 +190,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 05/07 UEP*SUPER U",
+      "nature_operation": "CARTE X5678 05/07 UEP*SUPER U",
       "debit": 46.48,
       "credit": null,
       "transactionId": "TX-00752",
@@ -198,7 +198,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9103 05/07 CSEC SOCIETE GEN",
+      "nature_operation": "CARTE X1234 05/07 CSEC SOCIETE GEN",
       "debit": 141.31,
       "credit": null,
       "transactionId": "TX-00753",
@@ -206,7 +206,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9103 06/07 AMZ DIGITAL FRA COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 06/07 AMZ DIGITAL FRA COMMERCE ELECTRONIQUE",
       "debit": 3.5,
       "credit": null,
       "transactionId": "TX-00754",
@@ -214,7 +214,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 06/07 VERTBAUDET COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 06/07 VERTBAUDET COMMERCE ELECTRONIQUE",
       "debit": 24.36,
       "credit": null,
       "transactionId": "TX-00755",
@@ -222,7 +222,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 06/07 Easypara COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 06/07 Easypara COMMERCE ELECTRONIQUE",
       "debit": 96.41,
       "credit": null,
       "transactionId": "TX-00756",
@@ -230,7 +230,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9819 06/07 FAMILY FUN BOWLING",
+      "nature_operation": "CARTE X5678 06/07 FAMILY FUN BOWLING",
       "debit": 28.2,
       "credit": null,
       "transactionId": "TX-00757",
@@ -238,7 +238,7 @@
     },
     {
       "date": "07/07/2025",
-      "nature_operation": "CARTE X9103 06/07 LIDL 3358",
+      "nature_operation": "CARTE X1234 06/07 LIDL 3358",
       "debit": 29.73,
       "credit": null,
       "transactionId": "TX-00758",
@@ -270,7 +270,7 @@
     },
     {
       "date": "08/07/2025",
-      "nature_operation": "CARTE X9103 07/07 QPF PELLETAN",
+      "nature_operation": "CARTE X1234 07/07 QPF PELLETAN",
       "debit": 6.68,
       "credit": null,
       "transactionId": "TX-00762",
@@ -278,7 +278,7 @@
     },
     {
       "date": "08/07/2025",
-      "nature_operation": "CARTE X9819 07/07 PETIT MINOT",
+      "nature_operation": "CARTE X5678 07/07 PETIT MINOT",
       "debit": 21.96,
       "credit": null,
       "transactionId": "TX-00763",
@@ -286,7 +286,7 @@
     },
     {
       "date": "08/07/2025",
-      "nature_operation": "CARTE X9819 07/07 UEP*SUPER U",
+      "nature_operation": "CARTE X5678 07/07 UEP*SUPER U",
       "debit": 39.51,
       "credit": null,
       "transactionId": "TX-00764",
@@ -294,7 +294,7 @@
     },
     {
       "date": "08/07/2025",
-      "nature_operation": "CARTE X9103 07/07 STATION U",
+      "nature_operation": "CARTE X1234 07/07 STATION U",
       "debit": 62.11,
       "credit": null,
       "transactionId": "TX-00765",
@@ -318,7 +318,7 @@
     },
     {
       "date": "09/07/2025",
-      "nature_operation": "CARTE X9103 08/07 UEP*SUPER U",
+      "nature_operation": "CARTE X1234 08/07 UEP*SUPER U",
       "debit": 0.88,
       "credit": null,
       "transactionId": "TX-00768",
@@ -326,7 +326,7 @@
     },
     {
       "date": "09/07/2025",
-      "nature_operation": "CARTE X9103 08/07 VICTOF",
+      "nature_operation": "CARTE X1234 08/07 VICTOF",
       "debit": 6.19,
       "credit": null,
       "transactionId": "TX-00769",
@@ -334,7 +334,7 @@
     },
     {
       "date": "09/07/2025",
-      "nature_operation": "CARTE X9819 08/07 BURGER KING",
+      "nature_operation": "CARTE X5678 08/07 BURGER KING",
       "debit": 42.07,
       "credit": null,
       "transactionId": "TX-00770",
@@ -342,7 +342,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9819 09/07 PARKING2TALMONT",
+      "nature_operation": "CARTE X5678 09/07 PARKING2TALMONT",
       "debit": 4.61,
       "credit": null,
       "transactionId": "TX-00771",
@@ -350,7 +350,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9103 09/07 PHARMACIE DIDONN",
+      "nature_operation": "CARTE X1234 09/07 PHARMACIE DIDONN",
       "debit": 7.49,
       "credit": null,
       "transactionId": "TX-00772",
@@ -358,7 +358,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9103 09/07 UEP*SUPER U",
+      "nature_operation": "CARTE X1234 09/07 UEP*SUPER U",
       "debit": 27.14,
       "credit": null,
       "transactionId": "TX-00773",
@@ -366,7 +366,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9819 09/07 ASSO ETINCELLES",
+      "nature_operation": "CARTE X5678 09/07 ASSO ETINCELLES",
       "debit": 30.62,
       "credit": null,
       "transactionId": "TX-00774",
@@ -374,7 +374,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9103 09/07 L'ANE CULOTTE",
+      "nature_operation": "CARTE X1234 09/07 L'ANE CULOTTE",
       "debit": 57.4,
       "credit": null,
       "transactionId": "TX-00775",
@@ -382,7 +382,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9819 09/07 SUMUP *VOCABULL ART",
+      "nature_operation": "CARTE X5678 09/07 SUMUP *VOCABULL ART",
       "debit": 22.09,
       "credit": null,
       "transactionId": "TX-00776",
@@ -390,7 +390,7 @@
     },
     {
       "date": "10/07/2025",
-      "nature_operation": "CARTE X9103 09/07 CSEC SG COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 09/07 CSEC SG COMMERCE ELECTRONIQUE",
       "debit": 547.32,
       "credit": null,
       "transactionId": "TX-00777",
@@ -422,7 +422,7 @@
     },
     {
       "date": "11/07/2025",
-      "nature_operation": "CARTE X9103 10/07 VICTOF",
+      "nature_operation": "CARTE X1234 10/07 VICTOF",
       "debit": 7.79,
       "credit": null,
       "transactionId": "TX-00781",
@@ -430,7 +430,7 @@
     },
     {
       "date": "11/07/2025",
-      "nature_operation": "CARTE X9103 10/07 CHARMILIE",
+      "nature_operation": "CARTE X1234 10/07 CHARMILIE",
       "debit": 20.79,
       "credit": null,
       "transactionId": "TX-00782",
@@ -438,7 +438,7 @@
     },
     {
       "date": "11/07/2025",
-      "nature_operation": "CARTE X9819 10/07 LA BONBONNIERE",
+      "nature_operation": "CARTE X5678 10/07 LA BONBONNIERE",
       "debit": 30.0,
       "credit": null,
       "transactionId": "TX-00783",
@@ -454,7 +454,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 REMBT 13/07 CRF MASSY",
+      "nature_operation": "CARTE X5678 REMBT 13/07 CRF MASSY",
       "debit": null,
       "credit": 6.7,
       "transactionId": "TX-00785",
@@ -462,7 +462,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 REMBT 13/07 CRF MASSY",
+      "nature_operation": "CARTE X5678 REMBT 13/07 CRF MASSY",
       "debit": null,
       "credit": 10.3,
       "transactionId": "TX-00786",
@@ -478,7 +478,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 06/07 Greenweez COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 06/07 Greenweez COMMERCE ELECTRONIQUE",
       "debit": 66.34,
       "credit": null,
       "transactionId": "TX-00788",
@@ -486,7 +486,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 08/07 AMAZON EU SARL COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 08/07 AMAZON EU SARL COMMERCE ELECTRONIQUE",
       "debit": 18.89,
       "credit": null,
       "transactionId": "TX-00789",
@@ -494,7 +494,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 11/07 COOLONGALOOK PAR",
+      "nature_operation": "CARTE X5678 11/07 COOLONGALOOK PAR",
       "debit": 7.43,
       "credit": null,
       "transactionId": "TX-00790",
@@ -502,7 +502,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 11/07 UEP*U EXPRESS",
+      "nature_operation": "CARTE X1234 11/07 UEP*U EXPRESS",
       "debit": 1.37,
       "credit": null,
       "transactionId": "TX-00791",
@@ -510,7 +510,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 11/07 CHARMILIE",
+      "nature_operation": "CARTE X5678 11/07 CHARMILIE",
       "debit": 19.13,
       "credit": null,
       "transactionId": "TX-00792",
@@ -518,7 +518,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 11/07 VICTOF",
+      "nature_operation": "CARTE X1234 11/07 VICTOF",
       "debit": 6.32,
       "credit": null,
       "transactionId": "TX-00793",
@@ -526,7 +526,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 11/07 COOLONGALOOK PAR",
+      "nature_operation": "CARTE X1234 11/07 COOLONGALOOK PAR",
       "debit": 47.44,
       "credit": null,
       "transactionId": "TX-00794",
@@ -534,7 +534,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 12/07 UEP*SUPER U",
+      "nature_operation": "CARTE X5678 12/07 UEP*SUPER U",
       "debit": 2.2,
       "credit": null,
       "transactionId": "TX-00795",
@@ -542,7 +542,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 12/07 COFIROUTE TOURS-C/SORIGN",
+      "nature_operation": "CARTE X5678 12/07 COFIROUTE TOURS-C/SORIGN",
       "debit": 30.35,
       "credit": null,
       "transactionId": "TX-00796",
@@ -550,7 +550,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 12/07 LA GOURMANDISE",
+      "nature_operation": "CARTE X1234 12/07 LA GOURMANDISE",
       "debit": 7.62,
       "credit": null,
       "transactionId": "TX-00797",
@@ -558,7 +558,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 12/07 AUCHAN SUPERMAR,",
+      "nature_operation": "CARTE X1234 12/07 AUCHAN SUPERMAR,",
       "debit": 8.0,
       "credit": null,
       "transactionId": "TX-00798",
@@ -566,7 +566,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 12/07 STATION U",
+      "nature_operation": "CARTE X1234 12/07 STATION U",
       "debit": 11.67,
       "credit": null,
       "transactionId": "TX-00799",
@@ -574,7 +574,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 12/07 AUCHAN DAC",
+      "nature_operation": "CARTE X1234 12/07 AUCHAN DAC",
       "debit": 25.42,
       "credit": null,
       "transactionId": "TX-00800",
@@ -582,7 +582,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 12/07 COFIROUTE LA FOLIE-B/PAR",
+      "nature_operation": "CARTE X1234 12/07 COFIROUTE LA FOLIE-B/PAR",
       "debit": 27.53,
       "credit": null,
       "transactionId": "TX-00801",
@@ -590,7 +590,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 13/07 CRF MASSY",
+      "nature_operation": "CARTE X1234 13/07 CRF MASSY",
       "debit": 27.56,
       "credit": null,
       "transactionId": "TX-00802",
@@ -598,7 +598,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9819 13/07 GRAND FRAIS",
+      "nature_operation": "CARTE X5678 13/07 GRAND FRAIS",
       "debit": 78.94,
       "credit": null,
       "transactionId": "TX-00803",
@@ -606,7 +606,7 @@
     },
     {
       "date": "15/07/2025",
-      "nature_operation": "CARTE X9103 13/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 13/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
       "debit": 102.81,
       "credit": null,
       "transactionId": "TX-00804",
@@ -614,7 +614,7 @@
     },
     {
       "date": "18/07/2025",
-      "nature_operation": "CARTE X9103 14/07 CRF MASSY",
+      "nature_operation": "CARTE X1234 14/07 CRF MASSY",
       "debit": 30.46,
       "credit": null,
       "transactionId": "TX-00805",
@@ -622,7 +622,7 @@
     },
     {
       "date": "18/07/2025",
-      "nature_operation": "CARTE X9103 14/07 LE FONTANA",
+      "nature_operation": "CARTE X1234 14/07 LE FONTANA",
       "debit": 32.09,
       "credit": null,
       "transactionId": "TX-00806",
@@ -638,7 +638,7 @@
     },
     {
       "date": "16/07/2025",
-      "nature_operation": "CARTE X9819 14/07 Decathlon France COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 14/07 Decathlon France COMMERCE ELECTRONIQUE",
       "debit": 11.93,
       "credit": null,
       "transactionId": "TX-00808",
@@ -646,7 +646,7 @@
     },
     {
       "date": "17/07/2025",
-      "nature_operation": "CARTE X9819 13/07 PVH France SAS COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 13/07 PVH France SAS COMMERCE ELECTRONIQUE",
       "debit": 84.95,
       "credit": null,
       "transactionId": "TX-00809",
@@ -654,7 +654,7 @@
     },
     {
       "date": "17/07/2025",
-      "nature_operation": "CARTE X9819 13/07 Geox France Sart COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 13/07 Geox France Sart COMMERCE ELECTRONIQUE",
       "debit": 111.51,
       "credit": null,
       "transactionId": "TX-00810",
@@ -662,7 +662,7 @@
     },
     {
       "date": "17/07/2025",
-      "nature_operation": "CARTE X9819 16/07 CHATEAUFORM’ FRA",
+      "nature_operation": "CARTE X5678 16/07 CHATEAUFORM’ FRA",
       "debit": 10.35,
       "credit": null,
       "transactionId": "TX-00811",
@@ -702,7 +702,7 @@
     },
     {
       "date": "18/07/2025",
-      "nature_operation": "CARTE X9103 17/07 RRPAYBYPHONE COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 17/07 RRPAYBYPHONE COMMERCE ELECTRONIQUE",
       "debit": 2.42,
       "credit": null,
       "transactionId": "TX-00816",
@@ -710,7 +710,7 @@
     },
     {
       "date": "18/07/2025",
-      "nature_operation": "CARTE X9819 17/07 CENTRE IMAGERIE",
+      "nature_operation": "CARTE X5678 17/07 CENTRE IMAGERIE",
       "debit": 61.97,
       "credit": null,
       "transactionId": "TX-00817",
@@ -718,7 +718,7 @@
     },
     {
       "date": "18/07/2025",
-      "nature_operation": "CARTE X9103 17/07 MAESA DES NATIO",
+      "nature_operation": "CARTE X1234 17/07 MAESA DES NATIO",
       "debit": 158.16,
       "credit": null,
       "transactionId": "TX-00818",
@@ -758,7 +758,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9819 18/07 SOC. GEN. JULLIA COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 18/07 SOC. GEN. JULLIA COMMERCE ELECTRONIQUE",
       "debit": 11.49,
       "credit": null,
       "transactionId": "TX-00823",
@@ -766,7 +766,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 18/07 LDLC.COM COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 18/07 LDLC.COM COMMERCE ELECTRONIQUE",
       "debit": 46.96,
       "credit": null,
       "transactionId": "TX-00824",
@@ -774,7 +774,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 18/07 LDLC.COM COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 18/07 LDLC.COM COMMERCE ELECTRONIQUE",
       "debit": 47.16,
       "credit": null,
       "transactionId": "TX-00825",
@@ -782,7 +782,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 18/07 LDLC.COM COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 18/07 LDLC.COM COMMERCE ELECTRONIQUE",
       "debit": 134.72,
       "credit": null,
       "transactionId": "TX-00826",
@@ -790,7 +790,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 19/07 AMAZON PRIME FR COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 19/07 AMAZON PRIME FR COMMERCE ELECTRONIQUE",
       "debit": 4.21,
       "credit": null,
       "transactionId": "TX-00827",
@@ -798,7 +798,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 19/07 LeBonCoin COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 19/07 LeBonCoin COMMERCE ELECTRONIQUE",
       "debit": 52.35,
       "credit": null,
       "transactionId": "TX-00828",
@@ -806,7 +806,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9819 19/07 CABAIAFR COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 19/07 CABAIAFR COMMERCE ELECTRONIQUE",
       "debit": 77.36,
       "credit": null,
       "transactionId": "TX-00829",
@@ -814,7 +814,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 19/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 19/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
       "debit": 208.75,
       "credit": null,
       "transactionId": "TX-00830",
@@ -822,7 +822,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9819 19/07 CRF MASSY",
+      "nature_operation": "CARTE X5678 19/07 CRF MASSY",
       "debit": 51.58,
       "credit": null,
       "transactionId": "TX-00831",
@@ -830,7 +830,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9819 19/07 Mango.com COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X5678 19/07 Mango.com COMMERCE ELECTRONIQUE",
       "debit": 121.82,
       "credit": null,
       "transactionId": "TX-00832",
@@ -838,7 +838,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 20/07 AMAZON EU SARL (COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 20/07 AMAZON EU SARL (COMMERCE ELECTRONIQUE",
       "debit": 25.77,
       "credit": null,
       "transactionId": "TX-00833",
@@ -846,7 +846,7 @@
     },
     {
       "date": "21/07/2025",
-      "nature_operation": "CARTE X9103 20/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 20/07 Boutique bons d achat COMMERCE ELECTRONIQUE",
       "debit": 105.24,
       "credit": null,
       "transactionId": "TX-00834",
@@ -878,7 +878,7 @@
     },
     {
       "date": "22/07/2025",
-      "nature_operation": "CARTE X9103 18/07 4V2CqEOaeSBp COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 18/07 4V2CqEOaeSBp COMMERCE ELECTRONIQUE",
       "debit": 2.1,
       "credit": null,
       "transactionId": "TX-00838",
@@ -886,7 +886,7 @@
     },
     {
       "date": "22/07/2025",
-      "nature_operation": "CARTE X9819 19/07 CULTURA",
+      "nature_operation": "CARTE X5678 19/07 CULTURA",
       "debit": 82.67,
       "credit": null,
       "transactionId": "TX-00839",
@@ -894,7 +894,7 @@
     },
     {
       "date": "22/07/2025",
-      "nature_operation": "CARTE X9103 19/07 GRAND FRAIS",
+      "nature_operation": "CARTE X1234 19/07 GRAND FRAIS",
       "debit": 83.74,
       "credit": null,
       "transactionId": "TX-00840",
@@ -902,7 +902,7 @@
     },
     {
       "date": "22/07/2025",
-      "nature_operation": "CARTE X9103 21/07 SODEXOWEB 4795897 COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 21/07 SODEXOWEB 4795897 COMMERCE ELECTRONIQUE",
       "debit": 36.94,
       "credit": null,
       "transactionId": "TX-00841",
@@ -942,7 +942,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9819 REMBT 25/07 VERTBAUDET COMMERCE ELECTRONIQUE",
+      "nature_operation": "‘CARTE X5678 REMBT 25/07 VERTBAUDET COMMERCE ELECTRONIQUE",
       "debit": null,
       "credit": 5.31,
       "transactionId": "TX-00846",
@@ -950,7 +950,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9819 REMBT 26/07 GRAND FRAIS",
+      "nature_operation": "‘CARTE X5678 REMBT 26/07 GRAND FRAIS",
       "debit": null,
       "credit": 4.21,
       "transactionId": "TX-00847",
@@ -958,7 +958,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9103 REMBT 27/07 LeBonCoin ‘COMMERCE ELECTRONIQUE",
+      "nature_operation": "‘CARTE X1234 REMBT 27/07 LeBonCoin ‘COMMERCE ELECTRONIQUE",
       "debit": null,
       "credit": 118.96,
       "transactionId": "TX-00848",
@@ -974,7 +974,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9103 25/07 AMZ DIGITAL FRA COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 25/07 AMZ DIGITAL FRA COMMERCE ELECTRONIQUE",
       "debit": 3.47,
       "credit": null,
       "transactionId": "TX-00850",
@@ -982,7 +982,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9819 25/07 SODEXO SOCIETE",
+      "nature_operation": "‘CARTE X5678 25/07 SODEXO SOCIETE",
       "debit": 11.19,
       "credit": null,
       "transactionId": "TX-00851",
@@ -990,7 +990,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9103 25/07 PAYPAL *Paiement 4X COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 25/07 PAYPAL *Paiement 4X COMMERCE ELECTRONIQUE",
       "debit": 160.16,
       "credit": null,
       "transactionId": "TX-00852",
@@ -998,7 +998,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9103 26/07 AUCHAN SUPERMAR,",
+      "nature_operation": "CARTE X1234 26/07 AUCHAN SUPERMAR,",
       "debit": 4.2,
       "credit": null,
       "transactionId": "TX-00853",
@@ -1006,7 +1006,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9819 26/07 GRAND FRAIS",
+      "nature_operation": "‘CARTE X5678 26/07 GRAND FRAIS",
       "debit": 4.72,
       "credit": null,
       "transactionId": "TX-00854",
@@ -1014,7 +1014,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9103 26/07 CASTORAMA",
+      "nature_operation": "‘CARTE X1234 26/07 CASTORAMA",
       "debit": 9.19,
       "credit": null,
       "transactionId": "TX-00855",
@@ -1022,7 +1022,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9819 26/07 GRAND FRAIS",
+      "nature_operation": "‘CARTE X5678 26/07 GRAND FRAIS",
       "debit": 69.16,
       "credit": null,
       "transactionId": "TX-00856",
@@ -1030,7 +1030,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9819 26/07 AUCHAN SUPERMAR,",
+      "nature_operation": "CARTE X5678 26/07 AUCHAN SUPERMAR,",
       "debit": 116.62,
       "credit": null,
       "transactionId": "TX-00857",
@@ -1038,7 +1038,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9103 27/07 LeBonCoin COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 27/07 LeBonCoin COMMERCE ELECTRONIQUE",
       "debit": 171.53,
       "credit": null,
       "transactionId": "TX-00858",
@@ -1046,7 +1046,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9103 27/07 MOLNAR DISTRIBUT",
+      "nature_operation": "‘CARTE X1234 27/07 MOLNAR DISTRIBUT",
       "debit": 17.66,
       "credit": null,
       "transactionId": "TX-00859",
@@ -1054,7 +1054,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9819 27/07 APRR AUTOROUTE",
+      "nature_operation": "CARTE X5678 27/07 APRR AUTOROUTE",
       "debit": 2.2,
       "credit": null,
       "transactionId": "TX-00860",
@@ -1062,7 +1062,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "‘CARTE X9819 27/07 SARL JEANDRE",
+      "nature_operation": "‘CARTE X5678 27/07 SARL JEANDRE",
       "debit": 2.95,
       "credit": null,
       "transactionId": "TX-00861",
@@ -1070,7 +1070,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9819 27/07 LEFEVRE",
+      "nature_operation": "CARTE X5678 27/07 LEFEVRE",
       "debit": 11.55,
       "credit": null,
       "transactionId": "TX-00862",
@@ -1078,7 +1078,7 @@
     },
     {
       "date": "28/07/2025",
-      "nature_operation": "CARTE X9819 27/07 AUCHAN DAC",
+      "nature_operation": "CARTE X5678 27/07 AUCHAN DAC",
       "debit": 38.9,
       "credit": null,
       "transactionId": "TX-00863",
@@ -1126,7 +1126,7 @@
     },
     {
       "date": "30/07/2025",
-      "nature_operation": "CARTE X9103 29/07 SODEXO WEB 4795897 COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 29/07 SODEXO WEB 4795897 COMMERCE ELECTRONIQUE",
       "debit": 35.17,
       "credit": null,
       "transactionId": "TX-00869",
@@ -1142,7 +1142,7 @@
     },
     {
       "date": "31/07/2025",
-      "nature_operation": "CARTE X9103 30/07 2AdkHvPsq8WZ COMMERCE ELECTRONIQUE",
+      "nature_operation": "CARTE X1234 30/07 2AdkHvPsq8WZ COMMERCE ELECTRONIQUE",
       "debit": 2.09,
       "credit": null,
       "transactionId": "TX-00871",

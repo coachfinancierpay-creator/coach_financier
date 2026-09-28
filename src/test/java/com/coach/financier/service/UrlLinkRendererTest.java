@@ -73,14 +73,14 @@ class UrlLinkRendererTest {
     void toHtml_buildsAClickableCallLinkForATelUrl() {
         // Lien d'APPEL ajouté par le backend (page Centre d'appels / mail conseiller) : le numéro vient
         // de la configuration, jamais du LLM.
-        String out = UrlLinkRenderer.toHtml("Contacter le client : [URL|Appeler le client|tel:0644910925]");
-        assertTrue(out.contains("<a href=\"tel:0644910925\">Appeler le client</a>"));
+        String out = UrlLinkRenderer.toHtml("Contacter le client : [URL|Appeler le client|tel:0612345678]");
+        assertTrue(out.contains("<a href=\"tel:0612345678\">Appeler le client</a>"));
     }
 
     @Test
     void toText_showsThePhoneNumberOfACallLink() {
-        assertEquals("Contacter le client : Appeler le client : 0644910925",
-                UrlLinkRenderer.toText("Contacter le client : [URL|Appeler le client|tel:0644910925]"));
+        assertEquals("Contacter le client : Appeler le client : 0612345678",
+                UrlLinkRenderer.toText("Contacter le client : [URL|Appeler le client|tel:0612345678]"));
     }
 
     @Test

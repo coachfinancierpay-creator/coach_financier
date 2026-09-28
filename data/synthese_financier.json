@@ -77,7 +77,7 @@
         },
         {
           "date": "2025-07-10",
-          "label": "CARTE X9103 09/07 CSEC SG COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 09/07 CSEC SG COMMERCE ELECTRONIQUE",
           "amount": 547.32,
           "category": "SHOPPING"
         }
@@ -107,13 +107,13 @@
         },
         {
           "date": "2025-08-12",
-          "label": "CARTE X9103 11/08 BOURSORAMA COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 11/08 BOURSORAMA COMMERCE ELECTRONIQUE",
           "amount": 239.99,
           "category": "SHOPPING"
         },
         {
           "date": "2025-08-11",
-          "label": "CARTE X9103 08/08 CSEC SG COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 08/08 CSEC SG COMMERCE ELECTRONIQUE",
           "amount": 227.48,
           "category": "SHOPPING"
         }
@@ -145,13 +145,13 @@
         },
         {
           "date": "2025-09-10",
-          "label": "CARTE X9103 08/09 CSEC SG COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 08/09 CSEC SG COMMERCE ELECTRONIQUE",
           "amount": 337.83,
           "category": "SHOPPING"
         },
         {
           "date": "2025-09-11",
-          "label": "CARTE X9103 10/09 MR BAUDRY MATTHI",
+          "label": "CARTE X1234 10/09 MR BAUDRY MATTHI",
           "amount": 318.01,
           "category": "OTHER"
         }
@@ -228,7 +228,7 @@
         },
         {
           "date": "2025-11-17",
-          "label": "CARTE X9103 16/11 CONSERV-WISS NET 187,26 COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 16/11 CONSERV-WISS NET 187,26 COMMERCE ELECTRONIQUE",
           "amount": 168.53,
           "category": "SHOPPING"
         }
@@ -340,7 +340,7 @@
         },
         {
           "date": "2026-02-16",
-          "label": "CARTE X9103 15/02 CONSERV-WISS NET COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 15/02 CONSERV-WISS NET COMMERCE ELECTRONIQUE",
           "amount": 218.02,
           "category": "SHOPPING"
         }
@@ -378,7 +378,7 @@
         },
         {
           "date": "2026-03-16",
-          "label": "CARTE X9819 14/03 SAINTE MARIE COMMERCE ELECTRONIQUE",
+          "label": "CARTE X5678 14/03 SAINTE MARIE COMMERCE ELECTRONIQUE",
           "amount": 210.04,
           "category": "SHOPPING"
         }
@@ -448,13 +448,13 @@
         },
         {
           "date": "2026-05-29",
-          "label": "‘CARTE X9819 28/05 CABINET DENTAIRE",
+          "label": "‘CARTE X5678 28/05 CABINET DENTAIRE",
           "amount": 544.72,
           "category": "OTHER"
         },
         {
           "date": "2026-05-28",
-          "label": "CARTE X9103 27/05 CSEC SG COMMERCE ELECTRONIQUE",
+          "label": "CARTE X1234 27/05 CSEC SG COMMERCE ELECTRONIQUE",
           "amount": 544.67,
           "category": "SHOPPING"
         }

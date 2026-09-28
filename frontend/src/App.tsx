@@ -185,7 +185,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        `Bonjour ! Je suis Ming, votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
+        `Bonjour ! Je suis Chloé, votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -1164,7 +1164,7 @@ function App() {
                     value={wakeWord}
                     maxLength={30}
                     aria-label="Mot-clé de réveil"
-                    placeholder="Mot-clé (ex. OK Ming)"
+                    placeholder="Mot-clé (ex. OK Chloé)"
                     onChange={(event) => setWakeWord(event.target.value)}
                   />
                   <select

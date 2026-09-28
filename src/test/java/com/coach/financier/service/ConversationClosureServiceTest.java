@@ -53,7 +53,7 @@ class ConversationClosureServiceTest {
     private static final String PRODUCT_ID = "sg_auto_tous_risques";
     private static final String PRODUCT_URL = "https://particuliers.sg.fr/assurances/nos-offres/assurance-auto";
     /** Numéro de DÉMO (configuration {@code app.suivi.customer-phone}) : jamais produit par l'IA. */
-    private static final String DEMO_PHONE = "0644910925";
+    private static final String DEMO_PHONE = "0612345678";
 
     private ConversationService conversationService;
     private AIServiceFactory aiServiceFactory;

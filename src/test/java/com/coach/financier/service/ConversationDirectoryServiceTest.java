@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
  * tri par score, et détail qui reprend la synthèse CONSEILLER (jamais le brouillon client).
  */
 class ConversationDirectoryServiceTest {
-    private static final String DEMO_PHONE = "0644910925";
+    private static final String DEMO_PHONE = "0612345678";
 
     @TempDir
     Path tempDir;

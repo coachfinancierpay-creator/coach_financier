@@ -64,7 +64,7 @@ app:
     # Numéro de téléphone du client, utilisé par le lien d'APPEL ajouté au mail conseiller et affiché
     # dans l'annuaire du centre d'appels. Renseigné en dur pour la DÉMO ; vide = aucun lien d'appel.
     # Le numéro n'est JAMAIS produit par l'IA : il vient uniquement de cette configuration.
-    customer-phone: ${SUIVI_CUSTOMER_PHONE:0644910925}
+    customer-phone: ${SUIVI_CUSTOMER_PHONE:0612345678}
   # --- Module Marketing Intelligence (POC, AUCUNE base de données : fichiers JSONL/JSON) ---
   # Les événements sont extraits lors du MÊME appel IA que le dossier de suivi (champ marketingEvents)
   # puis stockés anonymisés dans <dir>/events/, agrégés par le batch dans <dir>/aggregates/

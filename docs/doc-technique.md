@@ -240,7 +240,7 @@ app.suivi.advisor-appointment-url: ${ADVISOR_APPOINTMENT_URL:…}  # lien de RDV
 app.suivi.dossier-url: ${SUIVI_DOSSIER_URL:https://particuliers.sg.fr}  # REPLI du lien « dossier client » (utilisé seulement si app.advisor-feedback.frontend-url est vide)
 #   (démo = site Société Générale ; en production = outil conseiller. Vide ⇒ aucun lien)
 app.suivi.advisor-mail-html: ${SUIVI_ADVISOR_MAIL_HTML:true}
-app.suivi.customer-phone: ${SUIVI_CUSTOMER_PHONE:0644910925}  # lien d'appel du mail conseiller + page Centre d'appels
+app.suivi.customer-phone: ${SUIVI_CUSTOMER_PHONE:0612345678}  # lien d'appel du mail conseiller + page Centre d'appels
 app.call-center.dir: ${CALL_CENTER_DIR:./data/call-center}      # historique des STATUTS d'avancement des dossiers
 #   (numéro renseigné EN DUR pour la démo ; jamais produit par l'IA. Vide ⇒ aucun lien d'appel)
 app.mail.enabled: ${MAIL_ENABLED:true}

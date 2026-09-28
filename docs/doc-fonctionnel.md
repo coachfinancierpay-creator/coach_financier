@@ -204,7 +204,7 @@ flowchart TD
   `sessionId` ; le lien vers l'historique de la conversation a été retiré du mail (la page `#/conversation/<id>`
   reste disponible et la conversation se relit depuis la pop-in, bloc **« Conversation complète »** pilable, comme
   la synthèse conseiller) ;
-- il commence par le **score de sens commercial** (0 à 100 + libellé de priorité) avec son **explication courte** (« Pourquoi ce score ») et un **lien d'appel du client** (`tel:`, numéro de démonstration `0644910925`) : le conseiller sait **par quoi commencer**. Le score n'est **jamais** montré au client ;
+- il commence par le **score de sens commercial** (0 à 100 + libellé de priorité) avec son **explication courte** (« Pourquoi ce score ») et un **lien d'appel du client** (`tel:`, numéro de démonstration `0612345678`) : le conseiller sait **par quoi commencer**. Le score n'est **jamais** montré au client ;
 - la **conversation est archivée** avec son dossier (client, catégorie, titre, score, transcript) : elle reste consultable dans la page **`#/centre-appels`** même après un redémarrage du backend ;
 - le brouillon destiné au client est **joint** (`.eml`/`.html`/`.txt`), jamais envoyé et ne contient **jamais** ces liens internes.
 - Déclenchement **sans attente** (l'IHM n'affiche ni chargement ni bannière de résultat) et **une seule fois par session**.
