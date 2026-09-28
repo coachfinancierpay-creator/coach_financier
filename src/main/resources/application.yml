@@ -10,8 +10,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:mli.2023.fr@gmail.com}
-    password: ${CLE_GOOGLE_COACH_FINANCIER:}
+    username: ${MAIL_USERNAME:emetteur_a_remplacer_par_votre_mail@gmail.com}
+    password: ${CLE_GOOGLE_COACH_FINANCIER:a_alimneter_par_votre_mot_de_passe_d_application_Gmail}
     properties:
       mail:
         smtp:
@@ -33,7 +33,7 @@ app:
   # Par défaut : le compte mail configuré (utile pour tester la démo en local).
   advisor:
     name: ${ADVISOR_NAME:Votre conseiller}
-    email: ${ADVISOR_EMAIL:${MAIL_USERNAME:coach.financier.pay@gmail.com}}
+    email: ${ADVISOR_EMAIL:${MAIL_USERNAME:destination_a_remplacer_par_votre_mail@gmail.com}}
   # Nom du client (facultatif : le fichier bancaire ne contient qu'une référence).
   customer:
     name: ${CUSTOMER_NAME:}
