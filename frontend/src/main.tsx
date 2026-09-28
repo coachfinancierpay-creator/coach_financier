@@ -14,7 +14,7 @@ import PromptLab from './PromptLab'
 import './styles.css'
 
 type Page = 'chat' | 'logs' | 'agents' | 'marketing' | 'quality' | 'advisor-feedback' | 'advisor-dossier'
-  | 'conversation' | 'prompt-lab' | 'centre-appels'
+  | 'conversation' | 'prompt-lab' | 'centre-appels' | 'replay'
 
 /** SessionId porté par le lien du mail conseiller : `#/advisor-feedback/session/<sessionId>` (§42). */
 function dossierSessionId(hash: string): string | null {
@@ -37,11 +37,18 @@ function directorySessionId(hash: string): string | null {
   return match ? decodeURIComponent(match[1]) : null
 }
 
+/** SessionId porté par le bouton « Appeler le client » : ouvre le Coach en mode démonstration. */
+function replaySessionId(hash: string): string | null {
+  const match = hash.match(/^#\/replay\/(.+)$/)
+  return match ? decodeURIComponent(match[1]) : null
+}
+
 function pageFor(hash: string): Page {
   if (hash.startsWith('#/logs')) return 'logs'
   if (hash.startsWith('#/agents')) return 'agents'
   if (hash.startsWith('#/prompt-lab')) return 'prompt-lab'
   if (hash.startsWith('#/centre-appels')) return 'centre-appels'
+  if (hash.startsWith('#/replay/')) return 'replay'
   if (hash.startsWith('#/marketing')) return 'marketing'
   if (hash.startsWith('#/quality')) return 'quality'
   if (hash.startsWith('#/advisor-feedback/session/')) return 'advisor-dossier'
@@ -80,6 +87,10 @@ function pageContent(page: Page, route: string) {
   if (page === 'centre-appels') {
     const sessionId = directorySessionId(route)
     return sessionId ? <CallCenter key={sessionId} initialSessionId={sessionId} /> : <CallCenter />
+  }
+  if (page === 'replay') {
+    const sessionId = replaySessionId(route)
+    return sessionId ? <App key={`replay-${sessionId}`} replaySessionId={sessionId} /> : <App />
   }
   if (page === 'marketing') return <Marketing />
   if (page === 'quality') return <Quality />

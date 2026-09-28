@@ -22,7 +22,7 @@ import {
   Wallet,
   X,
 } from 'lucide-react'
-import { API_BASE_URL, closeConversation, fetchFinancialSummary, fetchNextClientQuestion, rewindConversation, sendChat, sendConversationFeedback } from './api'
+import { API_BASE_URL, closeConversation, fetchConversationDirectoryDetail, fetchFinancialSummary, fetchNextClientQuestion, rewindConversation, sendChat, sendConversationFeedback } from './api'
 import { playWakeCue } from './audioCue'
 import FeedbackPopup from './FeedbackPopup'
 import { getAdvisorIntent } from './advisorCallback'
@@ -67,31 +67,6 @@ const providerLabels: Record<AIProvider, string> = {
   LOCAL: 'Local (LM Studio)',
   MOCK: 'Mode démo',
 }
-
-const loadingMessages = [
-  'Analyse en cours... ou alors je suis juste parti chercher un café ?',
-  'C’est moi qui fais tout votre boulot, mais n’oubliez pas que l’avenir c’est vous !',
-  'Si je gagnais un token à chaque fois qu’on me pose cette question, je serais déjà à la retraite...',
-  'Je consulte vos données. Aucun conseiller financier n’a été maltraité pendant ce calcul.',
-  'Je prépare une réponse claire, sans jargon ni magie noire bancaire.',
-  'Je croise les chiffres. Le hackathon mérite quand même une réponse fiable...',
-  'Je fais parler vos transactions. Elles avaient visiblement beaucoup de choses à dire.',
-  'Vos données sont analysées en Chine, le trajet peut prendre un peu de temps...',
-  'Veuillez patienter, je dois demander une rallonge de crédits IA à Denis...',
-  'Calcul en cours... Conversion de votre épargne au TJM GSCI...',
-  'Récupération de votre code agence dans le RES...',
-  'Alors attendez, je sors ma calculatrice...',
-  'Laissez-moi quelques instants, je consulte le replay du ”Capital Markets Day”',
-  'Je cherche le bon équilibre entre précision financière et réponse lisible.',
-  'Je vérifie mes calculs. Une virgule mal placée ne gagnera pas ce hackathon.',
-  'Je pourrais répondre plus vite si j’avais encore 3 jours de TT...',
-  'En attente du Go/NoGo, votre réponse arrive bientôt...',
-  'Pas de panique, je brode un peu pour cacher le fait que je ne sais pas répondre...',
-  'Ça prend du temps, car je n’ai plus le droit de répondre “ça dépend” sans explication...',
-  'Dernière vérification : est-ce que cette question passe bien le contrôle qualité du hackathon ?',
-  'Patientez un peu, je finis ma formation “L’Art du Prompt” pour vous fournir la meilleure réponse possible...',
-]
-
 function newSessionId(): string {
   return `web-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
@@ -202,7 +177,16 @@ function formatPeriod(start: string, end: string): string {
   return `${from.toLocaleDateString('fr-FR')} → ${to.toLocaleDateString('fr-FR')}`
 }
 
-function App() {
+const REPLAY_TYPING_DELAY_MS = 28
+const REPLAY_AI_DELAY_MS = 2000
+const REPLAY_INITIAL_DELAY_MS = 5000
+const REPLAY_NEXT_QUESTION_DELAY_MS = 3000
+
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds))
+}
+
+export default function App({ replaySessionId }: { replaySessionId?: string }) {
   const [provider, setProvider] = useState<AIProvider>(() => {
     const stored = localStorage.getItem(PROVIDER_STORAGE_KEY)
     return stored === 'GPT' || stored === 'DEEPSEEK' || stored === 'LOCAL' || stored === 'MOCK'
@@ -213,7 +197,7 @@ function App() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [rewinding, setRewinding] = useState(false)
-  const [loadingMessage, setLoadingMessage] = useState(loadingMessages[0])
+  const [replayRunning, setReplayRunning] = useState(Boolean(replaySessionId))
   const messagesScrollRef = useRef<HTMLDivElement | null>(null)
   /**
    * CLIENT AUTO (bandeau) : l'IA joue le client et propose la question suivante à partir de l'historique.
@@ -283,6 +267,7 @@ function App() {
     && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
   const [speakingId, setSpeakingId] = useState<string | null>(null)
   const speakingIdRef = useRef<string | null>(null)
+  const replayCancelledRef = useRef(false)
 
   useEffect(() => {
     localStorage.setItem(SESSION_STORAGE_KEY, sessionId)
@@ -291,6 +276,78 @@ function App() {
   useEffect(() => {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(messages.slice(-60)))
   }, [messages])
+
+  /** REPLAY CENTRE D'APPELS : démonstration stable basée sur le transcript archivé, sans nouvel appel IA. */
+  useEffect(() => {
+    if (!replaySessionId) return undefined
+    let cancelled = false
+    replayCancelledRef.current = false
+    setReplayRunning(true)
+    setLoading(false)
+    setError(null)
+    setInput('')
+    setMessages(welcomeMessages())
+
+    void (async () => {
+      try {
+        const detail = await fetchConversationDirectoryDetail(replaySessionId)
+        // Laisser cinq secondes au démarrage pour préparer l'enregistrement vidéo avant la première question.
+        await wait(REPLAY_INITIAL_DELAY_MS)
+        if (cancelled || replayCancelledRef.current) return
+        const archivedMessages = detail.transcript ?? []
+        for (let messageIndex = 0; messageIndex < archivedMessages.length; messageIndex += 1) {
+          if (cancelled || replayCancelledRef.current) return
+          const archivedMessage = archivedMessages[messageIndex]
+          const content = (archivedMessage.content ?? '').trim()
+          if (!content) continue
+          if (archivedMessage.role === 'user') {
+            if (messageIndex > 0 && archivedMessages[messageIndex - 1]?.role === 'assistant') {
+              // Laisser le temps de regarder la réponse IA avant de commencer la question suivante.
+              await wait(REPLAY_NEXT_QUESTION_DELAY_MS)
+              if (cancelled || replayCancelledRef.current) return
+            }
+            for (let index = 1; index <= content.length; index += 1) {
+              if (cancelled || replayCancelledRef.current) return
+              setInput(content.slice(0, index))
+              await wait(REPLAY_TYPING_DELAY_MS)
+            }
+            setInput('')
+            setMessages((current) => [...current, {
+              id: newMessageId(),
+              role: 'user',
+              content,
+              timestamp: archivedMessage.timestamp ?? new Date().toISOString(),
+            }])
+          } else if (archivedMessage.role === 'assistant') {
+            setLoading(true)
+            await wait(REPLAY_AI_DELAY_MS)
+            if (cancelled || replayCancelledRef.current) return
+            setMessages((current) => [...current, {
+              id: newMessageId(),
+              role: 'assistant',
+              content,
+              timestamp: archivedMessage.timestamp ?? new Date().toISOString(),
+            }])
+            setLoading(false)
+          }
+        }
+      } catch (replayError) {
+        if (!cancelled) setError(replayError instanceof Error ? replayError.message : 'Rejeu impossible')
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+          setReplayRunning(false)
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+      replayCancelledRef.current = true
+      setLoading(false)
+      setReplayRunning(false)
+    }
+  }, [replaySessionId])
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => {
@@ -302,17 +359,6 @@ function App() {
     return () => window.cancelAnimationFrame(frame)
   }, [messages.length, loading])
 
-  useEffect(() => {
-    if (!loading) return undefined
-
-    let messageIndex = Math.floor(Math.random() * loadingMessages.length)
-    setLoadingMessage(loadingMessages[messageIndex])
-    const timer = window.setInterval(() => {
-      messageIndex = (messageIndex + 1) % loadingMessages.length
-      setLoadingMessage(loadingMessages[messageIndex])
-    }, 3000)
-    return () => window.clearInterval(timer)
-  }, [loading])
 
   useEffect(() => {
     localStorage.setItem(PROVIDER_STORAGE_KEY, provider)
@@ -743,7 +789,7 @@ function App() {
    * corrige s'il veut, puis l'envoie — ou pas. Chaque clic avance d'une question.
    */
   async function proposeClientQuestion() {
-    if (clientAutoLoading || loading || rewinding) return
+    if (clientAutoLoading || loading || rewinding || replayRunning) return
     setClientAutoNotice(null)
     setError(null)
     setClientAutoLoading(true)
@@ -768,7 +814,7 @@ function App() {
   }
 
   async function rewindToMessage(messageId: string) {
-    if (loading || clientAutoLoading || rewinding) return
+    if (loading || clientAutoLoading || rewinding || replayRunning) return
     const messageIndex = messages.findIndex((message) => message.id === messageId && message.role === 'user')
     if (messageIndex < 0) return
     const message = messages[messageIndex]
@@ -797,7 +843,7 @@ function App() {
 
   async function submitMessage(rawMessage?: string) {
     const message = (rawMessage ?? input).trim()
-    if (!message || loading || rewinding) return
+    if (!message || loading || rewinding || replayRunning) return
 
     stopSpeaking()
 
@@ -961,18 +1007,20 @@ function App() {
             <span className="adv-toggle-ui" aria-hidden="true" />
             <span className="adv-toggle-label">Avancé</span>
           </label>
-          {/* CLIENT AUTO : l'IA joue le client et propose la question suivante à partir de l'historique.
-              Elle n'est jamais envoyée toute seule : elle remplit le champ de saisie. */}
-          <button
-            type="button"
-            className="client-auto-button"
-            onClick={proposeClientQuestion}
-            disabled={clientAutoLoading || loading}
-            title="Client auto : lit l'historique de la conversation et propose la question suivante du client (à relire avant de l'envoyer). Nécessite une IA réelle (DeepSeek, GPT ou modèle local)."
-          >
-            <Bot size={15} />
-            <span>{clientAutoLoading ? 'Client…' : 'Client auto'}</span>
-          </button>
+          {!replaySessionId && (
+            /* CLIENT AUTO : l'IA joue le client et propose la question suivante à partir de l'historique.
+               Elle n'est jamais envoyée toute seule : elle remplit le champ de saisie. */
+            <button
+              type="button"
+              className="client-auto-button"
+              onClick={proposeClientQuestion}
+              disabled={clientAutoLoading || loading}
+              title="Client auto : lit l'historique de la conversation et propose la question suivante du client (à relire avant de l'envoyer). Nécessite une IA réelle (DeepSeek, GPT ou modèle local)."
+            >
+              <Bot size={15} />
+              <span>{clientAutoLoading ? 'Client…' : 'Client auto'}</span>
+            </button>
+          )}
           {advanced && (
             <div className="advanced-actions">
               <label className="adv-toggle" title="Activer le micro (dictée) et la lecture vocale des réponses">
@@ -1218,7 +1266,6 @@ function App() {
                 <div className="message-row assistant">
                   <div className="avatar assistant-avatar"><Sparkles size={17} /></div>
                   <div className="message-bubble assistant typing-bubble">
-                    <span className="loading-message">{loadingMessage}</span>
                     <div className="typing"><span /><span /><span /></div>
                   </div>
                 </div>
@@ -1322,6 +1369,7 @@ function App() {
                 <textarea
                   ref={composerRef}
                   value={input}
+                  disabled={replayRunning}
                   onChange={(event) => setInput(event.target.value)}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' && !event.shiftKey) {
@@ -1336,7 +1384,7 @@ function App() {
                   className="send-button"
                   type="button"
                   onClick={() => submitMessage()}
-                  disabled={loading || !input.trim()}
+                  disabled={loading || replayRunning || !input.trim()}
                   title="Envoyer"
                 >
                   <Send size={18} />
@@ -1437,4 +1485,3 @@ function App() {
   )
 }
 
-export default App

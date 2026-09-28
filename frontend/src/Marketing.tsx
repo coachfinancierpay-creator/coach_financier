@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Bot, Download, Lightbulb, RefreshCw, TrendingDown, TrendingUp, Wand2 } from 'lucide-react'
+import { ArrowLeft, Bot, Download, RefreshCw, TrendingDown, TrendingUp, Wand2 } from 'lucide-react'
 import {
   generateMarketingDemoData,
   fetchMarketingOverview,
@@ -10,11 +10,9 @@ import {
   regenerateMarketingReport,
 } from './api'
 import type {
-  AIProvider,
   MarketingAggregates,
   MarketingPeriod,
   MarketingProductDetail,
-  MarketingProductMetric,
   MarketingReport,
   MarketingStatus,
 } from './types'
@@ -105,7 +103,7 @@ export default function Marketing() {
   /** Journée du rapport IA : choisie explicitement (elle ne dépend PAS de la période affichée). */
   const [reportDate, setReportDate] = useState(isoToday())
   const [projectType, setProjectType] = useState('')
-  const [productFamily, setProductFamily] = useState('')
+  const [productFamily] = useState('')
   const [interestLevel, setInterestLevel] = useState('')
 
   const [data, setData] = useState<MarketingAggregates | null>(null)
@@ -141,7 +139,6 @@ export default function Marketing() {
   const familyLabel = useCallback((code?: string | null) => readableLabel(labels.family, code), [labels])
   const rejectionLabel = useCallback((code?: string | null) => readableLabel(labels.rejection, code), [labels])
   const unmetLabel = useCallback((code?: string | null) => readableLabel(labels.unmet, code), [labels])
-  const missingInfoLabel = useCallback((code?: string | null) => readableLabel(labels.missingInfo, code), [labels])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -294,12 +291,6 @@ export default function Marketing() {
           des conversations réelles.
         </div>
       )}
-      {data && data.invalidEventLines > 0 && (
-        <div className="mkt-notice warn">
-          {data.invalidEventLines} ligne(s) d'événement invalide(s) ignorée(s) dans les fichiers JSONL.
-        </div>
-      )}
-
       {loading && !data ? (
         <div className="logs-empty">Chargement des données marketing…</div>
       ) : !data ? (
@@ -433,108 +424,6 @@ export default function Marketing() {
               ))}
             </div>
 
-            <div className="mkt-card">
-              <h2>Questions sans réponse dans le catalogue</h2>
-              {data.missingInformation.length === 0 && <p className="mkt-empty">Aucun manque d'information signalé.</p>}
-              {data.missingInformation.slice(0, 6).map((info) => (
-                <div key={`${info.productId}-${info.reasonCategory}`} className="mkt-row">
-                  <span title={info.productId}>
-                    {isUnknown(info.productName) ? <span className="mkt-muted">Produit non identifié</span> : info.productName}
-                    <small> · {isUnknown(info.reasonCategory) ? 'motif non précisé' : missingInfoLabel(info.reasonCategory)}</small>
-                  </span>
-                  <span>{formatNumber(info.count)}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="mkt-card wide">
-            <h2>Analyse IA du jour {report?.reportDate ? `— ${report.reportDate}` : ''}</h2>
-            <p className="mkt-hint">
-              Analyse générée à partir de statistiques agrégées. Les chiffres sont calculés par le moteur
-              analytique et non par l'IA.
-              {report?.model ? ` · modèle : ${report.model}` : ''}
-            </p>
-            {report && reportDate && report.reportDate !== reportDate && (
-              <div className="mkt-notice warn">
-                Aucune analyse n&rsquo;existe pour le {reportDate} : voici la plus récente
-                {' '}({report.reportDate}). Utilisez « Régénérer le rapport IA » pour la journée choisie.
-              </div>
-            )}
-            {!report ? (
-              <p className="mkt-empty">
-                Aucun rapport IA disponible pour le {reportDate}. Utilisez « Régénérer le rapport IA ».
-              </p>
-            ) : (
-              <>
-                {report.error && <div className="mkt-notice warn">{report.error}</div>}
-                {report.executiveSummary && report.executiveSummary.length > 0 && (
-                  <ul className="mkt-report-list">
-                    {report.executiveSummary.map((item, index) => (
-                      <li key={`${item.title}-${index}`}>
-                        <span className={`mkt-importance ${(item.importance ?? 'LOW').toLowerCase()}`}>{item.importance}</span>
-                        <strong>{item.title}</strong> — {item.description}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <div className="mkt-report-cols">
-                  {report.mainTrends && report.mainTrends.length > 0 && (
-                    <div>
-                      <h3>Tendances</h3>
-                      <ul>{report.mainTrends.map((trend, i) => <li key={i}><strong>{trend.entityName}</strong> — {trend.observation}</li>)}</ul>
-                    </div>
-                  )}
-                  {report.recommendationPerformance && report.recommendationPerformance.length > 0 && (
-                    <div>
-                      <h3>Performance des recommandations</h3>
-                      <ul>{report.recommendationPerformance.map((item, i) => <li key={i}><strong>{item.productName}</strong> — {item.observation}</li>)}</ul>
-                    </div>
-                  )}
-                  {report.customerFriction && report.customerFriction.length > 0 && (
-                    <div>
-                      <h3>Freins clients</h3>
-                      <ul>{report.customerFriction.map((item, i) => <li key={i}><strong>{item.category}</strong> — {item.observation}</li>)}</ul>
-                    </div>
-                  )}
-                  {report.unmetNeeds && report.unmetNeeds.length > 0 && (
-                    <div>
-                      <h3>Besoins non couverts</h3>
-                      <ul>{report.unmetNeeds.map((item, i) => <li key={i}><strong>{projectLabel(item.projectType) || 'Projet non identifié'}</strong> — {item.observation}</li>)}</ul>
-                    </div>
-                  )}
-                  {report.missingProductInformation && report.missingProductInformation.length > 0 && (
-                    <div>
-                      <h3>Informations produit à enrichir</h3>
-                      <ul>{report.missingProductInformation.map((item, i) => <li key={i}><strong>{item.productName}</strong> — {item.observation}</li>)}</ul>
-                    </div>
-                  )}
-                  {report.crossSellInsights && report.crossSellInsights.length > 0 && (
-                    <div>
-                      <h3>Cross-sell</h3>
-                      <ul>{report.crossSellInsights.map((item, i) => <li key={i}><strong>{item.sourceProduct} → {item.targetProduct}</strong> — {item.observation}</li>)}</ul>
-                    </div>
-                  )}
-                  {report.aiCoachQuality && report.aiCoachQuality.length > 0 && (
-                    <div>
-                      <h3>Qualité du parcours IA</h3>
-                      <ul>{report.aiCoachQuality.map((item, i) => <li key={i}><strong>{item.type}</strong> — {item.observation}</li>)}</ul>
-                    </div>
-                  )}
-                </div>
-                {report.opportunities && report.opportunities.length > 0 && (
-                  <>
-                    <h3><Lightbulb size={15} /> Opportunités à étudier</h3>
-                    <ul className="mkt-report-list">
-                      {report.opportunities.map((item, index) => (
-                        <li key={index}><strong>{item.title}</strong> — {item.description} <em>{item.recommendation}</em></li>
-                      ))}
-                    </ul>
-                  </>
-                )}
-                {report.finalSummary && <p className="mkt-summary">{report.finalSummary}</p>}
-              </>
-            )}
           </section>
 
           <section className="mkt-card wide">
@@ -663,5 +552,3 @@ function EvolutionBadge({ value }: { value: number | null | undefined }) {
   )
 }
 
-/** Utilisé par la page pour typer les libellés de provider (aucun effet de bord). */
-export type MarketingProvider = AIProvider

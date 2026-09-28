@@ -35,6 +35,10 @@ const PERIODS: { days: number; label: string }[] = [
   { days: 0, label: 'Tout' },
 ]
 
+function wait(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, milliseconds))
+}
+
 const COLUMNS: { key: DirectorySort | 'agence' | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
   { key: 'categorie', label: 'Catégorie', sortable: true },
   { key: 'client', label: 'Client', sortable: true },
@@ -338,7 +342,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showTranscript, setShowTranscript] = useState(false)
-  const [showCriteria, setShowCriteria] = useState(false)
+  const [showCriteria, setShowCriteria] = useState(true)
   /** Synthèse conseiller : PILABLE, **repliée par défaut** comme la conversation complète : la pop-in
    *  s'ouvre sur le score, le suivi du dossier et les offres, et le conseiller déplie la synthèse (le
    *  contenu est déjà chargé, aucun appel réseau). */
@@ -366,6 +370,38 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
       }
     })()
   }, [sessionId])
+
+  /** Animation de lecture après le retour automatique d’une démonstration Coach. */
+  useEffect(() => {
+    if (!detail || sessionStorage.getItem('coach-replay-return-session') !== sessionId) return undefined
+    sessionStorage.removeItem('coach-replay-return-session')
+    let cancelled = false
+
+    void (async () => {
+      await wait(4000)
+      if (cancelled) return
+      setShowSynthesis(true)
+      await wait(100)
+      if (cancelled) return
+      popupRef.current?.querySelector<HTMLElement>('.cc-synthesis-body')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+      await wait(2000)
+      if (cancelled || !detail.customerEmailBody) return
+      setShowAttachment(true)
+      await wait(100)
+      if (cancelled) return
+      popupRef.current?.querySelector<HTMLElement>('.cc-attachment-body')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      })
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [detail, sessionId])
 
   /** Enregistre le nouveau statut d'avancement du dossier (action du centre d'appels). */
   async function saveStatus() {
@@ -651,7 +687,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                 <Sparkles size={15} /> Synthèse envoyée au conseiller
               </button>
               {showSynthesis && (
-                <div className="cc-toggle-body">
+                <div className="cc-toggle-body cc-synthesis-body">
                   <p className="cc-subject">{detail.advisorSubject ?? '—'}</p>
                   <div className="cc-mail">
                     {renderMessageContent(`dossier-${sessionId}`, detail.advisorBody ?? '', sessionId)}
@@ -674,7 +710,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                   <Paperclip size={15} /> Pièce jointe — email client préparé
                 </button>
                 {showAttachment && (
-                  <div className="cc-toggle-body">
+                  <div className="cc-toggle-body cc-attachment-body">
                     <p className="cc-subject">{detail.customerEmailSubject ?? '—'}</p>
                     <div className="cc-mail">
                       {renderMessageContent(`client-${sessionId}`, detail.customerEmailBody, sessionId)}
@@ -731,6 +767,15 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
         )}
 
         <div className="cc-popup-foot">
+          <button
+            type="button"
+            className="mkt-action cc-call-client"
+            onClick={() => { window.location.hash = `#/replay/${encodeURIComponent(sessionId)}` }}
+            disabled={loading || !detail}
+            title="Rejouer cette conversation dans le Coach pour une démonstration"
+          >
+            Favorie
+          </button>
           <button
             type="button"
             className="mkt-action cc-export"

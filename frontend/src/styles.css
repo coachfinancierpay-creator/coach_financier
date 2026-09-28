@@ -541,7 +541,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .mkt-bar { width: 100%; max-width: 34px; background: linear-gradient(180deg, #ff5d78, var(--accent)); border-radius: 3px 3px 0 0; min-height: 3px; }
 .mkt-bar-col span { font-size: 10px; color: #6b7280; }
 .mkt-hint { margin: 8px 0 0; font-size: 11px; color: #6b7280; }
-.mkt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.mkt-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+@media (max-width: 980px) {
+  .mkt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 680px) {
+  .mkt-grid { grid-template-columns: 1fr; }
+}
 .mkt-card.wide { grid-column: 1 / -1; margin-bottom: 16px; }
 .mkt-ranking-row {
   display: grid; grid-template-columns: 1fr 90px auto auto; align-items: center; gap: 8px;
@@ -1568,7 +1574,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* Largeur commune finale : Centre d'appels et pages métier SG. */
 .cc-page,
 .marketing-page:not(.cc-page) {
-  width: min(1680px, calc(100% - 48px));
+  width: min(1800px, calc(100% - 48px));
   max-width: none;
 }
 @media (max-width: 680px) {
