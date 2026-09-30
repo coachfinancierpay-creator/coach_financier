@@ -9,8 +9,18 @@ public final class ChatModels {
             @NotBlank String sessionId,
             @NotBlank String message,
             AIModels.AIProvider provider,
-            Boolean disableOutOfScopeGuard
-    ) {}
+            Boolean disableOutOfScopeGuard,
+            String language
+    ) {
+        public ChatRequest(String sessionId, String message, AIModels.AIProvider provider,
+                           Boolean disableOutOfScopeGuard) {
+            this(sessionId, message, provider, disableOutOfScopeGuard, "FR");
+        }
+
+        public String normalizedLanguage() {
+            return "EN".equalsIgnoreCase(language) ? "EN" : "FR";
+        }
+    }
 
     public record ChatResponse(
             String sessionId,

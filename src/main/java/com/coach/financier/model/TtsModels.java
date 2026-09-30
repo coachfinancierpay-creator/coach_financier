@@ -10,10 +10,12 @@ public final class TtsModels {
     private TtsModels() {}
 
     public static final String DEFAULT_VOICE = "fr-FR-HenriNeural";
-    public static final Map<String, String> FRENCH_VOICES = Map.of(
-            "fr-FR-DeniseNeural", "Denise · voix féminine",
-            "fr-FR-HenriNeural", "Henri · voix masculine",
-            "fr-FR-EloiseNeural", "Eloise · voix féminine"
+    public static final Map<String, String> FRENCH_VOICES = Map.ofEntries(
+            Map.entry("fr-FR-DeniseNeural", "Denise · voix féminine"),
+            Map.entry("fr-FR-HenriNeural", "Henri · voix masculine"),
+            Map.entry("fr-FR-EloiseNeural", "Eloise · voix féminine"),
+            Map.entry("en-US-AriaNeural", "Aria · English female"),
+            Map.entry("en-US-GuyNeural", "Guy · English male")
     );
 
     /** Demande de synthèse d'un texte à la vitesse demandée. */

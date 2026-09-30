@@ -11,6 +11,7 @@ import type {
   MarketingProductDetail,
   MarketingReport,
   MarketingStatus,
+  Language,
 } from './types'
 import type {
   QualityAggregates,
@@ -125,10 +126,11 @@ export async function sendChat(
   message: string,
   provider: AIProvider,
   disableOutOfScopeGuard: boolean,
+  language: Language = 'FR',
 ): Promise<ChatResponse> {
   return apiFetch<ChatResponse>('/chat', {
     method: 'POST',
-    body: JSON.stringify({ sessionId, message, provider, disableOutOfScopeGuard }),
+    body: JSON.stringify({ sessionId, message, provider, disableOutOfScopeGuard, language }),
   })
 }
 
@@ -144,10 +146,11 @@ export async function fetchTtsStatus(): Promise<{ provider: 'AZURE'; status: str
 export async function fetchNextClientQuestion(
   sessionId: string,
   provider: AIProvider,
+  language: Language = 'FR',
 ): Promise<ClientQuestionProposal> {
   return apiFetch<ClientQuestionProposal>(
     `/conversations/${encodeURIComponent(sessionId)}/client-question`,
-    { method: 'POST', body: JSON.stringify({ provider }) },
+    { method: 'POST', body: JSON.stringify({ provider, language }) },
   )
 }
 
@@ -224,6 +227,7 @@ export interface CloseConversationOptions {
   /** Actions déclenchées par le client dans le Coach, transmises au mail conseiller. */
   prisRDV?: boolean
   etreRappele?: boolean
+  language?: Language
 }
 
 /**

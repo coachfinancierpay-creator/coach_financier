@@ -159,13 +159,22 @@ public class MockAIService implements AIService {
                                     AIModels.BankingContextMode contextMode,
                                     Map<String, Object> additionalData,
                                     List<ConversationModels.Message> history, AIModels.AIProvider provider) {
-        String answer = "Mode démo actif. Sur la base de vos données bancaires, votre revenu mensuel moyen est de "
+        boolean english = additionalData != null && "EN".equalsIgnoreCase(String.valueOf(additionalData.get("language")));
+        String answer = english
+                ? "Demo mode is active. Based on your banking data, your average monthly income is "
+                + money(financialSummary.averageMonthlyIncome()) + " €, average monthly expenses are "
+                + money(financialSummary.averageMonthlyExpenses()) + " €. Your current balance is about "
+                + money(financialSummary.currentAccountBalance()) + " € and your savings are "
+                + money(financialSummary.savingsBalance()) + " €.\n\n"
+                + "For a detailed AI answer, configure OPENAI_API_KEY or DEEPSEEK_API_KEY and select the matching provider."
+                : "Mode démo actif. Sur la base de vos données bancaires, votre revenu mensuel moyen est de "
                 + money(financialSummary.averageMonthlyIncome()) + " € et vos dépenses mensuelles moyennes sont de "
                 + money(financialSummary.averageMonthlyExpenses()) + " €. Votre solde courant est d'environ "
                 + money(financialSummary.currentAccountBalance()) + " € et votre épargne de "
                 + money(financialSummary.savingsBalance()) + " €.\n\n"
                 + "Pour une réponse IA détaillée, configurez OPENAI_API_KEY ou DEEPSEEK_API_KEY et choisissez le fournisseur correspondant.";
-        return new AIModels.AIAnswer(AIModels.AIStatus.ANSWER, answer, null, Map.of(), "Analyse financière calculée côté backend.", null);
+        String summary = english ? "Financial analysis calculated by the backend." : "Analyse financière calculée côté backend.";
+        return new AIModels.AIAnswer(AIModels.AIStatus.ANSWER, answer, null, Map.of(), summary, null);
     }
 
     /**

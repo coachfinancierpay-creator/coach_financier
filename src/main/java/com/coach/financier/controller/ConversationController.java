@@ -86,7 +86,14 @@ public class ConversationController {
     }
 
     /** Corps d'une demande au CLIENT AUTO : le fournisseur IA à utiliser (doit être réel). */
-    public record ClientQuestionRequest(AIModels.AIProvider provider) {
+    public record ClientQuestionRequest(AIModels.AIProvider provider, String language) {
+        public ClientQuestionRequest(AIModels.AIProvider provider) {
+            this(provider, "FR");
+        }
+
+        public String normalizedLanguage() {
+            return "EN".equalsIgnoreCase(language) ? "EN" : "FR";
+        }
     }
 
     /**
@@ -98,7 +105,8 @@ public class ConversationController {
     public PromptOptimizationModels.ClientTurn clientQuestion(
             @PathVariable String sessionId,
             @RequestBody(required = false) ClientQuestionRequest request) {
-        return simulatedClientService.nextQuestion(sessionId, request == null ? null : request.provider());
+        return simulatedClientService.nextQuestion(sessionId, request == null ? null : request.provider(),
+                request == null ? "FR" : request.normalizedLanguage());
     }
 
     /**

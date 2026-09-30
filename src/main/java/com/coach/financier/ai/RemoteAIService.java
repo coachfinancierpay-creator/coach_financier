@@ -197,6 +197,9 @@ public abstract class RemoteAIService implements AIService {
         // sinon l'AGENT ACTIF (générique par défaut) relu depuis ./agent à chaque appel. Le thème est
         // choisi par ChatController et transmis via additionalData."agent".
         String system = resolveSystemPrompt(systemPrompt, additionalData);
+        system = system + "\n\nLANGUAGE POLICY: " + languageInstruction(additionalData)
+                + " This applies to every user-facing field, especially answer and conversationSummary."
+                + " Keep JSON field names and enum values unchanged.";
         if (Boolean.TRUE.equals(additionalData == null ? null : additionalData.get("disableNeedData"))) {
             system = withoutNeedDataInstruction(system);
         }
@@ -287,6 +290,12 @@ public abstract class RemoteAIService implements AIService {
     /** Thème de l'agent actif transmis par l'appelant via {@code additionalData."agent"}. */
     private static String themeOf(Map<String, Object> additionalData) {
         return additionalData != null && additionalData.get("agent") instanceof String theme ? theme : null;
+    }
+
+    private static String languageInstruction(Map<String, Object> additionalData) {
+        return additionalData != null && "EN".equalsIgnoreCase(String.valueOf(additionalData.get("language")))
+                ? "Write all user-facing text in clear, natural, professional English."
+                : "Rédige tous les textes destinés à l'utilisateur en français clair, naturel et professionnel.";
     }
 
     /** Vérifie la présence d'une clé API : message explicite, exploitable par l'IHM. */

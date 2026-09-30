@@ -29,7 +29,7 @@ import FeedbackPopup from './FeedbackPopup'
 import { getAdvisorIntent } from './advisorCallback'
 import { renderMessageContent, stripMarkdown } from './messageFormat'
 import type { QualityFeedbackRequest } from './types.quality'
-import type { AIProvider, ChatMessage, FinancialSummary } from './types'
+import type { AIProvider, ChatMessage, FinancialSummary, Language } from './types'
 
 const SESSION_STORAGE_KEY = 'financial-coach-session-id'
 const HISTORY_STORAGE_KEY = 'financial-coach-chat-history'
@@ -50,6 +50,7 @@ const VOICE_MODEL_STORAGE_KEY = 'financial-coach-voice-model'
 const VOICE_RATE_STORAGE_KEY = 'financial-coach-voice-rate'
 const AUDIO_STORAGE_KEY = 'financial-coach-audio'
 const AUTO_AUDIO_STORAGE_KEY = 'financial-coach-auto-audio'
+const LANGUAGE_STORAGE_KEY = 'financial-coach-language'
 const WAKE_WORD_STORAGE_KEY = 'financial-coach-wake-word'
 const SILENCE_STORAGE_KEY = 'financial-coach-silence-delay'
 const DEFAULT_WAKE_WORD = 'OK Ming'
@@ -61,6 +62,10 @@ const frenchVoices = [
   { id: 'fr-FR-HenriNeural', label: 'Henri', detail: 'masculine' },
   { id: 'fr-FR-DeniseNeural', label: 'Denise', detail: 'féminine' },
   { id: 'fr-FR-EloiseNeural', label: 'Eloise', detail: 'féminine' },
+] as const
+const englishVoices = [
+  { id: 'en-US-AriaNeural', label: 'Aria', detail: 'English female' },
+  { id: 'en-US-GuyNeural', label: 'Guy', detail: 'English male' },
 ] as const
 
 /**
@@ -76,7 +81,7 @@ const providerLabels: Record<AIProvider, string> = {
   MOCK: 'Mode démo',
 }
 
-const loadingMessages = [
+const loadingMessagesFr = [
   'Analyse en cours... ou alors je suis juste parti chercher un café ?',
   'C’est moi qui fais tout votre boulot, mais n’oubliez pas que l’avenir c’est vous !',
   'Si je gagnais un token à chaque fois qu’on me pose cette question, je serais déjà à la retraite...',
@@ -98,6 +103,12 @@ const loadingMessages = [
   'Ça prend du temps, car je n’ai plus le droit de répondre “ça dépend” sans explication...',
   'Dernière vérification : est-ce que cette question passe bien le contrôle qualité du hackathon ?',
   'Patientez un peu, je finis ma formation “L’Art du Prompt” pour vous fournir la meilleure réponse possible...',
+]
+const loadingMessagesEn = [
+  'Analysis in progress… or maybe I went to get a coffee?',
+  'I am preparing a clear answer with no banking jargon.',
+  'I am checking the figures. A misplaced comma will not win this hackathon.',
+  'I am looking for the right balance between financial accuracy and readability.',
 ]
 
 function newSessionId(): string {
@@ -171,8 +182,13 @@ function appendSpeechText(current: string, incoming: string): string {
   return `${existing} ${next}`.trim()
 }
 
-function welcomeMessages(): ChatMessage[] {
-  const funOpeners = [
+function welcomeMessages(language: Language = 'FR'): ChatMessage[] {
+  const english = language === 'EN'
+  const funOpeners = english ? [
+    'I use Mythos to analyse your banking data and answer your needs as accurately as possible.',
+    'I can access your banking data, but I promise not to judge your recent pizza deliveries.',
+    'I have studied your finances to give you useful advice. Your money is safer than your password.',
+  ] : [
     'J’utilise Mythos pour pirater vos données bancaires sur le mainframe afin de répondre au mieux à vos besoins.',
     'J’ai accès à vos données mais promis je ne juge pas… même les opérations “livraisons de pizzas pour le hackathon” des 2 derniers jours !',
     'J’ai accès à vos données bancaires, même dans le futur. Félicitations pour votre prime “Victoire Hackathon IA RBS 2026” 🏆',
@@ -185,7 +201,9 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        `Bonjour ! Je suis Chloé, votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
+        english
+          ? `Hello! I am Chloé, your assistant. Ask me about your budget, savings, loans or a purchase project. ${funOpener}`
+          : `Bonjour ! Je suis Chloé, votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat. ${funOpener}`,
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -237,6 +255,7 @@ function formatPeriod(start: string, end: string): string {
 }
 
 function App() {
+  const [language, setLanguage] = useState<Language>(() => localStorage.getItem(LANGUAGE_STORAGE_KEY) === 'EN' ? 'EN' : 'FR')
   const [provider, setProvider] = useState<AIProvider>(() => {
     const stored = localStorage.getItem(PROVIDER_STORAGE_KEY)
     return stored === 'GPT' || stored === 'DEEPSEEK' || stored === 'LOCAL' || stored === 'MOCK'
@@ -246,7 +265,7 @@ function App() {
   const [messages, setMessages] = useState<ChatMessage[]>(loadInitialMessages)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [loadingMessage, setLoadingMessage] = useState(loadingMessages[0])
+  const [loadingMessage, setLoadingMessage] = useState(loadingMessagesFr[0])
   const messagesScrollRef = useRef<HTMLDivElement | null>(null)
   /**
    * CLIENT AUTO (bandeau) : l'IA joue le client et propose la question suivante à partir de l'historique.
@@ -314,7 +333,7 @@ function App() {
   const [voiceEnabled, setVoiceEnabled] = useState(() => localStorage.getItem(VOICE_STORAGE_KEY) !== 'false')
   const [voiceModel, setVoiceModel] = useState(() => {
     const stored = localStorage.getItem(VOICE_MODEL_STORAGE_KEY)
-    return frenchVoices.some((voice) => voice.id === stored) ? stored! : frenchVoices[0].id
+    return [...frenchVoices, ...englishVoices].some((voice) => voice.id === stored) ? stored! : frenchVoices[0].id
   })
   const [voiceRate, setVoiceRate] = useState(() => {
     const raw = Number(localStorage.getItem(VOICE_RATE_STORAGE_KEY))
@@ -333,6 +352,11 @@ function App() {
   }, [sessionId])
 
   useEffect(() => {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language)
+    setVoiceModel(language === 'EN' ? englishVoices[0].id : frenchVoices[0].id)
+  }, [language])
+
+  useEffect(() => {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(messages.slice(-60)))
   }, [messages])
 
@@ -349,6 +373,7 @@ function App() {
   useEffect(() => {
     if (!loading) return undefined
 
+    const loadingMessages = language === 'EN' ? loadingMessagesEn : loadingMessagesFr
     let messageIndex = Math.floor(Math.random() * loadingMessages.length)
     setLoadingMessage(loadingMessages[messageIndex])
     const timer = window.setInterval(() => {
@@ -356,7 +381,7 @@ function App() {
       setLoadingMessage(loadingMessages[messageIndex])
     }, 3000)
     return () => window.clearInterval(timer)
-  }, [loading])
+  }, [loading, language])
 
   useEffect(() => {
     localStorage.setItem(PROVIDER_STORAGE_KEY, provider)
@@ -468,7 +493,7 @@ function App() {
     if (recognitionRef.current) return recognitionRef.current
     const credentials = await fetchSpeechToken()
     const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(credentials.token, credentials.region)
-    speechConfig.speechRecognitionLanguage = 'fr-FR'
+    speechConfig.speechRecognitionLanguage = language === 'EN' ? 'en-US' : 'fr-FR'
     const recognition = new SpeechSDK.SpeechRecognizer(speechConfig, SpeechSDK.AudioConfig.fromDefaultMicrophoneInput())
     recognition.recognizing = (_sender, event) => {
       setInput(`${finalTextRef.current} ${event.result.text}`.trim())
@@ -580,10 +605,10 @@ function App() {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false
     const synthesis = window.speechSynthesis
     const utterance = new SpeechSynthesisUtterance(stripMarkdown(text))
-    utterance.lang = 'fr-FR'
+    utterance.lang = language === 'EN' ? 'en-US' : 'fr-FR'
     utterance.rate = voiceRate
-    const frenchVoice = synthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith('fr'))
-    if (frenchVoice) utterance.voice = frenchVoice
+    const preferredVoice = synthesis.getVoices().find((voice) => voice.lang.toLowerCase().startsWith(language === 'EN' ? 'en' : 'fr'))
+    if (preferredVoice) utterance.voice = preferredVoice
     utterance.onend = () => {
       if (speakingIdRef.current !== id) return
       speakingIdRef.current = null
@@ -713,7 +738,7 @@ function App() {
       const credentials = await fetchSpeechToken()
       if (!autoAudio) return
       const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(credentials.token, credentials.region)
-      speechConfig.speechRecognitionLanguage = 'fr-FR'
+      speechConfig.speechRecognitionLanguage = language === 'EN' ? 'en-US' : 'fr-FR'
       const recognition = new SpeechSDK.SpeechRecognizer(speechConfig, SpeechSDK.AudioConfig.fromDefaultMicrophoneInput())
       autoActiveRef.current = true
       autoPhaseRef.current = 'standby'
@@ -846,7 +871,7 @@ function App() {
     setError(null)
     setClientAutoLoading(true)
     try {
-      const proposal = await fetchNextClientQuestion(sessionId, provider)
+      const proposal = await fetchNextClientQuestion(sessionId, provider, language)
       const question = (proposal.question ?? '').trim()
       if (!question) {
         setClientAutoNotice('Le client n\'a plus de question : il n\'y a rien à ajouter.')
@@ -884,7 +909,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await sendChat(sessionId, message, provider, !guardEnabled)
+      const response = await sendChat(sessionId, message, provider, !guardEnabled, language)
       setSummary(response.financialSummary ?? summary)
       const assistantMessage: ChatMessage = {
         id: newMessageId(),
@@ -938,6 +963,7 @@ function App() {
     void closeConversation(sessionId, {
       send: true,
       provider,
+      language,
       prisRDV: advisorIntent.prisRDV,
       etreRappele: advisorIntent.etreRappele,
     })
@@ -966,7 +992,7 @@ function App() {
    */
   function resetConversation() {
     setSessionId(newSessionId())
-    setMessages(welcomeMessages())
+    setMessages(welcomeMessages(language))
     setInput('')
     setError(null)
   }
@@ -1019,11 +1045,15 @@ function App() {
         <div className="brand-wrap">
           <div className="brand-mark"><Sparkles size={20} /></div>
           <div>
-            <div className="brand-title">Mon assistant dépenses et épargne</div>
+            <div className="brand-title">{language === 'EN' ? 'My spending and savings assistant' : 'Mon assistant dépenses et épargne'}</div>
           </div>
         </div>
 
         <div className="topbar-actions">
+          <div className="language-switch" role="group" aria-label="Language">
+            <button type="button" className={language === 'FR' ? 'active' : ''} onClick={() => setLanguage('FR')}>FR</button>
+            <button type="button" className={language === 'EN' ? 'active' : ''} onClick={() => setLanguage('EN')}>EN</button>
+          </div>
           <label className="adv-toggle" title="Afficher les réglages avancés (fournisseur IA, garde-fou, pages Logs et Agents)">
             <input
               type="checkbox"
@@ -1133,7 +1163,7 @@ function App() {
                       aria-label="Modèle de voix française"
                       onChange={(event) => setVoiceModel(event.target.value)}
                     >
-                      {frenchVoices.map((voice) => (
+                      {(language === 'EN' ? englishVoices : frenchVoices).map((voice) => (
                         <option key={voice.id} value={voice.id}>
                           {voice.label} · {voice.detail}
                         </option>
@@ -1246,7 +1276,7 @@ function App() {
           <div className="chat-heading">
             <div>
               <p className="eyebrow">CONVERSATION</p>
-              <h1>Bonjour, parlons de votre argent : quel est votre projet ?</h1>
+              <h1>{language === 'EN' ? 'Hello, let’s talk about your money: what is your project?' : 'Bonjour, parlons de votre argent : quel est votre projet ?'}</h1>
             </div>
             {/* Bouton unique (remplace l'ancien « Nouveau chat ») :
                 - suivi activé  → clôture (dossier conseiller) + vidage du chat ;
@@ -1411,7 +1441,7 @@ function App() {
                       submitMessage()
                     }
                   }}
-                  placeholder="Écrivez votre question…"
+                  placeholder={language === 'EN' ? 'Write your question…' : 'Écrivez votre question…'}
                   rows={1}
                 />
                 <button

@@ -57,6 +57,7 @@ public class ChatController {
         var conversation = conversationService.getOrCreate(request.sessionId());
         var provider = request.provider() == null ? aiServiceFactory.defaultProvider() : request.provider();
         var ai = aiServiceFactory.get(provider);
+        String language = request.normalizedLanguage();
 
         conversation.addMessage("user", request.message());
 
@@ -70,13 +71,20 @@ public class ChatController {
             classification.setIntent(FinancialIntent.OTHER);
             classification.setProjectType(ProjectType.OTHER_FINANCIAL);
             classification.setConfidence(ConfidenceLevel.HIGH);
-            classification.setReason("Contrôle OUT_OF_SCOPE désactivé par l'utilisateur.");
+            classification.setReason("EN".equals(language)
+                    ? "OUT_OF_SCOPE control disabled by the user."
+                    : "Contrôle OUT_OF_SCOPE désactivé par l'utilisateur.");
         } else {
-            classification = ai.classifyIntent(request.message(), currentProjectText, provider);
+            classification = ai.classifyIntent(request.message()
+                    + "\n\nLANGUAGE REQUIREMENT: classify normally; all user-facing text must be in "
+                    + ("EN".equals(language) ? "English." : "French."), currentProjectText, provider);
         }
 
         if (classification.isOutOfScope()) {
-            String response = "Je continuerais avec plaisir sur ce sujet, mais si je le fais, même Ivan n'arrivera pas à terminer la démo dans le temps imparti... "
+            String response = "EN".equals(language)
+                    ? "I would be happy to continue, but this topic is outside personal finance. "
+                    + "I can help you assess a purchase, your savings capacity, or the impact of a project on your budget."
+                    : "Je continuerais avec plaisir sur ce sujet, mais si je le fais, même Ivan n'arrivera pas à terminer la démo dans le temps imparti... "
                     + "Je peux en revanche vous aider à évaluer un achat, votre capacité d'épargne ou l'impact d'un projet sur votre budget.";
             conversation.addMessage("assistant", response);
             return new ChatModels.ChatResponse(request.sessionId(), provider, classification.toLegacyCategory(), false,
@@ -91,12 +99,15 @@ public class ChatController {
         //    filtré, données d'agent et debug. Construit par CoachContextBuilder, PARTAGÉ avec
         //    l'atelier d'optimisation des prompts (qui doit rejouer EXACTEMENT le même contexte).
         CoachContext ctx = coachContextBuilder.build(request.message(), classification,
-                conversation.currentProject(), conversation.messages(), null, conversation.customerId());
+                conversation.currentProject(), conversation.messages(), null, conversation.customerId(), language);
         FinancialSummary summary = ctx.financialSummary();
         conversation.setFinancialSummary(summary);
 
         if (ctx.clarificationRequired()) {
-            String clarify = CoachContextBuilder.CLARIFICATION_MESSAGE;
+            String clarify = "EN".equals(language)
+                    ? "To suggest suitable financing, could you specify what the money would be used for "
+                    + "(for example, buying a vehicle or home improvements)?"
+                    : CoachContextBuilder.CLARIFICATION_MESSAGE;
             conversation.addMessage("assistant", clarify);
             return new ChatModels.ChatResponse(request.sessionId(), provider, classification.toLegacyCategory(), true,
                     AIModels.AIStatus.ANSWER, clarify, summary, conversation.summary(),
@@ -189,7 +200,9 @@ public class ChatController {
                 log.warn("[CHAT] NEED_DATA sans réponse exploitable après {} tour(s) : fallback générique",
                         safetyLoop);
                 answer = new AIModels.AIAnswer(AIModels.AIStatus.ANSWER,
-                        "Je n'ai pas pu finaliser l'analyse demandée à partir des données disponibles.", null, Map.of(),
+                        "EN".equals(language)
+                                ? "I could not complete the requested analysis with the available data."
+                                : "Je n'ai pas pu finaliser l'analyse demandée à partir des données disponibles.", null, Map.of(),
                         conversation.summary(), null);
             }
         }

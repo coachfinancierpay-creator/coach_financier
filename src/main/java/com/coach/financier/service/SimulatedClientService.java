@@ -53,6 +53,11 @@ public class SimulatedClientService {
      * @throws IllegalArgumentException session sans aucun échange, ou fournisseur de démonstration
      */
     public PromptOptimizationModels.ClientTurn nextQuestion(String sessionId, AIModels.AIProvider provider) {
+        return nextQuestion(sessionId, provider, "FR");
+    }
+
+    public PromptOptimizationModels.ClientTurn nextQuestion(String sessionId, AIModels.AIProvider provider,
+                                                             String language) {
         AIModels.AIProvider agentProvider = requireRealProvider(provider);
         ConversationModels.Conversation conversation =
                 sessionId == null ? null : conversationService.find(sessionId);
@@ -78,6 +83,9 @@ public class SimulatedClientService {
         // Profondeur placée APRÈS la question courante : le compteur ne force donc jamais la clôture ici.
         // Le client s'arrête seulement s'il a réellement obtenu ce qu'il voulait (`endConversation`).
         payload.put("depth", turnNumber + 1);
+        if ("EN".equalsIgnoreCase(language)) {
+            payload.put("language", "EN");
+        }
 
         PromptOptimizationModels.ClientTurn turn = aiServiceFactory.get(agentProvider)
                 .clientTurn(payload, agentProvider);

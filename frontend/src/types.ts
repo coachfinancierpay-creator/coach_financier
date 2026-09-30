@@ -4,6 +4,8 @@
  */
 export type AIProvider = 'GPT' | 'DEEPSEEK' | 'LOCAL' | 'MOCK'
 
+export type Language = 'FR' | 'EN'
+
 export type RequestCategory =
   | 'PURCHASE_PROJECT'
   | 'BUDGET'

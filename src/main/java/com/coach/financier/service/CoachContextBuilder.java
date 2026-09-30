@@ -101,6 +101,13 @@ public class CoachContextBuilder {
     public CoachContext build(String question, IntentClassification classification, CurrentProject project,
                               List<ConversationModels.Message> history, String forcedAgentTheme,
                               String customerId) {
+        return build(question, classification, project, history, forcedAgentTheme, customerId, "FR");
+    }
+
+    /** Variante de production avec langue de réponse demandée par l'IHM. */
+    public CoachContext build(String question, IntentClassification classification, CurrentProject project,
+                              List<ConversationModels.Message> history, String forcedAgentTheme,
+                              String customerId, String language) {
         FinancialSummary summary = financialAnalysisService.analyze();
         boolean bfmEligible = bankingDataRepository.isBfmEligible();
 
@@ -191,6 +198,9 @@ public class CoachContextBuilder {
         additionalData.put("compatibleProducts", compatibleProducts);
         additionalData.put("agent", agentTheme);
         additionalData.put("agentLibelle", agentLibelle);
+        if ("EN".equalsIgnoreCase(language)) {
+            additionalData.put("language", "EN");
+        }
 
         AIModels.Classification legacy = legacyOf(classification);
         int agentDataCount = activeAgent == null || activeAgent.getData() == null
