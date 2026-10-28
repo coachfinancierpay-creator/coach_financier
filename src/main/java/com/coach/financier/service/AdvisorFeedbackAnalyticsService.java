@@ -290,9 +290,9 @@ public class AdvisorFeedbackAnalyticsService {
             List<AdvisorFeedbackModels.AdvisorFeedback> current,
             List<AdvisorFeedbackModels.AdvisorFeedback> previous) {
         List<MarketingModels.TrendMetric> trends = new ArrayList<>();
-        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "feedback", "Dossiers évalués",
+        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "feedback", "Case files evaluated",
                 current.size(), previous.size(), evolution((double) current.size(), (double) previous.size())));
-        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "incorrect", "Analyses jugées incorrectes",
+        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "incorrect", "Analyses rated incorrect",
                 countOf(current, AdvisorFeedbackModels.INCORRECT),
                 countOf(previous, AdvisorFeedbackModels.INCORRECT),
                 evolution((double) countOf(current, AdvisorFeedbackModels.INCORRECT),

@@ -65,7 +65,7 @@ const providerLabels: Record<AIProvider, string> = {
   GPT: 'GPT / OpenAI',
   DEEPSEEK: 'DeepSeek',
   LOCAL: 'Local (LM Studio)',
-  MOCK: 'Mode démo',
+  MOCK: 'Demo mode',
 }
 function newSessionId(): string {
   return `web-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
@@ -114,10 +114,10 @@ function findWakeWord(text: string, wake: string): { found: boolean; rest: strin
 
 function welcomeMessages(): ChatMessage[] {
   const funOpeners = [
-    'J’utilise Mythos pour pirater vos données bancaires sur le mainframe afin de répondre au mieux à vos besoins.',
-    'J’ai accès à vos données mais promis je ne juge pas… même les opérations “livraisons de pizzas pour le hackathon” des 2 derniers jours !',
-    'J’ai accès à vos données bancaires, même dans le futur. Félicitations pour votre prime “Victoire Hackathon IA RBS 2026” 🏆',
-    'J’ai étudié vos finances pour vous donner les meilleurs conseils, mais rassurez-vous, votre argent est toujours mieux protégé que votre mot de passe.',
+    'I use Mythos to hack your banking data on the mainframe so I can best meet your needs.',
+    'I have access to your data but I promise I don’t judge… not even the “pizza deliveries for the hackathon” transactions from the last 2 days!',
+    'I have access to your banking data, even in the future. Congratulations on your “RBS AI Hackathon 2026 Victory” bonus 🏆',
+    'I studied your finances to give you the best advice, but rest assured, your money is still better protected than your password.',
   ]
   const funOpener = funOpeners[Math.floor(Math.random() * funOpeners.length)]
 
@@ -126,7 +126,7 @@ function welcomeMessages(): ChatMessage[] {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Bonjour ! Je suis votre assistant. Posez-moi une question sur votre budget, votre épargne, vos crédits ou un projet d’achat.',
+        'Hello! I am your assistant. Ask me a question about your budget, your savings, your loans or a purchase project.',
       timestamp: new Date().toISOString(),
       provider: 'MOCK',
     },
@@ -147,7 +147,7 @@ function loadInitialMessages(): ChatMessage[] {
 }
 
 function formatMoney(value: number): string {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'EUR',
     maximumFractionDigits: 0,
@@ -155,7 +155,7 @@ function formatMoney(value: number): string {
 }
 
 function formatMoneyCents(value: number): string {
-  return new Intl.NumberFormat('fr-FR', {
+  return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: 'EUR',
     minimumFractionDigits: 2,
@@ -168,19 +168,35 @@ function formatRatio(value: number): string {
 }
 
 function formatPercent(value: number): string {
-  return `${(value * 100).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`
+  return `${(value * 100).toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %`
 }
 
 function formatPeriod(start: string, end: string): string {
   const from = new Date(`${start}T00:00:00`)
   const to = new Date(`${end}T00:00:00`)
-  return `${from.toLocaleDateString('fr-FR')} → ${to.toLocaleDateString('fr-FR')}`
+  return `${from.toLocaleDateString('en-GB')} → ${to.toLocaleDateString('en-GB')}`
 }
 
 const REPLAY_TYPING_DELAY_MS = 28
 const REPLAY_AI_DELAY_MS = 2000
 const REPLAY_INITIAL_DELAY_MS = 5000
 const REPLAY_NEXT_QUESTION_DELAY_MS = 3000
+/** Délai (secondes) choisi dans le Centre d'appels avant de lancer la démonstration. */
+const REPLAY_DELAY_STORAGE_KEY = 'coach-replay-next-question-delay'
+const MIN_REPLAY_DELAY_SECONDS = 0
+const MAX_REPLAY_DELAY_SECONDS = 60
+
+/** Délai configuré (en ms) entre la fin de la réponse IA et la question suivante du client. */
+function replayNextQuestionDelayMs(): number {
+  if (typeof sessionStorage === 'undefined') return REPLAY_NEXT_QUESTION_DELAY_MS
+  const stored = sessionStorage.getItem(REPLAY_DELAY_STORAGE_KEY)
+  if (stored === null) return REPLAY_NEXT_QUESTION_DELAY_MS
+  const seconds = Number(stored)
+  if (!Number.isFinite(seconds) || seconds < MIN_REPLAY_DELAY_SECONDS || seconds > MAX_REPLAY_DELAY_SECONDS) {
+    return REPLAY_NEXT_QUESTION_DELAY_MS
+  }
+  return Math.round(seconds * 1000)
+}
 
 function wait(milliseconds: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds))
@@ -198,6 +214,8 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
   const [loading, setLoading] = useState(false)
   const [rewinding, setRewinding] = useState(false)
   const [replayRunning, setReplayRunning] = useState(Boolean(replaySessionId))
+  /** Mode manuel (délai 0) : la démonstration attend un appui sur Espace. */
+  const [replayWaitingForSpace, setReplayWaitingForSpace] = useState(false)
   const messagesScrollRef = useRef<HTMLDivElement | null>(null)
   /**
    * CLIENT AUTO (bandeau) : l'IA joue le client et propose la question suivante à partir de l'historique.
@@ -268,6 +286,8 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
   const [speakingId, setSpeakingId] = useState<string | null>(null)
   const speakingIdRef = useRef<string | null>(null)
   const replayCancelledRef = useRef(false)
+  /** Résout l'attente du mode manuel (délai 0) lors du démontage / changement de session. */
+  const replayManualAdvanceRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     localStorage.setItem(SESSION_STORAGE_KEY, sessionId)
@@ -287,6 +307,28 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
     setError(null)
     setInput('')
     setMessages(welcomeMessages())
+    setReplayWaitingForSpace(false)
+
+    /** Délai 0 = mode manuel : la question suivante part à l'appui sur la barre d'espace. */
+    function waitForManualAdvance(): Promise<void> {
+      return new Promise((resolve) => {
+        const onKeyDown = (event: KeyboardEvent) => {
+          if (event.code !== 'Space') return
+          event.preventDefault()
+          window.removeEventListener('keydown', onKeyDown)
+          replayManualAdvanceRef.current = null
+          setReplayWaitingForSpace(false)
+          resolve()
+        }
+        replayManualAdvanceRef.current = () => {
+          window.removeEventListener('keydown', onKeyDown)
+          replayManualAdvanceRef.current = null
+          resolve()
+        }
+        window.addEventListener('keydown', onKeyDown)
+        setReplayWaitingForSpace(true)
+      })
+    }
 
     void (async () => {
       try {
@@ -295,6 +337,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
         await wait(REPLAY_INITIAL_DELAY_MS)
         if (cancelled || replayCancelledRef.current) return
         const archivedMessages = detail.transcript ?? []
+        const nextQuestionDelayMs = replayNextQuestionDelayMs()
         for (let messageIndex = 0; messageIndex < archivedMessages.length; messageIndex += 1) {
           if (cancelled || replayCancelledRef.current) return
           const archivedMessage = archivedMessages[messageIndex]
@@ -303,7 +346,11 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
           if (archivedMessage.role === 'user') {
             if (messageIndex > 0 && archivedMessages[messageIndex - 1]?.role === 'assistant') {
               // Laisser le temps de regarder la réponse IA avant de commencer la question suivante.
-              await wait(REPLAY_NEXT_QUESTION_DELAY_MS)
+              if (nextQuestionDelayMs === 0) {
+                await waitForManualAdvance()
+              } else {
+                await wait(nextQuestionDelayMs)
+              }
               if (cancelled || replayCancelledRef.current) return
             }
             for (let index = 1; index <= content.length; index += 1) {
@@ -332,10 +379,11 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
           }
         }
       } catch (replayError) {
-        if (!cancelled) setError(replayError instanceof Error ? replayError.message : 'Rejeu impossible')
+        if (!cancelled) setError(replayError instanceof Error ? replayError.message : 'Replay unavailable')
       } finally {
         if (!cancelled) {
           setLoading(false)
+          setReplayWaitingForSpace(false)
           setReplayRunning(false)
         }
       }
@@ -344,6 +392,8 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
     return () => {
       cancelled = true
       replayCancelledRef.current = true
+      replayManualAdvanceRef.current?.()
+      setReplayWaitingForSpace(false)
       setLoading(false)
       setReplayRunning(false)
     }
@@ -445,7 +495,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
         if (active) setSummary(data)
       })
       .catch(() => {
-        if (active) setError('Le backend Spring Boot n’est pas accessible. Vérifiez qu’il tourne sur le port 9797.')
+        if (active) setError('The Spring Boot backend is not reachable. Check that it is running on port 9797.')
       })
     return () => {
       active = false
@@ -458,7 +508,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (!SpeechRecognitionCtor) return null
     const recognition = new SpeechRecognitionCtor()
-    recognition.lang = 'fr-FR'
+    recognition.lang = 'en-GB'
     recognition.interimResults = true
     recognition.continuous = true
     recognition.onresult = (event: any) => {
@@ -474,7 +524,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       if (event?.error === 'not-allowed' || event?.error === 'service-not-allowed') {
         listeningRef.current = false
         setListening(false)
-        setError('Micro refusé. Cliquez sur l’icône 🔒/ⓘ à gauche de l’URL → « Microphone » → « Autoriser », puis rechargez la page. Vérifiez aussi l’autorisation micro dans les Paramètres Windows (Confidentialité → Microphone).')
+        setError('Microphone denied. Click the 🔒/ⓘ icon to the left of the URL → “Microphone” → “Allow”, then reload the page. Also check the microphone permission in Windows Settings (Privacy → Microphone).')
       }
     }
     recognition.onend = () => {
@@ -504,7 +554,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
   function toggleMic() {
     const recognition = ensureRecognition()
     if (!recognition) {
-      setError('Votre navigateur ne supporte pas la reconnaissance vocale (Chrome/Edge recommandé).')
+      setError('Your browser does not support voice recognition (Chrome/Edge recommended).')
       return
     }
     if (listeningRef.current) {
@@ -527,7 +577,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
     } catch {
       listeningRef.current = false
       setListening(false)
-      setError('Impossible de démarrer le micro. Autorisez l’accès : icône 🔒/ⓘ à gauche de l’URL → « Microphone » → « Autoriser », puis rechargez la page et réessayez.')
+      setError('Unable to start the microphone. Allow access: 🔒/ⓘ icon to the left of the URL → “Microphone” → “Allow”, then reload the page and try again.')
     }
   }
 
@@ -537,7 +587,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
     speakingIdRef.current = id
     setSpeakingId(id)
     const utterance = new SpeechSynthesisUtterance(stripMarkdown(text))
-    utterance.lang = 'fr-FR'
+    utterance.lang = 'en-GB'
     utterance.rate = voiceRate
     utterance.onend = () => {
       speakingIdRef.current = null
@@ -656,7 +706,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
     if (!SpeechRecognitionCtor) return
     const recognition = new SpeechRecognitionCtor()
-    recognition.lang = 'fr-FR'
+    recognition.lang = 'en-GB'
     recognition.interimResults = true
     recognition.continuous = true
     autoActiveRef.current = true
@@ -706,7 +756,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       if (event?.error === 'not-allowed' || event?.error === 'service-not-allowed') {
         stopAutoAudio()
         setAutoState('idle')
-        setError('Micro refusé (mode auto). Autorisez l’accès au micro puis réactivez le mode auto.')
+        setError('Microphone denied (auto mode). Allow microphone access then re-enable auto mode.')
       }
       // 'no-speech' / 'aborted' : silencieux, on relance via onend.
     }
@@ -797,17 +847,17 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       const proposal = await fetchNextClientQuestion(sessionId, provider)
       const question = (proposal.question ?? '').trim()
       if (!question) {
-        setClientAutoNotice('Le client n\'a plus de question : il n\'y a rien à ajouter.')
+        setClientAutoNotice('The customer has no more questions: there is nothing to add.')
         return
       }
       setInput(question)
       setClientAutoNotice(
         proposal.endConversation
-          ? 'Le client n\'a plus de question : sa phrase de clôture est proposée — à toi de l\'envoyer (ou de terminer la conversation).'
-          : 'Question suivante du client proposée : relis-la, modifie-la si besoin, puis envoie-la.',
+          ? 'The customer has no more questions: their closing sentence is suggested — it is up to you to send it (or end the conversation).'
+          : 'Next customer question suggested: read it again, edit it if needed, then send it.',
       )
     } catch (clientError) {
-      setError(clientError instanceof Error ? clientError.message : 'Client auto indisponible')
+      setError(clientError instanceof Error ? clientError.message : 'Auto customer unavailable')
     } finally {
       setClientAutoLoading(false)
     }
@@ -832,10 +882,10 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       setMessages((current) => current.slice(0, messageIndex))
       setInput(message.content)
       setSummary(null)
-      setClientAutoNotice('Retour avant cette question : modifie-la si besoin, puis envoie-la.')
+      setClientAutoNotice('Back before this question: edit it if needed, then send it.')
       window.setTimeout(() => composerRef.current?.focus(), 0)
     } catch (rewindError) {
-      setError(rewindError instanceof Error ? rewindError.message : 'Impossible de revenir à cette question.')
+      setError(rewindError instanceof Error ? rewindError.message : 'Unable to go back to this question.')
     } finally {
       setRewinding(false)
     }
@@ -874,14 +924,14 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       setMessages((current) => [...current, assistantMessage])
       if (audioEnabled && voiceEnabled && ttsSupported) speakMessage(assistantMessage.id, assistantMessage.content)
     } catch (err) {
-      const text = err instanceof Error ? err.message : 'Une erreur inattendue est survenue.'
+      const text = err instanceof Error ? err.message : 'An unexpected error occurred.'
       setError(text)
       setMessages((current) => [
         ...current,
         {
           id: newMessageId(),
           role: 'assistant',
-          content: 'Je n’ai pas pu contacter le serveur.',
+          content: 'I could not reach the server.',
           timestamp: new Date().toISOString(),
         },
       ])
@@ -993,19 +1043,19 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
         <div className="brand-wrap">
           <div className="brand-mark"><Sparkles size={20} /></div>
           <div>
-            <div className="brand-title">Mon assistant dépenses et épargne</div>
+            <div className="brand-title">My expenses and savings assistant</div>
           </div>
         </div>
 
         <div className="topbar-actions">
-          <label className="adv-toggle" title="Afficher les réglages avancés (fournisseur IA, garde-fou, pages Logs et Agents)">
+          <label className="adv-toggle" title="Show advanced settings (AI provider, guardrail, Logs and Agents pages)">
             <input
               type="checkbox"
               checked={advanced}
               onChange={(event) => setAdvanced(event.target.checked)}
             />
             <span className="adv-toggle-ui" aria-hidden="true" />
-            <span className="adv-toggle-label">Avancé</span>
+            <span className="adv-toggle-label">Advanced</span>
           </label>
           {!replaySessionId && (
             /* CLIENT AUTO : l'IA joue le client et propose la question suivante à partir de l'historique.
@@ -1015,15 +1065,15 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
               className="client-auto-button"
               onClick={proposeClientQuestion}
               disabled={clientAutoLoading || loading}
-              title="Client auto : lit l'historique de la conversation et propose la question suivante du client (à relire avant de l'envoyer). Nécessite une IA réelle (DeepSeek, GPT ou modèle local)."
+              title="Auto customer: reads the conversation history and suggests the customer's next question (to review before sending). Requires a real AI (DeepSeek, GPT or local model)."
             >
               <Bot size={15} />
-              <span>{clientAutoLoading ? 'Client…' : 'Client auto'}</span>
+              <span>{clientAutoLoading ? 'Customer…' : 'Auto customer'}</span>
             </button>
           )}
           {advanced && (
             <div className="advanced-actions">
-              <label className="adv-toggle" title="Activer le micro (dictée) et la lecture vocale des réponses">
+              <label className="adv-toggle" title="Enable the microphone (dictation) and voice playback of answers">
                 <input
                   type="checkbox"
                   checked={audioEnabled}
@@ -1034,7 +1084,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
               </label>
               <label
                 className="adv-toggle"
-                title="Mode auto : dites le mot-clé puis votre question ; elle sera envoyée après le délai de silence choisi"
+                title="Auto mode: say the wake word then your question; it will be sent after the chosen silence delay"
               >
                 <input
                   type="checkbox"
@@ -1046,47 +1096,47 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                 <span className="adv-toggle-label">Auto</span>
               </label>
               {!speechSupported && (
-                <span className="auto-warn">Reconnaissance vocale non supportée</span>
+                <span className="auto-warn">Voice recognition not supported</span>
               )}
               <div className="provider-select-wrap">
                 <Bot size={16} />
                 <select
-                  aria-label="Fournisseur IA"
+                  aria-label="AI provider"
                   value={provider}
                   onChange={(event) => setProvider(event.target.value as AIProvider)}
                 >
                   <option value="GPT">GPT / OpenAI</option>
                   <option value="DEEPSEEK">DeepSeek</option>
                   <option value="LOCAL">Local (LM Studio)</option>
-                  <option value="MOCK">Mode démo</option>
+                  <option value="MOCK">Demo mode</option>
                 </select>
                 <ChevronDown size={14} />
               </div>
               <label
                 className="guard-toggle"
-                title="Active/désactive le garde-fou qui refuse les questions hors sujet financier (OUT_OF_SCOPE)"
+                title="Enables/disables the guardrail that rejects questions outside the financial scope (OUT_OF_SCOPE)"
               >
                 <input
                   type="checkbox"
                   checked={guardEnabled}
                   onChange={(event) => setGuardEnabled(event.target.checked)}
                 />
-                <span>Contrôle hors-sujet</span>
+                <span>Out-of-scope check</span>
               </label>
               <label
                 className="guard-toggle"
-                title="À la fin d'une conversation, préparer le dossier de suivi et l'envoyer au conseiller (le brouillon d'email client est joint, jamais envoyé au client) — coché par défaut"
+                title="At the end of a conversation, prepare the follow-up case file and send it to the advisor (the customer email draft is attached, never sent to the customer) — checked by default"
               >
                 <input
                   type="checkbox"
                   checked={suiviEnabled}
                   onChange={(event) => setSuiviEnabled(event.target.checked)}
                 />
-                <span>Suivi conseiller</span>
+                <span>Advisor follow-up</span>
               </label>
               <label
                 className="guard-toggle"
-                title="Lire automatiquement les réponses de l'IA à voix haute (synthèse vocale)"
+                title="Automatically read the AI answers aloud (speech synthesis)"
               >
                 <input
                   type="checkbox"
@@ -1094,40 +1144,40 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                   onChange={(event) => setVoiceEnabled(event.target.checked)}
                   disabled={!ttsSupported}
                 />
-                <span>Réponses vocales</span>
+                <span>Voice answers</span>
               </label>
               {ttsSupported && audioEnabled && (
                 <select
                   className="voice-rate-select"
                   value={voiceRate}
-                  aria-label="Vitesse de la voix"
-                  title="Vitesse de lecture des réponses"
+                  aria-label="Voice speed"
+                  title="Answer playback speed"
                   onChange={(event) => setVoiceRate(Number(event.target.value))}
                 >
-                  <option value={0.5}>🐢 0,5×</option>
-                  <option value={0.75}>0,75×</option>
+                  <option value={0.5}>🐢 0.5×</option>
+                  <option value={0.75}>0.75×</option>
                   <option value={1}>1×</option>
-                  <option value={1.25}>1,25×</option>
-                  <option value={1.5}>1,5×</option>
+                  <option value={1.25}>1.25×</option>
+                  <option value={1.5}>1.5×</option>
                   <option value={2}>🐇 2×</option>
                 </select>
               )}
               {autoAudio && audioEnabled && speechSupported && (
-                <span className="auto-config" title="Configuration du mode auto">
+                <span className="auto-config" title="Auto mode configuration">
                   <input
                     className="auto-wake-input"
                     type="text"
                     value={wakeWord}
                     maxLength={30}
-                    aria-label="Mot-clé de réveil"
-                    placeholder="Mot-clé (ex. Chloé)"
+                    aria-label="Wake word"
+                    placeholder="Wake word (e.g. Chloé)"
                     onChange={(event) => setWakeWord(event.target.value)}
                   />
                   <select
                     className="auto-delay-select"
                     value={silenceSeconds}
-                    aria-label="Délai de silence en secondes"
-                    title="Délai de silence avant envoi"
+                    aria-label="Silence delay in seconds"
+                    title="Silence delay before sending"
                     onChange={(event) => setSilenceSeconds(Number(event.target.value))}
                   >
                     {Array.from({ length: MAX_SILENCE_SECONDS - MIN_SILENCE_SECONDS + 1 },
@@ -1137,25 +1187,25 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                   </select>
                 </span>
               )}
-              <a className="icon-button logs-link" href="#/agents" target="_blank" rel="noopener noreferrer" title="Agents IA">
+              <a className="icon-button logs-link" href="#/agents" target="_blank" rel="noopener noreferrer" title="AI Agents">
                 <FileText size={20} />
               </a>
               <a className="icon-button logs-link" href="#/marketing" target="_blank" rel="noopener noreferrer" title="Marketing Intelligence">
                 <TrendingUp size={20} />
               </a>
-              <a className="icon-button logs-link" href="#/quality" target="_blank" rel="noopener noreferrer" title="Qualité & Satisfaction du Coach">
+              <a className="icon-button logs-link" href="#/quality" target="_blank" rel="noopener noreferrer" title="Coach Quality & Satisfaction">
                 <BadgeCheck size={20} />
               </a>
-              <a className="icon-button logs-link" href="#/advisor-feedback" target="_blank" rel="noopener noreferrer" title="Feedback Conseillers">
+              <a className="icon-button logs-link" href="#/advisor-feedback" target="_blank" rel="noopener noreferrer" title="Advisor Feedback">
                 <UserCheck size={20} />
               </a>
-              <a className="icon-button logs-link" href="#/centre-appels" target="_blank" rel="noopener noreferrer" title="Centre d'appels — conversations et score commercial">
+              <a className="icon-button logs-link" href="#/centre-appels" target="_blank" rel="noopener noreferrer" title="Call center — conversations and sales score">
                 <PhoneCall size={20} />
               </a>
-              <a className="icon-button logs-link" href="#/prompt-lab" target="_blank" rel="noopener noreferrer" title="Atelier d'optimisation des prompts">
+              <a className="icon-button logs-link" href="#/prompt-lab" target="_blank" rel="noopener noreferrer" title="Prompt optimization workshop">
                 <Sparkles size={20} />
               </a>
-              <a className="icon-button logs-link" href="#/logs" target="_blank" rel="noopener noreferrer" title="Logs des appels IA">
+              <a className="icon-button logs-link" href="#/logs" target="_blank" rel="noopener noreferrer" title="AI call logs">
                 <Settings size={20} />
               </a>
             </div>
@@ -1169,30 +1219,30 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
         <div className="mobile-panel">
           <label
             className="guard-toggle"
-            title="Active/désactive le garde-fou OUT_OF_SCOPE"
+            title="Enables/disables the OUT_OF_SCOPE guardrail"
           >
             <input
               type="checkbox"
               checked={guardEnabled}
               onChange={(event) => setGuardEnabled(event.target.checked)}
             />
-            <span>Contrôle hors-sujet</span>
+            <span>Out-of-scope check</span>
           </label>
           <label
             className="guard-toggle"
-            title="Préparer et envoyer le dossier de suivi au conseiller à la clôture — coché par défaut"
+            title="Prepare and send the follow-up case file to the advisor on closure — checked by default"
           >
             <input
               type="checkbox"
               checked={suiviEnabled}
               onChange={(event) => setSuiviEnabled(event.target.checked)}
             />
-            <span>Suivi conseiller</span>
+            <span>Advisor follow-up</span>
           </label>
-          <button onClick={finishConversation} type="button"><Plus size={17} /> Nouvelle conversation</button>
+          <button onClick={finishConversation} type="button"><Plus size={17} /> New conversation</button>
           <div className="mobile-provider">
             <Bot size={17} />
-            <span>IA : {providerLabels[provider]}</span>
+            <span>AI: {providerLabels[provider]}</span>
           </div>
         </div>
       )}
@@ -1202,7 +1252,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
           <div className="chat-heading">
             <div>
               <p className="eyebrow">CONVERSATION</p>
-              <h1>Comment puis-je vous aider ?</h1>
+              <h1>How can I help you?</h1>
             </div>
             {/* Bouton unique (remplace l'ancien « Nouveau chat ») :
                 - suivi activé  → clôture (dossier conseiller) + vidage du chat ;
@@ -1213,12 +1263,12 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
               onClick={requestFinish}
               title={
                 suiviEnabled
-                  ? "Terminer la conversation : préparer le dossier de suivi et l'envoyer au conseiller (fire-and-forget, si au moins 2 échanges client), puis vider le chat. Le brouillon d'email client est joint : il n'est jamais envoyé automatiquement."
-                  : 'Démarrer une nouvelle conversation (vide le chat). Le suivi conseiller est désactivé : aucun dossier ne sera préparé ni envoyé.'
+                  ? "End the conversation: prepare the follow-up case file and send it to the advisor (fire-and-forget, if there are at least 2 customer messages), then clear the chat. The customer email draft is attached: it is never sent automatically."
+                  : 'Start a new conversation (clears the chat). Advisor follow-up is disabled: no case file will be prepared or sent.'
               }
             >
               {suiviEnabled ? <Send size={16} /> : <Plus size={17} />}
-              <span>{suiviEnabled ? 'Terminer la conversation' : 'Nouvelle conversation'}</span>
+              <span>{suiviEnabled ? 'End the conversation' : 'New conversation'}</span>
             </button>
           </div>
 
@@ -1235,7 +1285,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                         <button
                           type="button"
                           className={`message-speak${speakingId === message.id ? ' active' : ''}`}
-                          title={speakingId === message.id ? 'Arrêter la lecture' : 'Lire la réponse à voix haute'}
+                          title={speakingId === message.id ? 'Stop reading' : 'Read the answer aloud'}
                           onClick={() => (speakingId === message.id
                             ? stopSpeaking()
                             : speakMessage(message.id, message.content))}
@@ -1252,8 +1302,8 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                     <button
                       className="avatar user-avatar"
                       type="button"
-                      title="Revenir avant cette question et la reposer"
-                      aria-label="Revenir avant cette question et la reposer"
+                      title="Go back before this question and ask it again"
+                      aria-label="Go back before this question and ask it again"
                       onClick={() => void rewindToMessage(message.id)}
                       disabled={loading || clientAutoLoading || rewinding}
                     >
@@ -1277,14 +1327,14 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                 {autoState === 'listening' ? (
                   <>
                     <span className="auto-dot listening" />
-                    <span>🎙️ Écoute…</span>
+                    <span>🎙️ Listening…</span>
                     {autoCountdown !== null && !loading ? (
                       <>
                         {/* DÉCOMPTE : le nombre de secondes qui restent avant l'envoi automatique à l'IA.
                             Il repart à chaque parole captée — il ne s'écoule donc que pendant le silence. */}
                         <span
                           className={`auto-countdown${autoCountdown <= 2 ? ' urgent' : ''}`}
-                          title="Votre question est envoyée à l'IA à la fin du décompte ; parlez pour le relancer"
+                          title="Your question is sent to the AI when the countdown ends; speak to restart it"
                         >
                           <strong>{autoCountdown}</strong>
                           <span>s</span>
@@ -1296,21 +1346,21 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                           />
                         </span>
                         <span className="auto-countdown-hint">
-                          envoi automatique à l&rsquo;IA si vous ne parlez plus
+                          automatically sent to the AI if you stop speaking
                         </span>
                       </>
                     ) : (
                       <span>
                         {loading
-                          ? 'réponse de l’IA en cours — votre question partira ensuite'
-                          : `envoi automatique après ${silenceSeconds}s de silence`}
+                          ? 'AI answer in progress — your question will be sent next'
+                          : `automatically sent after ${silenceSeconds}s of silence`}
                       </span>
                     )}
                   </>
                 ) : (
                   <>
                     <span className="auto-dot" />
-                    <span>🎧 En veille — dites «&nbsp;{wakeWord.trim() || DEFAULT_WAKE_WORD}&nbsp;» puis votre question</span>
+                    <span>🎧 Standby — say “&nbsp;{wakeWord.trim() || DEFAULT_WAKE_WORD}&nbsp;” then your question</span>
                   </>
                 )}
               </div>
@@ -1340,10 +1390,10 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                   disabled={!speechSupported || (loading && !listening)}
                   title={
                     listening
-                      ? 'Arrêter et envoyer la question'
+                      ? 'Stop and send the question'
                       : speechSupported
-                        ? 'Parler au micro (dictée)'
-                        : 'Reconnaissance vocale non supportée'
+                        ? 'Speak into the microphone (dictation)'
+                        : 'Voice recognition not supported'
                   }
                 >
                   {listening ? <MicOff size={19} /> : <Mic size={19} />}
@@ -1357,10 +1407,10 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                   disabled={!ttsSupported}
                   title={
                     speakingId
-                      ? 'Arrêter la lecture vocale'
+                      ? 'Stop voice playback'
                       : ttsSupported
-                        ? 'Écouter la dernière réponse'
-                        : 'Lecture vocale non supportée'
+                        ? 'Listen to the last answer'
+                        : 'Voice playback not supported'
                   }
                 >
                   {speakingId ? <VolumeX size={19} /> : <Volume2 size={19} />}
@@ -1377,7 +1427,7 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                       submitMessage()
                     }
                   }}
-                  placeholder="Écrivez votre question…"
+                  placeholder="Type your question…"
                   rows={1}
                 />
                 <button
@@ -1385,14 +1435,18 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
                   type="button"
                   onClick={() => submitMessage()}
                   disabled={loading || replayRunning || !input.trim()}
-                  title="Envoyer"
+                  title="Send"
                 >
                   <Send size={18} />
                 </button>
               </div>
               <div className="composer-footer">
-                <span>Entrée pour envoyer · Maj + Entrée pour une nouvelle ligne</span>
-                <span>Session : {sessionId.slice(0, 18)}…</span>
+                {replayWaitingForSpace ? (
+                  <span className="replay-space-hint">Press <kbd>Space</kbd> to continue the demo</span>
+                ) : (
+                  <span>Enter to send · Shift + Enter for a new line</span>
+                )}
+                <span>Session: {sessionId.slice(0, 18)}…</span>
               </div>
             </div>
           </div>
@@ -1401,8 +1455,8 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
         <aside className="summary-column">
           <div className="summary-header">
             <div>
-              <p className="eyebrow">VUE D’ENSEMBLE</p>
-              <h2>Votre situation</h2>
+              <p className="eyebrow">OVERVIEW</p>
+              <h2>Your situation</h2>
             </div>
             <Landmark size={21} />
           </div>
@@ -1410,53 +1464,53 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
           {summary ? (
             <>
               <div className="balance-card">
-                <div className="balance-label"><Wallet size={16} /> Solde du compte courant</div>
+                <div className="balance-label"><Wallet size={16} /> Current account balance</div>
                 <div className="balance-value">{formatMoneyCents(summary.currentAccountBalance)}</div>
-                <div className="balance-period">Données du {formatPeriod(summary.periodStart, summary.periodEnd)}</div>
+                <div className="balance-period">Data from {formatPeriod(summary.periodStart, summary.periodEnd)}</div>
               </div>
 
               <div className="metric-grid">
                 <div className="metric-card">
                   <span className="metric-icon"><Wallet size={16} /></span>
-                  <span className="metric-label">Épargne</span>
+                  <span className="metric-label">Savings</span>
                   <strong>{formatMoney(summary.savingsBalance)}</strong>
                 </div>
                 <div className="metric-card">
                   <span className="metric-icon"><TrendingUp size={16} /></span>
-                  <span className="metric-label">Revenu mensuel moyen</span>
+                  <span className="metric-label">Average monthly income</span>
                   <strong>{formatMoney(summary.averageMonthlyIncome)}</strong>
                 </div>
                 <div className="metric-card">
-                  <span className="metric-label">Dépenses mensuelles</span>
+                  <span className="metric-label">Monthly expenses</span>
                   <strong>{formatMoney(summary.averageMonthlyExpenses)}</strong>
                 </div>
                 <div className="metric-card">
-                  <span className="metric-label">Crédits / mois</span>
+                  <span className="metric-label">Loans / month</span>
                   <strong>{formatMoney(summary.monthlyLoanPayments)}</strong>
                 </div>
               </div>
 
               <div className="health-card">
-                <div className="health-title"><span>Santé financière</span><ArrowUpRight size={16} /></div>
+                <div className="health-title"><span>Financial health</span><ArrowUpRight size={16} /></div>
                 <div className="health-row">
-                  <span>Taux d’endettement</span>
+                  <span>Debt-to-income ratio</span>
                   <strong>{formatRatio(summary.debtServiceToIncomeRatio)}</strong>
                 </div>
                 <div className="progress"><span style={{ width: `${Math.min(summary.debtServiceToIncomeRatio * 100, 100)}%` }} /></div>
                 <div className="health-row">
-                  <span>Taux d’épargne</span>
+                  <span>Savings rate</span>
                   <div className="health-value">
                     <strong>{formatPercent(summary.savingsToIncomeRatio3Months)}</strong>
-                    <small className="health-month">3 derniers mois · {summary.savingsRatePeriodLabel}</small>
+                    <small className="health-month">Last 3 months · {summary.savingsRatePeriodLabel}</small>
                   </div>
                 </div>
                 <div className="progress"><span style={{ width: `${Math.min(summary.savingsToIncomeRatio3Months * 100, 100)}%` }} /></div>
               </div>
 
               <div className="context-card">
-                <div className="context-title">Contexte utilisé par l’IA</div>
-                <div className="context-line"><span>Période</span><strong>{summary.periodMonths} mois</strong></div>
-                <div className="context-line"><span>Transactions</span><strong>{summary.transactionCount.toLocaleString('fr-FR')}</strong></div>
+                <div className="context-title">Context used by the AI</div>
+                <div className="context-line"><span>Period</span><strong>{summary.periodMonths} months</strong></div>
+                <div className="context-line"><span>Transactions</span><strong>{summary.transactionCount.toLocaleString('en-GB')}</strong></div>
               </div>
             </>
           ) : (
@@ -1472,8 +1526,8 @@ export default function App({ replaySessionId }: { replaySessionId?: string }) {
       </main>
 
       <footer className="app-footer">
-        <span>POC — Coach financier conversationnel</span>
-        <span>API : {API_BASE_URL}</span>
+        <span>POC — Conversational financial coach</span>
+        <span>API: {API_BASE_URL}</span>
       </footer>
 
       {/* Pop-in de satisfaction : ouverte au clic sur « Terminer la conversation »,

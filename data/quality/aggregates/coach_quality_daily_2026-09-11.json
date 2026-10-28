@@ -47,14 +47,14 @@
   } ],
   "feedbackCategories" : [ {
     "reason" : "MISSING_INFORMATION",
-    "label" : "Il manquait des informations",
+    "label" : "Information was missing",
     "count" : 2,
     "share" : 0.6667,
     "previousCount" : null,
     "evolutionPercent" : null
   }, {
     "reason" : "HARD_TO_UNDERSTAND",
-    "label" : "Les explications étaient difficiles à comprendre",
+    "label" : "The explanations were hard to understand",
     "count" : 1,
     "share" : 0.3333,
     "previousCount" : null,
@@ -62,23 +62,23 @@
   } ],
   "commentThemes" : [ {
     "theme" : "HARD_TO_UNDERSTAND",
-    "label" : "Les explications étaient difficiles à comprendre",
+    "label" : "The explanations were hard to understand",
     "count" : 1,
     "share" : 0.3333
   }, {
     "theme" : "TOO_REPETITIVE",
-    "label" : "Les réponses étaient trop répétitives",
+    "label" : "The answers were too repetitive",
     "count" : 1,
     "share" : 0.3333
   }, {
     "theme" : "ACTION_NOT_POSSIBLE",
-    "label" : "Je n'ai pas pu réaliser l'action souhaitée",
+    "label" : "I could not complete the desired action",
     "count" : 1,
     "share" : 0.3333
   } ],
   "qualityChecks" : [ {
     "checkType" : "EXCESSIVE_REPETITION",
-    "label" : "Répétition excessive",
+    "label" : "Excessive repetition",
     "severity" : "LOW",
     "checksRun" : 8,
     "detected" : 2,
@@ -87,7 +87,7 @@
     "evolutionPercent" : 0.0
   }, {
     "checkType" : "CREDIT_SIMULATION_VIOLATION",
-    "label" : "Simulation de crédit interdite",
+    "label" : "Credit simulation not allowed",
     "severity" : "HIGH",
     "checksRun" : 8,
     "detected" : 0,
@@ -96,7 +96,7 @@
     "evolutionPercent" : null
   }, {
     "checkType" : "INVENTED_URL",
-    "label" : "URL inventée",
+    "label" : "Invented URL",
     "severity" : "HIGH",
     "checksRun" : 8,
     "detected" : 0,
@@ -105,7 +105,7 @@
     "evolutionPercent" : null
   }, {
     "checkType" : "MISSING_DATA_NOT_RETRIEVED",
-    "label" : "Donnée demandée non récupérée",
+    "label" : "Requested data not retrieved",
     "severity" : "MEDIUM",
     "checksRun" : 8,
     "detected" : 0,
@@ -114,7 +114,7 @@
     "evolutionPercent" : -100.0
   }, {
     "checkType" : "PRODUCT_MISMATCH",
-    "label" : "Produit incompatible",
+    "label" : "Product mismatch",
     "severity" : "HIGH",
     "checksRun" : 8,
     "detected" : 0,
@@ -123,7 +123,7 @@
     "evolutionPercent" : null
   }, {
     "checkType" : "UNANSWERED_REQUEST",
-    "label" : "Demande non résolue",
+    "label" : "Unresolved request",
     "severity" : "MEDIUM",
     "checksRun" : 8,
     "detected" : 0,
@@ -153,80 +153,80 @@
   "trends" : [ {
     "entityType" : "CHECK",
     "entityId" : "UNANSWERED_REQUEST",
-    "entityName" : "Demande non résolue",
+    "entityName" : "Unresolved request",
     "current" : 0,
     "previous" : 1,
     "evolutionPercent" : -100.0
   }, {
     "entityType" : "CHECK",
     "entityId" : "MISSING_DATA_NOT_RETRIEVED",
-    "entityName" : "Donnée demandée non récupérée",
+    "entityName" : "Requested data not retrieved",
     "current" : 0,
     "previous" : 1,
     "evolutionPercent" : -100.0
   }, {
     "entityType" : "OVERVIEW",
     "entityId" : "anomalies",
-    "entityName" : "Anomalies détectées",
+    "entityName" : "Issues detected",
     "current" : 2,
     "previous" : 4,
     "evolutionPercent" : -50.0
   }, {
     "entityType" : "OVERVIEW",
     "entityId" : "feedback",
-    "entityName" : "Avis reçus",
+    "entityName" : "Reviews received",
     "current" : 5,
     "previous" : 5,
     "evolutionPercent" : 0.0
   }, {
     "entityType" : "CHECK",
     "entityId" : "EXCESSIVE_REPETITION",
-    "entityName" : "Répétition excessive",
+    "entityName" : "Excessive repetition",
     "current" : 2,
     "previous" : 2,
     "evolutionPercent" : 0.0
   }, {
     "entityType" : "REASON",
     "entityId" : "MISSING_INFORMATION",
-    "entityName" : "Il manquait des informations",
+    "entityName" : "Information was missing",
     "current" : 2,
     "previous" : 0,
     "evolutionPercent" : null
   }, {
     "entityType" : "REASON",
     "entityId" : "HARD_TO_UNDERSTAND",
-    "entityName" : "Les explications étaient difficiles à comprendre",
+    "entityName" : "The explanations were hard to understand",
     "current" : 1,
     "previous" : 0,
     "evolutionPercent" : null
   }, {
     "entityType" : "CHECK",
     "entityId" : "CREDIT_SIMULATION_VIOLATION",
-    "entityName" : "Simulation de crédit interdite",
+    "entityName" : "Credit simulation not allowed",
     "current" : 0,
     "previous" : 0,
     "evolutionPercent" : null
   }, {
     "entityType" : "CHECK",
     "entityId" : "PRODUCT_MISMATCH",
-    "entityName" : "Produit incompatible",
+    "entityName" : "Product mismatch",
     "current" : 0,
     "previous" : 0,
     "evolutionPercent" : null
   }, {
     "entityType" : "CHECK",
     "entityId" : "INVENTED_URL",
-    "entityName" : "URL inventée",
+    "entityName" : "Invented URL",
     "current" : 0,
     "previous" : 0,
     "evolutionPercent" : null
   } ],
   "anonymizedComments" : [ {
     "commentRef" : "fb-73442618-f251-306f-9def-8a9d91257952",
-    "text" : "Échanges utiles et clairs, merci."
+    "text" : "Useful and clear exchanges, thank you."
   }, {
     "commentRef" : "fb-542b2154-af2b-327b-b8af-1697a295bb3d",
-    "text" : "Je n'ai pas obtenu la mensualité de mon crédit, il m'a renvoyé vers un simulateur."
+    "text" : "I did not get the monthly payment for my loan, it sent me to a simulator."
   } ],
   "invalidLines" : 0,
   "demo" : true,

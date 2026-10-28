@@ -10,7 +10,7 @@
   "offres": [
     {
       "id": "sg_livret_a",
-      "nom": "Livret A",
+      "nom": "Livret A savings account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/livret-a",
       "famille": "epargne_precaution",
       "type": "livret_reglemente",
@@ -50,7 +50,7 @@
     },
     {
       "id": "sg_ldds",
-      "nom": "Livret de Développement Durable et Solidaire",
+      "nom": "Sustainable Development Passbook",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/ldds-livret-developpement-durable-solidaire",
       "acronyme": "LDDS",
       "famille": "epargne_precaution",
@@ -85,7 +85,7 @@
     },
     {
       "id": "sg_lep",
-      "nom": "Livret d'Épargne Populaire",
+      "nom": "Popular Savings Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/lep-livret-epargne-populaire",
       "acronyme": "LEP",
       "famille": "epargne_precaution",
@@ -121,12 +121,12 @@
           "ldds",
           "csl"
         ],
-        "raison": "Rémunération nette supérieure sous réserve d'éligibilité."
+        "raison": "Higher net return subject to eligibility."
       }
     },
     {
       "id": "sg_livret_jeune",
-      "nom": "Livret Jeune",
+      "nom": "Youth Savings Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/livret-jeune",
       "famille": "epargne_jeune",
       "type": "livret_reglemente",
@@ -159,7 +159,7 @@
     },
     {
       "id": "sg_compte_sur_livret",
-      "nom": "Compte Sur Livret",
+      "nom": "Passbook Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/csl-compte-sur-livret",
       "acronyme": "CSL",
       "famille": "epargne_liquide",
@@ -195,7 +195,7 @@
     },
     {
       "id": "sg_livret_epargne_plus",
-      "nom": "Livret Épargne Plus SG",
+      "nom": "SG Savings Plus Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/livret-epargne-plus",
       "famille": "epargne_liquide",
       "type": "livret_non_reglemente",
@@ -224,7 +224,7 @@
     },
     {
       "id": "bfm_livret_avenir",
-      "nom": "Livret BFM Avenir",
+      "nom": "BFM Avenir Savings Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/livret-bfm-avenir",
       "famille": "epargne_fonction_publique",
       "type": "livret_non_reglemente",
@@ -248,7 +248,7 @@
         "date_taux": "2026-09-01"
       },
       "avantage_associe": {
-        "produit": "Prêt BFM Avenir",
+        "produit": "BFM Avenir Loan",
         "condition_interets_acquis_minimum": 75,
         "pret_montant_minimum": 1500,
         "pret_montant_maximum": 64000,
@@ -264,7 +264,7 @@
     },
     {
       "id": "sg_cel",
-      "nom": "Compte Épargne Logement",
+      "nom": "Home Savings Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/cel-compte-epargne-logement",
       "acronyme": "CEL",
       "famille": "epargne_logement",
@@ -291,7 +291,7 @@
     },
     {
       "id": "sg_pel",
-      "nom": "Plan Épargne Logement",
+      "nom": "Home Savings Plan",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/pel-plan-epargne-logement",
       "acronyme": "PEL",
       "famille": "epargne_logement",
@@ -325,7 +325,7 @@
     },
     {
       "id": "sg_compte_a_terme",
-      "nom": "Compte à Terme SG",
+      "nom": "SG Term Deposit Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/compte-a-terme",
       "acronyme": "CAT",
       "famille": "epargne_a_terme",
@@ -486,7 +486,7 @@
     },
     {
       "id": "sg_pea",
-      "nom": "Plan d'Épargne en Actions",
+      "nom": "Equity Savings Plan",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/pea-plan-epargne-actions",
       "acronyme": "PEA",
       "famille": "investissement_bourse",
@@ -549,7 +549,7 @@
     },
     {
       "id": "sg_cto",
-      "nom": "Compte Titres Ordinaire",
+      "nom": "Ordinary Securities Account",
       "url": "https://particuliers.sg.fr/epargner-placer-son-argent/nos-offres/cto-compte-titres-ordinaire",
       "acronyme": "CTO",
       "famille": "investissement_bourse",

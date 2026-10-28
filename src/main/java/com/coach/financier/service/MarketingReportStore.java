@@ -39,7 +39,7 @@ public class MarketingReportStore {
     /** Écrit (ou écrase) le rapport d'une date — opération idempotente. */
     public MarketingModels.MarketingReport save(MarketingModels.MarketingReport report) {
         if (report == null || report.reportDate() == null) {
-            throw new IllegalArgumentException("Rapport marketing sans date : rien à écrire.");
+            throw new IllegalArgumentException("Marketing report without a date: nothing to write.");
         }
         Path file = fileOf(report.reportDate());
         try {
@@ -47,7 +47,7 @@ public class MarketingReportStore {
             String json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(report);
             Files.writeString(file, json, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Écriture du rapport marketing impossible : " + file, e);
+            throw new IllegalStateException("Unable to write the marketing report: " + file, e);
         }
         return report;
     }

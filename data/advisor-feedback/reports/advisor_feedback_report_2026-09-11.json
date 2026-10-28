@@ -6,110 +6,110 @@
   },
   "executiveSummary" : {
     "status" : "ATTENTION",
-    "summary" : "84 dossier(s) évalué(s) : 56.0 % jugé(s) pertinents, 28.6 % à améliorer, 15.5 % incorrects."
+    "summary" : "84 case file(s) evaluated: 56.0 % rated relevant, 28.6 % to improve, 15.5 % incorrect."
   },
   "strengths" : [ {
-    "title" : "Emails préparés exploitables",
-    "observation" : "67.9 % des emails évalués sont prêts à l'emploi ou ne demandent que des modifications mineures."
+    "title" : "Emails prepared are usable",
+    "observation" : "67.9 % of the emails evaluated are ready to use or require only minor changes."
   }, {
-    "title" : "Produits jugés pertinents",
-    "observation" : "89.8 % des produits évalués sont validés par les conseillers."
+    "title" : "Products rated relevant",
+    "observation" : "89.8 % of the products evaluated are approved by advisors."
   } ],
   "mainIssues" : [ {
     "area" : "CLIENT_EMAIL",
-    "observation" : "Email préparé pour le client : 14 correction(s) signalée(s)",
+    "observation" : "Customer email prepared: 14 correction(s) reported",
     "severity" : "MEDIUM"
   }, {
     "area" : "PROJECT_DETECTION",
-    "observation" : "Projet détecté : 13 correction(s) signalée(s)",
+    "observation" : "Detected project: 13 correction(s) reported",
     "severity" : "MEDIUM"
   }, {
     "area" : "PRODUCT_RELEVANCE",
-    "observation" : "Produit proposé / produit d'intérêt : 13 correction(s) signalée(s)",
+    "observation" : "Recommended product / product of interest: 13 correction(s) reported",
     "severity" : "MEDIUM"
   }, {
     "area" : "INTEREST_LEVEL",
-    "observation" : "Niveau d'intérêt du client : 10 correction(s) signalée(s)",
+    "observation" : "Customer interest level: 10 correction(s) reported",
     "severity" : "MEDIUM"
   }, {
     "area" : "OTHER",
-    "observation" : "Motif « Trop générique » relevé 14 fois",
+    "observation" : "Reason “Too generic” reported 14 times",
     "severity" : "LOW"
   }, {
     "area" : "OTHER",
-    "observation" : "Motif « Erreur » relevé 13 fois",
+    "observation" : "Reason “Error” reported 13 times",
     "severity" : "LOW"
   } ],
   "productAnalysis" : [ {
     "productId" : "sg_auto_tiers_plus",
-    "productName" : "Assurance Auto SG – Tiers+",
-    "observation" : "32 évaluation(s), 28 pertinent(s), 4 non pertinent(s), 10 correction(s) de niveau",
+    "productName" : "SG Car Insurance – Third Party+",
+    "observation" : "32 assessment(s), 28 relevant, 4 not relevant, 10 level correction(s)",
     "signal" : "POSITIVE"
   }, {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
-    "observation" : "32 évaluation(s), 29 pertinent(s), 3 non pertinent(s), 10 correction(s) de niveau, ajouté 1 fois par un conseiller",
+    "productName" : "SG Car Insurance – Comprehensive",
+    "observation" : "32 assessment(s), 29 relevant, 3 not relevant, 10 level correction(s), added once by an advisor",
     "signal" : "POSITIVE"
   }, {
     "productId" : "sg_auto_tiers",
-    "productName" : "Assurance Auto SG – Tiers",
-    "observation" : "31 évaluation(s), 26 pertinent(s), 5 non pertinent(s), 13 correction(s) de niveau",
+    "productName" : "SG Car Insurance – Third Party",
+    "observation" : "31 assessment(s), 26 relevant, 5 not relevant, 13 level correction(s)",
     "signal" : "POSITIVE"
   }, {
     "productId" : "sg_auto_leasing",
-    "productName" : "Assurance Auto SG – Leasing",
-    "observation" : "21 évaluation(s), 20 pertinent(s), 1 non pertinent(s), 5 correction(s) de niveau",
+    "productName" : "SG Car Insurance – Leasing",
+    "observation" : "21 assessment(s), 20 relevant, 1 not relevant, 5 level correction(s)",
     "signal" : "POSITIVE"
   }, {
     "productId" : "sg_auto_tous_risques_plus",
-    "productName" : "Assurance Auto SG – Tous Risques+",
-    "observation" : "12 évaluation(s), 12 pertinent(s), 0 non pertinent(s), 6 correction(s) de niveau, ajouté 1 fois par un conseiller",
+    "productName" : "SG Car Insurance – Comprehensive+",
+    "observation" : "12 assessment(s), 12 relevant, 0 not relevant, 6 level correction(s), added once by an advisor",
     "signal" : "POSITIVE"
   }, {
     "productId" : "sg_ade_investissement_locatif",
     "productName" : null,
-    "observation" : "0 évaluation(s), 0 pertinent(s), 0 non pertinent(s), 0 correction(s) de niveau, ajouté 1 fois par un conseiller",
+    "observation" : "0 assessment(s), 0 relevant, 0 not relevant, 0 level correction(s), added once by an advisor",
     "signal" : "INSUFFICIENT_DATA"
   }, {
     "productId" : "sg_ade_residence_principale_secondaire",
     "productName" : null,
-    "observation" : "0 évaluation(s), 0 pertinent(s), 0 non pertinent(s), 0 correction(s) de niveau, ajouté 2 fois par un conseiller",
+    "observation" : "0 assessment(s), 0 relevant, 0 not relevant, 0 level correction(s), added twice by an advisor",
     "signal" : "INSUFFICIENT_DATA"
   }, {
     "productId" : "sg_ade_senior",
     "productName" : null,
-    "observation" : "0 évaluation(s), 0 pertinent(s), 0 non pertinent(s), 0 correction(s) de niveau, ajouté 1 fois par un conseiller",
+    "observation" : "0 assessment(s), 0 relevant, 0 not relevant, 0 level correction(s), added once by an advisor",
     "signal" : "INSUFFICIENT_DATA"
   } ],
   "interestLevelAnalysis" : {
-    "summary" : "44 correction(s) de niveau d'intérêt : la valeur IA et la valeur conseiller sont conservées séparément.",
-    "overestimationSignals" : [ "Assurance Auto SG – Tiers : HIGH → MEDIUM (10 fois, surestimation)", "Assurance Auto SG – Tous Risques : HIGH → MEDIUM (9 fois, surestimation)", "Assurance Auto SG – Tiers+ : HIGH → MEDIUM (6 fois, surestimation)", "Assurance Auto SG – Tous Risques+ : HIGH → MEDIUM (6 fois, surestimation)", "Assurance Auto SG – Tiers+ : MEDIUM → LOW (4 fois, surestimation)" ],
+    "summary" : "44 interest-level correction(s): the AI value and the advisor value are kept separately.",
+    "overestimationSignals" : [ "SG Car Insurance – Third Party: HIGH → MEDIUM (10 times, overestimation)", "SG Car Insurance – Comprehensive: HIGH → MEDIUM (9 times, overestimation)", "SG Car Insurance – Third Party+: HIGH → MEDIUM (6 times, overestimation)", "SG Car Insurance – Comprehensive+: HIGH → MEDIUM (6 times, overestimation)", "SG Car Insurance – Third Party+: MEDIUM → LOW (4 times, overestimation)" ],
     "underestimationSignals" : [ ]
   },
   "nextActionAnalysis" : {
-    "summary" : "Le suivi conseillé est évalué par les conseillers ; 128 produit(s) évalué(s) sur la période.",
+    "summary" : "The suggested follow-up is assessed by advisors; 128 product(s) evaluated over the period.",
     "issues" : [ ]
   },
   "clientEmailAnalysis" : {
-    "summary" : "Distribution des emails évalués : Prêt à utiliser = 35, Modifications mineures = 22, Modifications importantes = 27.",
+    "summary" : "Distribution of the emails evaluated: Ready to use = 35, Minor changes = 22, Major changes = 27.",
     "issues" : [ ]
   },
   "trends" : [ ],
   "priorityImprovements" : [ {
     "priority" : "MEDIUM",
-    "title" : "Traiter la correction la plus fréquente",
-    "observation" : "Email préparé pour le client (14 signalement(s))",
-    "recommendation" : "Analyser les dossiers concernés et examiner les critères utilisés par le Coach, sans modifier automatiquement de seuil ni de règle.",
-    "expectedBenefit" : "Baisse des corrections manuelles et gain de temps pour les conseillers."
+    "title" : "Address the most frequent correction",
+    "observation" : "Customer email prepared (14 report(s))",
+    "recommendation" : "Analyse the case files concerned and review the criteria used by the Coach, without automatically changing any threshold or rule.",
+    "expectedBenefit" : "Fewer manual corrections and time saved for advisors."
   }, {
     "priority" : "HIGH",
-    "title" : "Réduire la surestimation des niveaux d'intérêt",
-    "observation" : "Assurance Auto SG – Tiers : HIGH → MEDIUM (10 fois, surestimation) | Assurance Auto SG – Tous Risques : HIGH → MEDIUM (9 fois, surestimation) | Assurance Auto SG – Tiers+ : HIGH → MEDIUM (6 fois, surestimation) | Assurance Auto SG – Tous Risques+ : HIGH → MEDIUM (6 fois, surestimation) | Assurance Auto SG – Tiers+ : MEDIUM → LOW (4 fois, surestimation)",
-    "recommendation" : "Étudier les critères distinguant un intérêt explicite d'une simple demande d'information (comparaison des dossiers corrigés).",
-    "expectedBenefit" : "Meilleure priorisation commerciale et confiance accrue dans le dossier."
+    "title" : "Reduce the overestimation of interest levels",
+    "observation" : "SG Car Insurance – Third Party: HIGH → MEDIUM (10 times, overestimation) | SG Car Insurance – Comprehensive: HIGH → MEDIUM (9 times, overestimation) | SG Car Insurance – Third Party+: HIGH → MEDIUM (6 times, overestimation) | SG Car Insurance – Comprehensive+: HIGH → MEDIUM (6 times, overestimation) | SG Car Insurance – Third Party+: MEDIUM → LOW (4 times, overestimation)",
+    "recommendation" : "Study the criteria that distinguish explicit interest from a simple request for information (comparison of corrected case files).",
+    "expectedBenefit" : "Better sales prioritisation and greater confidence in the case file."
   } ],
-  "watchPoints" : [ "Plusieurs niveaux d'intérêt corrigés par les conseillers : converger avec les signaux produit.", "Des feedbacks de démonstration (source=DEMO) sont présents sur la période." ],
-  "finalAssessment" : "Rapport généré en mode démo à partir des KPI calculés : il propose des pistes, il ne modifie jamais automatiquement le Coach (prompt, règles, seuils, catalogue, code).",
+  "watchPoints" : [ "Several interest levels corrected by advisors: converge with the product signals.", "Demo feedback items (source=DEMO) are present over the period." ],
+  "finalAssessment" : "Report generated in demo mode from the calculated KPIs: it suggests avenues for improvement, it never automatically modifies the Coach (prompt, rules, thresholds, catalogue, code).",
   "generatedAt" : "2026-09-11T10:27:24.197267400Z",
   "model" : "MOCK",
   "aiGenerated" : true,

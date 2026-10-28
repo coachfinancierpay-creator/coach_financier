@@ -14,14 +14,14 @@ class MarketingLabelsTest {
     @Test
     @DisplayName("les codes connus sont traduits en libellés métier lisibles")
     void knownCodesAreTranslated() {
-        assertThat(MarketingModels.projectTypeLabel("REAL_ESTATE")).isEqualTo("Projet immobilier");
-        assertThat(MarketingModels.projectTypeLabel("VEHICLE")).isEqualTo("Achat d'un véhicule");
-        assertThat(MarketingModels.unmetReasonLabel("NO_SUITABLE_PRODUCT")).isEqualTo("Aucune offre adaptée au besoin");
-        assertThat(MarketingModels.rejectionReasonLabel("PRICE")).isEqualTo("Prix / coût trop élevé");
-        assertThat(MarketingModels.missingInfoReasonLabel("MISSING_PRICING_INFORMATION")).isEqualTo("Tarif non documenté");
-        assertThat(MarketingModels.interestReasonLabel("RATE_REQUEST")).isEqualTo("Demande de taux");
-        assertThat(MarketingModels.productFamilyLabel("MORTGAGE")).isEqualTo("Crédit immobilier");
-        assertThat(MarketingModels.productFamilyLabel("SAVINGS_PRODUCT")).isEqualTo("Produit d'épargne");
+        assertThat(MarketingModels.projectTypeLabel("REAL_ESTATE")).isEqualTo("Real estate project");
+        assertThat(MarketingModels.projectTypeLabel("VEHICLE")).isEqualTo("Vehicle purchase");
+        assertThat(MarketingModels.unmetReasonLabel("NO_SUITABLE_PRODUCT")).isEqualTo("No offer suited to the need");
+        assertThat(MarketingModels.rejectionReasonLabel("PRICE")).isEqualTo("Price / cost too high");
+        assertThat(MarketingModels.missingInfoReasonLabel("MISSING_PRICING_INFORMATION")).isEqualTo("Pricing not documented");
+        assertThat(MarketingModels.interestReasonLabel("RATE_REQUEST")).isEqualTo("Rate request");
+        assertThat(MarketingModels.productFamilyLabel("MORTGAGE")).isEqualTo("Mortgage");
+        assertThat(MarketingModels.productFamilyLabel("SAVINGS_PRODUCT")).isEqualTo("Savings product");
     }
 
     @Test
@@ -46,10 +46,10 @@ class MarketingLabelsTest {
                 .containsKeys("REAL_ESTATE", "VEHICLE", "UNKNOWN")
                 .allSatisfy((code, label) -> assertThat(label).isNotBlank());
         assertThat(MarketingModels.productFamilyLabels())
-                .containsEntry("MORTGAGE", "Crédit immobilier")
+                .containsEntry("MORTGAGE", "Mortgage")
                 .containsKey("INSURANCE_AUTO");
         assertThat(MarketingModels.unmetReasonLabels())
-                .containsEntry("NO_SUITABLE_PRODUCT", "Aucune offre adaptée au besoin");
+                .containsEntry("NO_SUITABLE_PRODUCT", "No offer suited to the need");
         assertThat(MarketingModels.rejectionReasonLabels()).isNotEmpty();
         assertThat(MarketingModels.missingInfoReasonLabels()).isNotEmpty();
         assertThat(MarketingModels.interestReasonLabels()).isNotEmpty();

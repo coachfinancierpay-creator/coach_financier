@@ -40,17 +40,17 @@ import type {
 import { isoToday } from './dates'
 
 const PERIODS: { id: AdvisorPeriod; label: string }[] = [
-  { id: 'today', label: "Aujourd'hui" },
-  { id: 'yesterday', label: 'Hier' },
-  { id: '7d', label: '7 jours' },
-  { id: '30d', label: '30 jours' },
-  { id: 'custom', label: 'Personnalisé' },
+  { id: 'today', label: 'Today' },
+  { id: 'yesterday', label: 'Yesterday' },
+  { id: '7d', label: '7 days' },
+  { id: '30d', label: '30 days' },
+  { id: 'custom', label: 'Custom' },
 ]
 
 const ASSESSMENTS: { code: AdvisorAssessment; label: string; icon: typeof ThumbsUp }[] = [
-  { code: 'RELEVANT', label: 'Pertinente', icon: ThumbsUp },
-  { code: 'NEEDS_IMPROVEMENT', label: 'À améliorer', icon: MessageSquareQuote },
-  { code: 'INCORRECT', label: 'Incorrecte', icon: ThumbsDown },
+  { code: 'RELEVANT', label: 'Relevant', icon: ThumbsUp },
+  { code: 'NEEDS_IMPROVEMENT', label: 'Needs improvement', icon: MessageSquareQuote },
+  { code: 'INCORRECT', label: 'Incorrect', icon: ThumbsDown },
 ]
 
 function percent(value: number | null | undefined, decimals = 0): string {
@@ -110,7 +110,7 @@ export default function AdvisorFeedback() {
       setData(overview)
       setReport(await fetchAdvisorReport(reportDate))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur inconnue')
+      setError(e instanceof Error ? e.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
@@ -129,10 +129,10 @@ export default function AdvisorFeedback() {
     setNotice(null)
     try {
       setReport(await generateAdvisorReport('custom', reportDate, reportDate))
-      setNotice(`Analyse IA des retours conseillers générée pour le ${reportDate}.`)
+      setNotice(`AI analysis of advisor feedback generated for ${reportDate}.`)
       await load()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur inconnue')
+      setError(e instanceof Error ? e.message : 'Unknown error')
     }
   }
 
@@ -140,11 +140,11 @@ export default function AdvisorFeedback() {
     setNotice(null)
     try {
       const result = await generateAdvisorDemoData(14, 4)
-      setNotice(`Données de démonstration générées (${result.days} jours, ${result.written} feedbacks).`)
+      setNotice(`Demo data generated (${result.days} days, ${result.written} feedback entries).`)
       setPeriod('30d')
       await load()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Erreur inconnue')
+      setError(e instanceof Error ? e.message : 'Unknown error')
     }
   }
 
@@ -155,16 +155,16 @@ export default function AdvisorFeedback() {
     <div className="logs-shell marketing-page">
       <header className="logs-header">
         <a className="logs-back" href="#/">
-          <ArrowLeft size={16} /> Retour au chat
+          <ArrowLeft size={16} /> Back to chat
         </a>
         <h1>
-          <UserCheck size={20} /> Feedback Conseillers
+          <UserCheck size={20} /> Advisor Feedback
         </h1>
       </header>
       <p className="mkt-subtitle">
-        Mesurer la pertinence du Coach à partir de l&rsquo;expertise des conseillers. Le conseiller donne son
-        avis, le système mesure, l&rsquo;IA analyse les tendances : <strong>aucune modification du Coach
-        n&rsquo;est appliquée automatiquement</strong>.
+        Measure the Coach&rsquo;s relevance from the advisors&rsquo; expertise. The advisor gives feedback, the
+        system measures, the AI analyses trends: <strong>no change to the Coach is applied
+        automatically</strong>.
       </p>
 
       <div className="mkt-toolbar">
@@ -188,21 +188,21 @@ export default function AdvisorFeedback() {
           </div>
         )}
         <select
-          aria-label="Filtrer par évaluation"
+          aria-label="Filter by assessment"
           value={filters.assessment ?? ''}
           onChange={(event) => setFilters({ ...filters, assessment: event.target.value || undefined })}
         >
-          <option value="">Toutes les évaluations</option>
-          <option value="RELEVANT">Pertinente</option>
-          <option value="NEEDS_IMPROVEMENT">À améliorer</option>
-          <option value="INCORRECT">Incorrecte</option>
+          <option value="">All assessments</option>
+          <option value="RELEVANT">Relevant</option>
+          <option value="NEEDS_IMPROVEMENT">Needs improvement</option>
+          <option value="INCORRECT">Incorrect</option>
         </select>
         <select
-          aria-label="Filtrer par exploitabilité email"
+          aria-label="Filter by email usability"
           value={filters.emailAssessment ?? ''}
           onChange={(event) => setFilters({ ...filters, emailAssessment: event.target.value || undefined })}
         >
-          <option value="">Tous les emails</option>
+          <option value="">All emails</option>
           {ADVISOR_EMAIL_ASSESSMENTS.map((item) => (
             <option key={item.code} value={item.code}>
               {item.label}
@@ -210,48 +210,48 @@ export default function AdvisorFeedback() {
           ))}
         </select>
         <button type="button" className="mkt-action" onClick={() => void load()} disabled={loading}>
-          <RefreshCw size={14} /> {loading ? 'Chargement…' : 'Actualiser'}
+          <RefreshCw size={14} /> {loading ? 'Loading…' : 'Refresh'}
         </button>
-        <label className="mkt-report-date" title="Journée analysée par l'analyse IA (le rapport portera cette date)">
-          <span>Rapport du</span>
+        <label className="mkt-report-date" title="Day analysed by the AI analysis (the report will carry this date)">
+          <span>Report of</span>
           <input
             type="date"
-            aria-label="Date du rapport IA"
+            aria-label="AI report date"
             value={reportDate}
             onChange={(event) => setReportDate(event.target.value)}
           />
         </label>
         <button type="button" className="mkt-action" onClick={() => void generate()} disabled={loading || !reportDate}>
-          <Bot size={14} /> Générer l&rsquo;analyse IA
+          <Bot size={14} /> Generate the AI analysis
         </button>
         <button type="button" className="mkt-action" onClick={() => void seedDemo()}>
-          <Wand2 size={14} /> Données de démo
+          <Wand2 size={14} /> Demo data
         </button>
         <a className="mkt-action" href={advisorSummaryCsvUrl(period, from || undefined, to || undefined)}>
-          <Download size={14} /> Export CSV
+          <Download size={14} /> CSV export
         </a>
       </div>
 
       {notice && <div className="mkt-notice">{notice}</div>}
-      {error && <div className="mkt-notice warn">Erreur : {error}</div>}
+      {error && <div className="mkt-notice warn">Error: {error}</div>}
       {data?.demo && (
         <div className="mkt-demo-banner">
-          Des feedbacks de DÉMONSTRATION (source=DEMO) sont présents : ils ne représentent pas de vrais
-          retours de conseillers.
+          DEMONSTRATION feedback (source=DEMO) is present: it does not represent real advisor
+          feedback.
         </div>
       )}
       {data && data.invalidLines > 0 && (
         <div className="mkt-notice warn">
-          {data.invalidLines} ligne(s) illisible(s) ignorée(s) dans les fichiers de feedback.
+          {data.invalidLines} unreadable line(s) ignored in the feedback files.
         </div>
       )}
 
       {data && !hasFeedback && (
         <div className="mkt-card">
-          <h2>Aucun feedback conseiller sur la période</h2>
+          <h2>No advisor feedback for the period</h2>
           <p className="mkt-empty">
-            Aucun dossier évalué entre le {data.dateFrom} et le {data.dateTo}. Aucune statistique n&rsquo;est
-            estimée : utilisez le bloc « Évaluer un dossier » ci-dessous ou générez des données de démonstration.
+            No case file assessed between {data.dateFrom} and {data.dateTo}. No statistic is
+            estimated: use the “Evaluate a case file” block below or generate demo data.
           </p>
         </div>
       )}
@@ -259,29 +259,29 @@ export default function AdvisorFeedback() {
       {data && hasFeedback && (
         <>
           <div className="mkt-kpis">
-            <Kpi label="Dossiers évalués" value={String(kpis?.sessionsEvaluated ?? 0)} />
-            <Kpi label="Analyses pertinentes" value={percent(kpis?.relevantRate)} />
-            <Kpi label="À améliorer" value={percent(kpis?.needsImprovementRate)} />
-            <Kpi label="Incorrectes" value={percent(kpis?.incorrectRate)} />
-            <Kpi label="Produits jugés pertinents" value={percent(kpis?.productRelevanceRate)} />
-            <Kpi label="Emails prêts ou mineurs" value={percent(kpis?.emailReadyOrMinorRate)} />
-            <Kpi label="Corrections d'intérêt" value={String(kpis?.interestCorrections ?? 0)} />
-            <Kpi label="Évolution « pertinent »" value={evolution(kpis?.relevantRateEvolutionPercent)} />
+            <Kpi label="Case files assessed" value={String(kpis?.sessionsEvaluated ?? 0)} />
+            <Kpi label="Relevant analyses" value={percent(kpis?.relevantRate)} />
+            <Kpi label="Needs improvement" value={percent(kpis?.needsImprovementRate)} />
+            <Kpi label="Incorrect" value={percent(kpis?.incorrectRate)} />
+            <Kpi label="Products judged relevant" value={percent(kpis?.productRelevanceRate)} />
+            <Kpi label="Emails ready or minor" value={percent(kpis?.emailReadyOrMinorRate)} />
+            <Kpi label="Interest corrections" value={String(kpis?.interestCorrections ?? 0)} />
+            <Kpi label="“Relevant” trend" value={evolution(kpis?.relevantRateEvolutionPercent)} />
           </div>
 
           <p className="mkt-hint">
-            {kpis?.feedbackCount} feedback(s) sur {kpis?.sessionsEvaluated} dossier(s)
+            {kpis?.feedbackCount} feedback on {kpis?.sessionsEvaluated} case file(s)
             {kpis?.participationRate === null || kpis?.participationRate === undefined
-              ? ' — taux de feedback non calculable (aucune conversation clôturée sur la période).'
-              : ` — taux de feedback ${percent(kpis.participationRate)} des conversations clôturées.`}{' '}
+              ? ' — feedback rate not computable (no conversation closed in the period).'
+              : ` — feedback rate ${percent(kpis.participationRate)} of closed conversations.`}{' '}
             {kpis?.sufficientSample
-              ? 'Échantillon suffisant pour interpréter.'
-              : 'Échantillon encore limité : conclusions préliminaires.'}
+              ? 'Sufficient sample to interpret.'
+              : 'Sample still limited: preliminary conclusions.'}
           </p>
 
           <div className="mkt-grid">
             <section className="mkt-card">
-              <h2>Évaluations globales</h2>
+              <h2>Overall assessments</h2>
               {data.assessments.map((item) => (
                 <div key={item.code} className="mkt-row column">
                   <div className="mkt-ranking-row">
@@ -290,16 +290,16 @@ export default function AdvisorFeedback() {
                   </div>
                   <div className="mkt-ranking-bar" style={{ width: `${Math.max(item.share * 100, 1)}%` }} />
                   <span className={evolutionClass(item.evolutionPercent)}>
-                    {evolution(item.evolutionPercent)} vs période précédente
+                    {evolution(item.evolutionPercent)} vs previous period
                   </span>
                 </div>
               ))}
             </section>
 
             <section className="mkt-card">
-              <h2>À améliorer — zones les plus corrigées</h2>
+              <h2>Needs improvement — most corrected areas</h2>
               {data.areas.length === 0 ? (
-                <p className="mkt-empty">Aucune correction signalée sur la période.</p>
+                <p className="mkt-empty">No correction reported for the period.</p>
               ) : (
                 data.areas.map((area) => (
                   <div key={area.area} className="mkt-row column">
@@ -309,18 +309,18 @@ export default function AdvisorFeedback() {
                     </div>
                     <div className="mkt-ranking-bar" style={{ width: `${Math.max(area.share * 100, 1)}%` }} />
                     <span className={evolutionClass(area.evolutionPercent)}>
-                      {evolution(area.evolutionPercent)} — part {percent(area.share)}
+                      {evolution(area.evolutionPercent)} — share {percent(area.share)}
                     </span>
                   </div>
                 ))
               )}
               {data.reasons.length > 0 && (
                 <>
-                  <h3>Motifs structurés</h3>
+                  <h3>Structured reasons</h3>
                   <ul className="mkt-report-list">
                     {data.reasons.slice(0, 6).map((reason) => (
                       <li key={reason.reason}>
-                        {reason.label} : {reason.count} ({evolution(reason.evolutionPercent)})
+                        {reason.label}: {reason.count} ({evolution(reason.evolutionPercent)})
                       </li>
                     ))}
                   </ul>
@@ -329,21 +329,21 @@ export default function AdvisorFeedback() {
             </section>
 
             <section className="mkt-card">
-              <h2>Pertinence des produits</h2>
+              <h2>Product relevance</h2>
               {data.products.length === 0 ? (
-                <p className="mkt-empty">Aucun produit évalué sur la période.</p>
+                <p className="mkt-empty">No product assessed for the period.</p>
               ) : (
                 <div className="mkt-table-scroll dashboard-table-scroll product-relevance-table">
                   <table className="mkt-table compact">
                     <thead>
                       <tr>
-                        <th>Produit</th>
-                        <th>Éval.</th>
-                        <th>Pertinent</th>
-                        <th>Non pertinent</th>
-                        <th>Taux</th>
+                        <th>Product</th>
+                        <th>Assess.</th>
+                        <th>Relevant</th>
+                        <th>Not relevant</th>
+                        <th>Rate</th>
                         <th>Corr.</th>
-                        <th>Ajouté</th>
+                        <th>Added</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -365,21 +365,21 @@ export default function AdvisorFeedback() {
             </section>
 
             <section className="mkt-card">
-              <h2>Niveaux d&rsquo;intérêt corrigés</h2>
+              <h2>Corrected interest levels</h2>
               {data.interestCorrections.length === 0 ? (
                 <p className="mkt-empty">
-                  Aucune correction de niveau d&rsquo;intérêt : la valeur IA et la valeur conseiller sont
-                  conservées séparément lorsqu&rsquo;il y en a une.
+                  No interest level correction: the AI value and the advisor value are kept
+                  separately when there is one.
                 </p>
               ) : (
                 <div className="mkt-table-scroll dashboard-table-scroll corrected-interest-table">
                   <table className="mkt-table compact">
                     <thead>
                       <tr>
-                        <th>Produit</th>
-                        <th>IA</th>
-                        <th>Conseiller</th>
-                        <th>Cas</th>
+                        <th>Product</th>
+                        <th>AI</th>
+                        <th>Advisor</th>
+                        <th>Cases</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -395,9 +395,9 @@ export default function AdvisorFeedback() {
                   </table>
                 </div>
               )}
-              <h3>Qualité des emails préparés</h3>
+              <h3>Quality of prepared emails</h3>
               {data.emailQuality.length === 0 ? (
-                <p className="mkt-empty">Aucun email évalué sur la période.</p>
+                <p className="mkt-empty">No email assessed for the period.</p>
               ) : (
                 data.emailQuality.map((email) => (
                   <div key={email.code} className="mkt-row column">
@@ -427,23 +427,23 @@ export default function AdvisorFeedback() {
 
       <section className="mkt-card wide">
         <h2>
-          <Bot size={15} /> Analyse IA des retours conseillers
+          <Bot size={15} /> AI analysis of advisor feedback
           {report?.reportDate ? ` — ${report.reportDate}` : ''}
         </h2>
         <p className="mkt-hint">
-          Analyse générée à partir des KPI calculés par le backend et de commentaires anonymisés. L&rsquo;IA
-          n&rsquo;a calculé aucun chiffre et ne modifie rien : elle propose, l&rsquo;équipe décide.
+          Analysis generated from the KPIs computed by the backend and anonymised comments. The AI has
+          not computed any figure and changes nothing: it proposes, the team decides.
         </p>
         {report && reportDate && report.reportDate !== reportDate && (
           <div className="mkt-notice warn">
-            Aucune analyse n&rsquo;existe pour le {reportDate} : voici la plus récente
-            {' '}({report.reportDate}). Utilisez « Générer l&rsquo;analyse IA » pour la journée choisie.
+            No analysis exists for {reportDate}: here is the most recent one
+            {' '}({report.reportDate}). Use “Generate the AI analysis” for the chosen day.
           </div>
         )}
         {!report ? (
           <p className="mkt-empty">
-            Aucune analyse disponible pour le {reportDate} : utilisez « Générer l&rsquo;analyse IA »
-            (la génération est manuelle dans le POC).
+            No analysis available for {reportDate}: use “Generate the AI analysis”
+            (generation is manual in the POC).
           </p>
         ) : (
           <>
@@ -455,12 +455,12 @@ export default function AdvisorFeedback() {
                 {report.executiveSummary.summary}
               </p>
             )}
-            {report.error && <div className="mkt-notice warn">Analyse IA indisponible : {report.error}</div>}
+            {report.error && <div className="mkt-notice warn">AI analysis unavailable: {report.error}</div>}
             <div className="mkt-report-cols">
               <div>
-                <h3>Ce qui fonctionne</h3>
+                <h3>What works</h3>
                 {report.strengths.length === 0 ? (
-                  <p className="mkt-empty">Aucun point fort identifié dans les données fournies.</p>
+                  <p className="mkt-empty">No strength identified in the provided data.</p>
                 ) : (
                   <ul className="mkt-report-list">
                     {report.strengths.map((item) => (
@@ -472,9 +472,9 @@ export default function AdvisorFeedback() {
                 )}
               </div>
               <div>
-                <h3>Problèmes principaux</h3>
+                <h3>Main issues</h3>
                 {report.mainIssues.length === 0 ? (
-                  <p className="mkt-empty">Aucun problème récurrent identifié.</p>
+                  <p className="mkt-empty">No recurring issue identified.</p>
                 ) : (
                   <ul className="mkt-report-list">
                     {report.mainIssues.map((item) => (
@@ -486,7 +486,7 @@ export default function AdvisorFeedback() {
                 )}
               </div>
               <div>
-                <h3>Niveaux d&rsquo;intérêt</h3>
+                <h3>Interest levels</h3>
                 <p className="mkt-empty">{report.interestLevelAnalysis?.summary || '—'}</p>
                 {report.interestLevelAnalysis?.overestimationSignals?.length ? (
                   <ul className="mkt-report-list">
@@ -497,7 +497,7 @@ export default function AdvisorFeedback() {
                 ) : null}
               </div>
               <div>
-                <h3>Email client &amp; suivi</h3>
+                <h3>Customer email &amp; follow-up</h3>
                 <p className="mkt-empty">{report.clientEmailAnalysis?.summary || '—'}</p>
                 <p className="mkt-empty">{report.nextActionAnalysis?.summary || '—'}</p>
               </div>
@@ -505,11 +505,11 @@ export default function AdvisorFeedback() {
 
             {report.productAnalysis.length > 0 && (
               <>
-                <h3>Analyse par produit</h3>
+                <h3>Analysis by product</h3>
                 <table className="mkt-table compact">
                   <thead>
                     <tr>
-                      <th>Produit</th>
+                      <th>Product</th>
                       <th>Signal</th>
                       <th>Observation</th>
                     </tr>
@@ -529,15 +529,15 @@ export default function AdvisorFeedback() {
 
             {report.priorityImprovements.length > 0 && (
               <>
-                <h3>Priorités d&rsquo;amélioration</h3>
+                <h3>Improvement priorities</h3>
                 <table className="mkt-table compact">
                   <thead>
                     <tr>
-                      <th>Priorité</th>
-                      <th>Titre</th>
-                      <th>Constat</th>
-                      <th>Recommandation</th>
-                      <th>Bénéfice attendu</th>
+                      <th>Priority</th>
+                      <th>Title</th>
+                      <th>Finding</th>
+                      <th>Recommendation</th>
+                      <th>Expected benefit</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -569,11 +569,11 @@ export default function AdvisorFeedback() {
 
             {report.trends.length > 0 && (
               <>
-                <h3>Tendances</h3>
+                <h3>Trends</h3>
                 <ul className="mkt-report-list">
                   {report.trends.map((trend) => (
                     <li key={`${trend.type}-${trend.topic}`}>
-                      <strong>{trend.type}</strong> — {trend.topic} : {trend.observation}
+                      <strong>{trend.type}</strong> — {trend.topic}: {trend.observation}
                     </li>
                   ))}
                 </ul>
@@ -582,7 +582,7 @@ export default function AdvisorFeedback() {
 
             {report.watchPoints.length > 0 && (
               <>
-                <h3>Points de vigilance</h3>
+                <h3>Watch points</h3>
                 <ul className="mkt-report-list">
                   {report.watchPoints.map((item) => (
                     <li key={item}>{item}</li>
@@ -593,9 +593,9 @@ export default function AdvisorFeedback() {
 
             {report.finalAssessment && <p className="mkt-summary">{report.finalAssessment}</p>}
             <p className="mkt-hint">
-              Rapport du {report.reportDate} · modèle {report.model ?? '—'} ·{' '}
-              {report.aiGenerated ? 'généré par IA' : 'analyse IA indisponible'} — le module ne modifie jamais
-              automatiquement le Coach (prompt, règles, seuils, catalogue, code).
+              Report of {report.reportDate} · model {report.model ?? '—'} ·{' '}
+              {report.aiGenerated ? 'AI generated' : 'AI analysis unavailable'} — the module never modifies
+              the Coach automatically (prompt, rules, thresholds, catalogue, code).
             </p>
           </>
         )}
@@ -680,36 +680,36 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
       })
       setMessage(
         response.status === 'SAVED'
-          ? `Feedback enregistré (version ${response.version})${response.event === 'UPDATED' ? ' — révision' : ''}.`
-          : `Feedback non enregistré (${response.status})${response.message ? ` : ${response.message}` : ''}`,
+          ? `Feedback saved (version ${response.version})${response.event === 'UPDATED' ? ' — revision' : ''}.`
+          : `Feedback not saved (${response.status})${response.message ? `: ${response.message}` : ''}`,
       )
       onSubmitted(response.status === 'SAVED'
-        ? `Feedback conseiller enregistré pour ${sessionId}.`
-        : `Feedback conseiller : ${response.status}.`)
+        ? `Advisor feedback saved for ${sessionId}.`
+        : `Advisor feedback: ${response.status}.`)
       reset()
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : 'Erreur inconnue')
+      setMessage(e instanceof Error ? e.message : 'Unknown error')
     }
   }
 
   return (
     <section className="mkt-card wide">
       <h2>
-        <BadgeCheck size={15} /> Évaluer un dossier
+        <BadgeCheck size={15} /> Evaluate a case file
       </h2>
       <p className="mkt-hint">
-        Quelques secondes suffisent : l&rsquo;évaluation globale est le seul champ requis. Un feedback négatif
-        ouvre les détails (zones, motifs, produits, intérêts, suivi, email).
+        A few seconds are enough: the overall assessment is the only required field. Negative feedback
+        opens the details (areas, reasons, products, interests, follow-up, email).
       </p>
       {!open ? (
         <button type="button" className="mkt-action" onClick={() => setOpen(true)}>
-          Ouvrir la saisie rapide
+          Open quick capture
         </button>
       ) : (
         <>
           <div className="qlt-popup-actions" style={{ justifyContent: 'flex-start' }}>
             <select
-              aria-label="Dossier à évaluer"
+              aria-label="Case file to evaluate"
               value={sessionId}
               onChange={(event) => {
                 setSessionId(event.target.value)
@@ -717,24 +717,24 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
                 setMissing([])
               }}
             >
-              <option value="">— choisir un dossier —</option>
+              <option value="">— choose a case file —</option>
               {candidates.map((candidate) => (
                 <option key={candidate.sessionId} value={candidate.sessionId}>
                   {candidate.sessionId}
                   {candidate.projectType ? ` · ${candidate.projectType}` : ''}
-                  {candidate.evaluated ? ` · déjà évalué (v${candidate.currentVersion})` : ''}
+                  {candidate.evaluated ? ` · already evaluated (v${candidate.currentVersion})` : ''}
                 </option>
               ))}
             </select>
             <button type="button" className="mkt-action" onClick={() => void submit()} disabled={!sessionId || !assessment}>
-              Envoyer le feedback
+              Send feedback
             </button>
             <button type="button" className="mkt-action" onClick={() => setOpen(false)}>
-              Fermer
+              Close
             </button>
           </div>
 
-          <h3>Cette analyse vous paraît-elle pertinente&nbsp;?</h3>
+          <h3>Does this analysis seem relevant to you&nbsp;?</h3>
           <div className="mkt-periods" style={{ width: 'fit-content' }}>
             {ASSESSMENTS.map((item) => {
               const Icon = item.icon
@@ -753,7 +753,7 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
 
           {(assessment === 'NEEDS_IMPROVEMENT' || assessment === 'INCORRECT') && (
             <>
-              <h3>Qu&rsquo;est-ce qui doit être amélioré&nbsp;?</h3>
+              <h3>What needs to be improved&nbsp;?</h3>
               <div className="afb-areas">
                 {ADVISOR_AREAS.map((area) => (
                   <div key={area.code} className="afb-area">
@@ -772,13 +772,13 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
                     </label>
                     {area.code in areaReasons && (
                       <select
-                        aria-label={`Motif pour ${area.label}`}
+                        aria-label={`Reason for ${area.label}`}
                         value={areaReasons[area.code]}
                         onChange={(event) =>
                           setAreaReasons({ ...areaReasons, [area.code]: event.target.value })
                         }
                       >
-                        <option value="">Motif (facultatif)</option>
+                        <option value="">Reason (optional)</option>
                         {ADVISOR_REASONS.map((reason) => (
                           <option key={reason.code} value={reason.code}>
                             {reason.label}
@@ -794,15 +794,15 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
 
           {selected && selected.products.length > 0 && (
             <>
-              <h3>Produits détectés — pertinence et niveau d&rsquo;intérêt</h3>
+              <h3>Detected products — relevance and interest level</h3>
               <table className="mkt-table compact">
                 <thead>
                   <tr>
-                    <th>Produit</th>
-                    <th>Intérêt IA</th>
-                    <th>Jugement</th>
-                    <th>Intérêt corrigé</th>
-                    <th>Motif</th>
+                    <th>Product</th>
+                    <th>AI interest</th>
+                    <th>Assessment</th>
+                    <th>Corrected interest</th>
+                    <th>Reason</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -829,23 +829,23 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
                             className={entry.advisorAssessment === 'RELEVANT_PRODUCT' ? 'mkt-period active' : 'mkt-period'}
                             onClick={() => update({ advisorAssessment: 'RELEVANT_PRODUCT' })}
                           >
-                            <ThumbsUp size={12} /> Pertinent
+                            <ThumbsUp size={12} /> Relevant
                           </button>{' '}
                           <button
                             type="button"
                             className={entry.advisorAssessment === 'NOT_RELEVANT' ? 'mkt-period active' : 'mkt-period'}
                             onClick={() => update({ advisorAssessment: 'NOT_RELEVANT' })}
                           >
-                            <ThumbsDown size={12} /> Non pertinent
+                            <ThumbsDown size={12} /> Not relevant
                           </button>
                         </td>
                         <td>
                           <select
-                            aria-label={`Niveau d'intérêt corrigé pour ${product.productId}`}
+                            aria-label={`Corrected interest level for ${product.productId}`}
                             value={entry.advisorInterestLevel ?? ''}
                             onChange={(event) => update({ advisorInterestLevel: event.target.value || undefined })}
                           >
-                            <option value="">(inchangé)</option>
+                            <option value="">(unchanged)</option>
                             {ADVISOR_INTEREST_LEVELS.map((level) => (
                               <option key={level} value={level}>
                                 {level}
@@ -856,11 +856,11 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
                         <td>
                           {entry.advisorAssessment === 'NOT_RELEVANT' ? (
                             <select
-                              aria-label={`Motif pour ${product.productId}`}
+                              aria-label={`Reason for ${product.productId}`}
                               value={entry.reason ?? ''}
                               onChange={(event) => update({ reason: event.target.value || undefined })}
                             >
-                              <option value="">Motif (facultatif)</option>
+                              <option value="">Reason (optional)</option>
                               {ADVISOR_PRODUCT_REASONS.map((reason) => (
                                 <option key={reason.code} value={reason.code}>
                                   {reason.label}
@@ -879,9 +879,9 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
             </>
           )}
 
-          <h3>Un produit pertinent a-t-il été oublié&nbsp;?</h3>
+          <h3>Was a relevant product missed&nbsp;?</h3>
           <select
-            aria-label="Produit manquant (catalogue)"
+            aria-label="Missing product (catalogue)"
             value=""
             onChange={(event) => {
               if (event.target.value && !missing.includes(event.target.value)) {
@@ -889,7 +889,7 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
               }
             }}
           >
-            <option value="">— ajouter un produit du catalogue —</option>
+            <option value="">— add a product from the catalogue —</option>
             {catalogue.map((product) => (
               <option key={product.productId} value={product.productId}>
                 {product.productName}
@@ -902,34 +902,34 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
                 <li key={id}>
                   {catalogue.find((product) => product.productId === id)?.productName ?? id}{' '}
                   <button type="button" className="mkt-action" onClick={() => setMissing(missing.filter((item) => item !== id))}>
-                    retirer
+                    remove
                   </button>
                 </li>
               ))}
             </ul>
           )}
 
-          <h3>Suivi conseillé et email préparé</h3>
+          <h3>Recommended follow-up and prepared email</h3>
           <div className="mkt-report-cols">
             <div>
               <select
-                aria-label="Évaluation du suivi conseillé"
+                aria-label="Recommended follow-up assessment"
                 value={nextAction}
                 onChange={(event) => setNextAction(event.target.value)}
               >
-                <option value="">Suivi conseillé : non évalué</option>
-                <option value="RELEVANT">Pertinent</option>
-                <option value="NEEDS_IMPROVEMENT">À améliorer</option>
+                <option value="">Recommended follow-up: not assessed</option>
+                <option value="RELEVANT">Relevant</option>
+                <option value="NEEDS_IMPROVEMENT">Needs improvement</option>
                 <option value="INCORRECT">Incorrect</option>
               </select>
             </div>
             <div>
               <select
-                aria-label="Évaluation de l'email préparé"
+                aria-label="Prepared email assessment"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               >
-                <option value="">Email client : non évalué</option>
+                <option value="">Customer email: not assessed</option>
                 {ADVISOR_EMAIL_ASSESSMENTS.map((item) => (
                   <option key={item.code} value={item.code}>
                     {item.label}
@@ -943,14 +943,14 @@ function CaptureForm({ candidatesPeriodDays, onSubmitted }: {
             className="qlt-comment"
             rows={3}
             maxLength={1000}
-            placeholder="Commentaire (facultatif)"
+            placeholder="Comment (optional)"
             value={comment}
             onChange={(event) => setComment(event.target.value)}
           />
           {message && <p className="mkt-hint">{message}</p>}
           <p className="mkt-hint">
-            Aucun feedback ne modifie automatiquement le Coach : il alimente les KPI et l&rsquo;analyse IA.
-            Votre nom n&rsquo;est pas stocké (identifiant technique uniquement).
+            No feedback modifies the Coach automatically: it feeds the KPIs and the AI analysis.
+            Your name is not stored (technical identifier only).
           </p>
         </>
       )}

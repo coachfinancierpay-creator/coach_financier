@@ -70,14 +70,14 @@ public class ChatController {
             classification.setIntent(FinancialIntent.OTHER);
             classification.setProjectType(ProjectType.OTHER_FINANCIAL);
             classification.setConfidence(ConfidenceLevel.HIGH);
-            classification.setReason("Contrôle OUT_OF_SCOPE désactivé par l'utilisateur.");
+            classification.setReason("OUT_OF_SCOPE check disabled by the user.");
         } else {
             classification = ai.classifyIntent(request.message(), currentProjectText, provider);
         }
 
         if (classification.isOutOfScope()) {
-            String response = "Je continuerais avec plaisir sur ce sujet, mais si je le fais, même Ivan n'arrivera pas à terminer la démo dans le temps imparti... "
-                    + "Je peux en revanche vous aider à évaluer un achat, votre capacité d'épargne ou l'impact d'un projet sur votre budget.";
+            String response = "I would gladly continue on this topic, but if I do, even Ivan would not manage to finish the demo in time... "
+                    + "I can however help you assess a purchase, your savings capacity or the impact of a project on your budget.";
             conversation.addMessage("assistant", response);
             return new ChatModels.ChatResponse(request.sessionId(), provider, classification.toLegacyCategory(), false,
                     AIModels.AIStatus.ANSWER, response, null, conversation.summary(),
@@ -134,13 +134,13 @@ public class ChatController {
                     finalAnswerRetryDone = true;
                     ctx.additionalData().put("disableNeedData", true);
                     ctx.additionalData().put("dataRequestResolution",
-                            "Les fichiers demandés ont déjà été fournis dans additionalData.providedData. "
-                                    + "Ne demande plus de données et réponds maintenant avec les informations disponibles.");
+                            "The requested files have already been provided in additionalData.providedData. "
+                                    + "Do not request any more data and answer now with the available information.");
                     log.warn("[CHAT] NEED_DATA répétée : dernière relance forcée en mode réponse finale");
                     String finalAnswerInstruction = request.message()
-                            + "\n\nINSTRUCTION FINALE DU BACKEND : les données demandées ont déjà été chargées et sont présentes "
-                            + "dans additionalData.providedData. Ne renvoie plus NEED_DATA. Réponds maintenant avec "
-                            + "status=ANSWER en utilisant uniquement les données disponibles, sans inventer.";
+                            + "\n\nFINAL BACKEND INSTRUCTION: the requested data has already been loaded and is present "
+                            + "in additionalData.providedData. Do not return NEED_DATA again. Answer now with "
+                            + "status=ANSWER using only the available data, without inventing anything.";
                     aiStartedAt = System.nanoTime();
                     answer = ai.answer(finalAnswerInstruction, legacy, summary, Map.of(),
                             AIModels.BankingContextMode.SYNTHESIS_AVAILABLE, ctx.additionalData(), ctx.history(), provider);
@@ -164,8 +164,8 @@ public class ChatController {
             ctx.providedData().addAll(fetched);
             ctx.additionalData().put("disableNeedData", true);
             ctx.additionalData().put("dataRequestResolution",
-                    "Les fichiers demandés viennent d'être fournis dans additionalData.providedData. "
-                            + "Ne les redemande pas et réponds maintenant avec les informations disponibles.");
+                    "The requested files have just been provided in additionalData.providedData. "
+                            + "Do not request them again and answer now with the available information.");
             sentChars = coachContextBuilder.payloadCharCount(ctx, request.message());
             promptSnapshot = coachContextBuilder.loggedPrompt(ctx, request.message());
             aiStartedAt = System.nanoTime();
@@ -189,7 +189,7 @@ public class ChatController {
                 log.warn("[CHAT] NEED_DATA sans réponse exploitable après {} tour(s) : fallback générique",
                         safetyLoop);
                 answer = new AIModels.AIAnswer(AIModels.AIStatus.ANSWER,
-                        "Je n'ai pas pu finaliser l'analyse demandée à partir des données disponibles.", null, Map.of(),
+                        "I could not complete the requested analysis from the available data.", null, Map.of(),
                         conversation.summary(), null);
             }
         }

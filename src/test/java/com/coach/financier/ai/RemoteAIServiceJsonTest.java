@@ -62,7 +62,7 @@ class RemoteAIServiceJsonTest {
         String user = String.valueOf(messages.get(1).get("content"));
         assertTrue(user.startsWith("user"), user);
         assertTrue(user.endsWith(RemoteAIService.JSON_FORMAT_REMINDER), user);
-        assertTrue(user.contains("objet JSON valide"), user);
+        assertTrue(user.contains("valid JSON object"), user);
     }
 
     /**

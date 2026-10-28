@@ -1,67 +1,67 @@
-cascade - ARBRE DE DÉCISION — CRÉDIT IMMOBILIER
+cascade - DECISION TREE — MORTGAGE
 =====================================
 
-Rôle : vérifier la faisabilité d'un projet immobilier et recommander le montage de financement le plus adapté.
-Utilisation : suivre les étapes dans l'ordre ; appliquer la première condition qui correspond au client.
+Role: check the feasibility of a property project and recommend the most suitable financing package.
+Usage: follow the steps in order; apply the first condition that matches the customer.
 
 
-ÉTAPE 1 — Périmètre
-- SI le projet n'est PAS réellement immobilier : ALORS sortir du parcours crédit immobilier.
-- SINON : passer à l'étape 2.
+STEP 1 — Scope
+- IF the project is NOT genuinely a property project: THEN leave the mortgage flow.
+- OTHERWISE: go to step 2.
 
 
-ÉTAPE 2 — Faisabilité financière
-Vérifier : apport disponible ; revenus stables ; crédits existants ; taux d'endettement ; reste à vivre ; épargne restante après achat ; frais de notaire / garantie / travaux.
-- SI le projet n'est PAS soutenable : ALORS ne pas proposer de financement.
-- SI le projet est soutenable : passer à l'étape 3.
+STEP 2 — Financial feasibility
+Check: available down payment; stable income; existing loans; debt-to-income ratio; remaining income after charges; savings left after purchase; notary fees / guarantee / works.
+- IF the project is NOT sustainable: THEN do not propose financing.
+- IF the project is sustainable: go to step 3.
 
 
-ÉTAPE 3 — Achat avant vente du logement actuel ?
-- SI le client achète avant d'avoir vendu son logement actuel :
-  ALORS proposer un « Crédit Relais » (+ prêt immobilier complémentaire si nécessaire).
-- SI NON : passer à l'étape 4.
+STEP 3 — Buying before selling the current home?
+- IF the customer buys before having sold the current home:
+  THEN propose a « Bridging Loan » (+ additional mortgage if needed).
+- IF NO: go to step 4.
 
 
-ÉTAPE 4 — Résidence principale ?
-- SI le projet est une résidence principale :
-    1. Si primo-accédant :
-       - éligible PTZ → intégrer le « PTZ » en priorité ;
-       - sinon → continuer.
-    2. Si revenus compatibles avec le « PAS » → comparer PAS + PTZ + prêt classique.
-    3. Sinon, si « Prêt Conventionné » pertinent → comparer.
-    4. Sinon → « prêt immobilier à taux fixe ».
-- SI NON (pas une résidence principale) : passer à l'étape 5.
+STEP 4 — Primary residence?
+- IF the project is a primary residence:
+    1. If first-time buyer:
+       - PTZ eligible → include the « PTZ » as a priority;
+       - otherwise → continue.
+    2. If income compatible with the « PAS » → compare PAS + PTZ + standard loan.
+    3. Otherwise, if « Subsidised Loan » relevant → compare.
+    4. Otherwise → « Fixed-Rate Mortgage ».
+- IF NO (not a primary residence): go to step 5.
 
 
-ÉTAPE 5 — Investissement locatif ?
-- SI OUI :
-    - Profil patrimonial / stratégie « in fine » pertinente → comparer « Prêt In Fine » vs « Prêt Immobilier Taux Fixe ».
-    - Sinon → « Prêt Immobilier Taux Fixe ».
-- SI NON : passer à l'étape 6.
+STEP 5 — Rental investment?
+- IF YES:
+    - Wealth profile / relevant « in fine » strategy → compare « In Fine Mortgage » vs « Fixed-Rate Mortgage ».
+    - Otherwise → « Fixed-Rate Mortgage ».
+- IF NO: go to step 6.
 
 
-ÉTAPE 6 — PEL / CEL avec droits à prêt ?
-- SI le client possède un PEL ou CEL avec droits à prêt : calculer l'intérêt du « Prêt Épargne Logement » et le comparer au taux du prêt principal.
-- SI NON : passer à l'étape 7.
+STEP 6 — PEL / CEL with borrowing rights?
+- IF the customer has a PEL or CEL with borrowing rights: calculate the value of the « Home Savings Loan » and compare it with the rate of the main loan.
+- IF NO: go to step 7.
 
 
-ÉTAPE 7 — Travaux de rénovation énergétique ?
-- SI OUI : vérifier l'« Éco-PTZ » (+ prêt principal si besoin).
-- SI NON : passer à l'étape 8.
+STEP 7 — Energy renovation works?
+- IF YES: check the « Zero-Interest Eco Loan » (+ main loan if needed).
+- IF NO: go to step 8.
 
 
-ÉTAPE 8 — Éligible BFM / fonction publique ?
-- SI OUI : appliquer les avantages BFM / une caution adaptée.
-- SI NON : passer à l'étape 9.
+STEP 8 — BFM / public sector eligible?
+- IF YES: apply the BFM advantages / an adapted guarantee.
+- IF NO: go to step 9.
 
 
-ÉTAPE 9 — Compléter le plan de financement
-- Compléter avec le « Prêt Immobilier à Taux Fixe SG ».
+STEP 9 — Complete the financing plan
+- Complete with the « SG Fixed-Rate Mortgage ».
 
 
-ÉTAPE 10 — Coûts annexes à intégrer
-- assurance emprunteur ; garantie / caution ; frais de dossier ; frais de notaire ; travaux ; charges / taxe foncière.
+STEP 10 — Ancillary costs to include
+- mortgage protection insurance; guarantee / surety; arrangement fees; notary fees; works; charges / property tax.
 
 
-ÉTAPE 11 — Réponse au client (LLM)
-Expliquer en français le montage de financement recommandé et les alternatives.
+STEP 11 — Answer to the customer (LLM)
+Explain in English the recommended financing package and the alternatives.

@@ -33,7 +33,7 @@ class MockAIServiceSuiviTest {
         assertEquals("HIGH", interest.interestLevel());
         assertEquals("https://exemple.test/auto-tous-risques", interest.productUrl());
         assertTrue(result.preparedCustomerEmail().body().contains("Assurance Auto SG – Tous Risques"));
-        assertTrue(result.advisorEmail().body().toLowerCase().contains("pièce jointe"));
+        assertTrue(result.advisorEmail().body().toLowerCase().contains("attached"));
     }
 
     @Test

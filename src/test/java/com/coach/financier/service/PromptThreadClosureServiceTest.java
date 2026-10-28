@@ -105,7 +105,7 @@ class PromptThreadClosureServiceTest {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> service.close("t-vide", true, true, AIModels.AIProvider.MOCK));
 
-        assertEquals(true, error.getMessage().contains("aucun échange"));
+        assertEquals(true, error.getMessage().contains("no validated exchange"));
         assertNull(conversations.find("t-vide"), "aucune session de chat n'est créée pour rien");
         verify(closureService, never()).close(anyString(), any(), anyBoolean());
     }

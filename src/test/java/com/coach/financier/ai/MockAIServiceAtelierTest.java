@@ -25,7 +25,7 @@ class MockAIServiceAtelierTest {
                 () -> mock.reviewCoachAnswer(Map.of(), AIModels.AIProvider.MOCK));
 
         assertEquals(MockAIService.NO_REAL_PROVIDER_MESSAGE, error.getMessage());
-        assertTrue(error.getMessage().contains("fournisseur IA réel"), "message exploitable par l'IHM");
+        assertTrue(error.getMessage().contains("requires a real AI provider"), "message exploitable par l'IHM");
     }
 
     @Test

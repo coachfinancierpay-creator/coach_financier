@@ -57,7 +57,7 @@ class PromptOptimizationModelsTest {
         assertEquals(1, feedback.positivePoints().size());
         assertEquals("Le ton pédagogique.", feedback.mustPreserve().get(0));
         assertFalse(feedback.requiresHumanOrBusinessReview());
-        assertEquals("Amélioration nécessaire", feedback.statusText());
+        assertEquals("Improvement needed", feedback.statusText());
     }
 
     @Test
@@ -135,7 +135,7 @@ class PromptOptimizationModelsTest {
 
         assertTrue(result.updated());
         assertFalse(result.reviewRequired());
-        assertEquals("Zone modifiée", result.statusText());
+        assertEquals("Zone modified", result.statusText());
         assertEquals("Tu accompagnes le client de manière pédagogique.", result.editableSection());
         assertEquals(1, result.changeSummary().size());
         assertTrue(result.humanFeedbackApplied());
@@ -154,13 +154,13 @@ class PromptOptimizationModelsTest {
 
     @Test
     void labelsAreReadableAndHumanizeUnknownCodes() {
-        assertEquals("Aucune amélioration nécessaire",
+        assertEquals("No improvement needed",
                 PromptOptimizationModels.controllerStatusLabel(PromptOptimizationModels.STATUS_GOOD));
-        assertEquals("Revue humaine requise",
+        assertEquals("Human review required",
                 PromptOptimizationModels.editorStatusLabel(PromptOptimizationModels.EDITOR_REVIEW_REQUIRED));
         assertEquals("Racine", PromptOptimizationModels.severityLabel("RACINE"));
-        assertEquals("Majeure", PromptOptimizationModels.severityLabel("HIGH"));
-        assertEquals("URL inventée", PromptOptimizationModels.issueTypeLabel("INVENTED_URL"));
+        assertEquals("Major", PromptOptimizationModels.severityLabel("HIGH"));
+        assertEquals("Invented URL", PromptOptimizationModels.issueTypeLabel("INVENTED_URL"));
         assertEquals("Some new code", PromptOptimizationModels.issueTypeLabel("SOME_NEW_CODE"),
                 "un code inconnu est humanisé, jamais affiché brut");
         assertEquals("", PromptOptimizationModels.humanize(null));

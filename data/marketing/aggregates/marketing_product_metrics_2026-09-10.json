@@ -1,6 +1,6 @@
 [ {
   "productId" : "sg_livret_a",
-  "productName" : "Livret A",
+  "productName" : "Livret A savings account",
   "productFamily" : "SAVINGS_PRODUCT",
   "recommendedSessions" : 1,
   "interestedSessions" : 2,
@@ -18,7 +18,7 @@
   "evolutionPercent" : null
 }, {
   "productId" : "sg_auto_tiers",
-  "productName" : "Assurance Auto SG – Tiers",
+  "productName" : "SG Car Insurance – Third Party",
   "productFamily" : "INSURANCE_AUTO",
   "recommendedSessions" : 3,
   "interestedSessions" : 1,
@@ -36,7 +36,7 @@
   "evolutionPercent" : null
 }, {
   "productId" : "sg_credit_auto_expresso",
-  "productName" : "Crédit Auto Expresso",
+  "productName" : "Expresso Auto Loan",
   "productFamily" : "AUTO_LOAN",
   "recommendedSessions" : 1,
   "interestedSessions" : 1,
@@ -54,7 +54,7 @@
   "evolutionPercent" : 0.0
 }, {
   "productId" : "sg_habitation_confort",
-  "productName" : "Assurance Habitation SG – Confort",
+  "productName" : "SG Home Insurance – Comfort",
   "productFamily" : "INSURANCE_HOME",
   "recommendedSessions" : 1,
   "interestedSessions" : 1,
@@ -72,7 +72,7 @@
   "evolutionPercent" : 0.0
 }, {
   "productId" : "sg_pea",
-  "productName" : "Plan d'Épargne en Actions (PEA)",
+  "productName" : "PEA (equity savings plan)",
   "productFamily" : "EQUITY_INVESTMENT",
   "recommendedSessions" : 2,
   "interestedSessions" : 1,
@@ -90,7 +90,7 @@
   "evolutionPercent" : 0.0
 }, {
   "productId" : "sg_pel",
-  "productName" : "Plan Épargne Logement (PEL)",
+  "productName" : "Home Savings Plan (PEL)",
   "productFamily" : "HOME_SAVINGS",
   "recommendedSessions" : 3,
   "interestedSessions" : 1,
@@ -108,7 +108,7 @@
   "evolutionPercent" : null
 }, {
   "productId" : "sg_auto_tous_risques",
-  "productName" : "Assurance Auto SG – Tous Risques",
+  "productName" : "SG Car Insurance – Comprehensive",
   "productFamily" : "INSURANCE_AUTO",
   "recommendedSessions" : 2,
   "interestedSessions" : 0,
@@ -126,7 +126,7 @@
   "evolutionPercent" : null
 }, {
   "productId" : "sg_credit_expresso",
-  "productName" : "Crédit Expresso",
+  "productName" : "Expresso Loan",
   "productFamily" : "PERSONAL_LOAN",
   "recommendedSessions" : 2,
   "interestedSessions" : 0,
@@ -144,7 +144,7 @@
   "evolutionPercent" : -100.0
 }, {
   "productId" : "sg_pret_etudiant_evolutif",
-  "productName" : "Prêt Étudiant Évolutif",
+  "productName" : "Progressive Student Loan",
   "productFamily" : "STUDENT_LOAN",
   "recommendedSessions" : 4,
   "interestedSessions" : 0,
@@ -162,7 +162,7 @@
   "evolutionPercent" : -100.0
 }, {
   "productId" : "sg_pret_immo_taux_fixe",
-  "productName" : "Prêt Immobilier à Taux Fixe",
+  "productName" : "Fixed-Rate Mortgage",
   "productFamily" : "MORTGAGE",
   "recommendedSessions" : 0,
   "interestedSessions" : 0,

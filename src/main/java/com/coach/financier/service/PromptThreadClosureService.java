@@ -64,7 +64,7 @@ public class PromptThreadClosureService {
         PromptOptimizationModels.ConversationThread thread = promptOptimizationService.thread(threadId);
         if (thread.empty()) {
             throw new IllegalArgumentException(
-                    "La conversation de l'atelier ne contient aucun échange validé : il n'y a rien à clôturer.");
+                    "The workshop conversation contains no validated exchange: there is nothing to close.");
         }
 
         // La session de chat est RECONSTRUITE (et non complétée) : rejouer la clôture ne duplique rien.

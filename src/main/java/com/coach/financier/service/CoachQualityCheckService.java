@@ -59,20 +59,20 @@ public class CoachQualityCheckService {
 
     /** Marqueurs d'un chiffrage de crédit réalisé par le Coach lui-même. */
     private static final List<Pattern> SIMULATION_TRIGGERS = List.of(
-            Pattern.compile("(?i)(je\\s+(peux|vais|pourrais)\\s+(vous\\s+)?(calculer|simuler))"),
-            Pattern.compile("(?i)voici\\s+(la|une|le)\\s+(mensualit|simulation|estimation)"),
-            Pattern.compile("(?i)mensualit[ée]s?\\s*(serait|seraient|est|s'[ée]l[èe]ve|de|:|=)"
+            Pattern.compile("(?i)(i\\s+(can|will|could)\\s+(calculate|simulate|compute))"),
+            Pattern.compile("(?i)here\\s+is\\s+(the|a|an)\\s+(monthly payment|simulation|estimate|estimation)"),
+            Pattern.compile("(?i)monthly\\s+payment\\s*(would be|is|of|:|=)"
                     + "[^.]{0,20}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
-            Pattern.compile("(?i)co[ûu]t\\s+total[^.]{0,25}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
-            Pattern.compile("(?i)(int[ée]r[êe]ts?)[^.]{0,20}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
-            Pattern.compile("(?i)(capacit[ée]\\s+d'emprunt|montant\\s+finan[çc]able)"
+            Pattern.compile("(?i)total\\s+cost[^.]{0,25}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
+            Pattern.compile("(?i)(interest|interests)[^.]{0,20}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
+            Pattern.compile("(?i)(borrowing\\s+capacity|financing\\s+capacity|financeable\\s+amount)"
                     + "[^.]{0,30}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
             Pattern.compile("(?i)simulation[^.]{0,30}?[\\d][\\d\\s.,]{2,}\\s?(€|euros)"),
-            Pattern.compile("(?i)[\\d][\\d\\s.,]{2,}\\s?(€|euros)\\s*(par\\s+mois|/\\s*mois|mensuel)"));
+            Pattern.compile("(?i)[\\d][\\d\\s.,]{2,}\\s?(€|euros)\\s*(per\\s+month|/\\s*month|monthly)"));
 
     /** Libellés d'un chiffrage de crédit (prérequis de la détection d'un TABLEAU de chiffrage ci-dessous). */
     private static final Pattern SIMULATION_LABEL = Pattern.compile(
-            "(?i)(mensualit[ée]s?|co[ûu]t\\s+total|montant\\s+total\\s+d[ûu]|taux\\s+d[ée]biteur)");
+            "(?i)(monthly\\s+payment|total\\s+cost|total\\s+amount|debit\\s+rate|interest\\s+rate)");
 
     /**
      * Ligne de TABLEAU de chiffrage (plusieurs durées / mensualités comparées) : deux montants en euros
@@ -89,21 +89,21 @@ public class CoachQualityCheckService {
      * (cas d'une conversation sans grille de taux disponible).
      */
     private static final Pattern COMPLIANT_MARKERS = Pattern.compile(
-            "(?i)(grille\\s+de\\s+taux|grille\\s+tarifaire|souscription\\s+fait\\s+foi|contrat\\s+de\\s+pr[êe]t"
-                    + "|indicatif|indicative|non\\s+contractuel|hypoth[èe]ses?\\s+de\\s+la\\s+grille"
-                    + "|simulateur|outil\\s+officiel|site\\s+officiel|je\\s+ne\\s+peux\\s+pas\\s+(calculer|simuler|r[ée]aliser)"
-                    + "|je\\s+n'ai\\s+pas\\s+(le\\s+droit|la\\s+possibilit[ée])|r[ée]glementation"
-                    + "|nous\\s+ne\\s+(calculons|r[ée]alisons)\\s+pas|estimer\\s+vous-m[êe]me)");
+            "(?i)(rate\\s+grid|pricing\\s+grid|the\\s+subscription\\s+is\\s+binding|loan\\s+agreement"
+                    + "|indicative|non[\\s-]?contractual|assumptions?\\s+(of|from)\\s+the\\s+grid"
+                    + "|simulator|official\\s+tool|official\\s+website|i\\s+(cannot|can't|am\\s+not\\s+able\\s+to)\\s+(calculate|simulate|perform)"
+                    + "|i\\s+am\\s+not\\s+allowed|regulation"
+                    + "|we\\s+do\\s+not\\s+(calculate|perform)|estimate\\s+it\\s+yourself)");
 
     /** Montants liés à un crédit EXISTANT (données du client) : hors périmètre du contrôle. */
     private static final Pattern EXISTING_CREDIT = Pattern.compile(
-            "(?i)(cr[ée]dit\\s+existant|cr[ée]dit\\s+en\\s+cours|votre\\s+cr[ée]dit|mensualit[ée]\\s+actuelle"
-                    + "|engagement\\s+actuel)");
+            "(?i)(existing\\s+(credit|loan)|current\\s+(credit|loan)|your\\s+(credit|loan)|current\\s+monthly\\s+payment"
+                    + "|current\\s+commitment)");
 
     private static final Pattern SENTENCE_SPLIT = Pattern.compile("[.!?\\n]+");
     /** URLs brutes écrites directement par le Coach (en plus du format [URL|nom|url]). */
     private static final Pattern RAW_URL = Pattern.compile("https?://[^\\s\\)\\]\"'<>]+");
-    private static final Pattern GREETING = Pattern.compile("(?i)^(re)?bonjour\\b.*");
+    private static final Pattern GREETING = Pattern.compile("(?i)^(hi|hello|hey|good\\s+(morning|afternoon|evening))\\b.*");
     private static final int MIN_REPEATED_SENTENCE = 40;
 
     private final QualityProperties properties;
@@ -205,13 +205,12 @@ public class CoachQualityCheckService {
                 continue; // grille de taux citée (simulation autorisée) ou refus/redirection explicite = conforme (§16)
             }
             return check(sessionId, QualityModels.CREDIT_SIMULATION_VIOLATION, true,
-                    "Le Coach semble avoir produit lui-même un chiffrage de crédit (mensualité, coût total ou "
-                            + "capacité d'emprunt) sans s'appuyer sur la grille de taux fournie : la simulation "
-                            + "autorisée doit citer la grille et préciser qu'elle est indicative (la souscription "
-                            + "fait foi).", 0.7);
+                    "The Coach appears to have produced a credit quote itself (monthly payment, total cost or "
+                            + "borrowing capacity) without relying on the rate grid provided: an allowed simulation "
+                            + "must cite the grid and state that it is indicative (the subscription is binding).", 0.7);
         }
         return check(sessionId, QualityModels.CREDIT_SIMULATION_VIOLATION, false,
-                "Aucun chiffrage de crédit produit par le Coach n'a été détecté.", null);
+                "No credit quote produced by the Coach was detected.", null);
     }
 
     private QualityModels.QualityCheck productMismatch(String sessionId,
@@ -224,7 +223,7 @@ public class CoachQualityCheckService {
         });
         if (projects.isEmpty()) {
             return check(sessionId, QualityModels.PRODUCT_MISMATCH, false,
-                    "Aucun projet identifiable : contrôle sans objet.", null);
+                    "No identifiable project: check not applicable.", null);
         }
         List<String> anomalies = new ArrayList<>();
         for (Map<String, Object> product : conversation.discussedProducts()) {
@@ -245,11 +244,11 @@ public class CoachQualityCheckService {
         }
         if (anomalies.isEmpty()) {
             return check(sessionId, QualityModels.PRODUCT_MISMATCH, false,
-                    "Toutes les offres présentées appartiennent à des familles autorisées.", null);
+                    "All the offers presented belong to allowed families.", null);
         }
         return check(sessionId, QualityModels.PRODUCT_MISMATCH, true,
-                "Offre(s) présentée(s) hors familles autorisées pour le projet "
-                        + projects + " : " + String.join(", ", anomalies) + ".", 0.9);
+                "Offer(s) presented outside the allowed families for the project "
+                        + projects + ": " + String.join(", ", anomalies) + ".", 0.9);
     }
 
     private QualityModels.QualityCheck inventedUrl(String sessionId, List<String> coachMessages) {
@@ -272,10 +271,10 @@ public class CoachQualityCheckService {
         }
         if (suspects.isEmpty()) {
             return check(sessionId, QualityModels.INVENTED_URL, false,
-                    "Toutes les URLs citées correspondent à des fiches officielles.", null);
+                    "All the URLs cited correspond to official product pages.", null);
         }
         return check(sessionId, QualityModels.INVENTED_URL, true,
-                "URL(s) absente(s) des fiches officielles : " + String.join(", ", suspects) + ".", 0.9);
+                "URL(s) missing from the official product pages: " + String.join(", ", suspects) + ".", 0.9);
     }
 
     private QualityModels.QualityCheck unansweredRequest(String sessionId,
@@ -284,18 +283,18 @@ public class CoachQualityCheckService {
         boolean error = sessionLogs.stream().anyMatch(entry -> "ERROR".equalsIgnoreCase(entry.status()));
         if (error) {
             return check(sessionId, QualityModels.UNANSWERED_REQUEST, true,
-                    "Un appel IA de la conversation s'est terminé en erreur : la demande n'a pas pu être traitée.",
+                    "An AI call in the conversation ended in error: the request could not be processed.",
                     0.9);
         }
         if (!transcript.isEmpty()) {
             ConversationModels.Message last = transcript.get(transcript.size() - 1);
             if (last.role() != null && USER_ROLE.equalsIgnoreCase(last.role())) {
                 return check(sessionId, QualityModels.UNANSWERED_REQUEST, true,
-                        "La conversation se termine sur un message client sans réponse du Coach.", 0.8);
+                        "The conversation ends with a customer message unanswered by the Coach.", 0.8);
             }
         }
         return check(sessionId, QualityModels.UNANSWERED_REQUEST, false,
-                "Chaque demande client a reçu une réponse du Coach.", null);
+                "Every customer request received an answer from the Coach.", null);
     }
 
     private QualityModels.QualityCheck missingDataNotRetrieved(String sessionId, List<LogEntry> sessionLogs) {
@@ -303,12 +302,12 @@ public class CoachQualityCheckService {
             if ("NEED_DATA".equalsIgnoreCase(entry.status())
                     && entry.requestedData() != null && !entry.requestedData().isEmpty()) {
                 return check(sessionId, QualityModels.MISSING_DATA_NOT_RETRIEVED, true,
-                        "Données demandées par l'IA et non fournies : "
+                        "Data requested by the AI and not provided: "
                                 + String.join(", ", entry.requestedData()) + ".", 0.6);
             }
         }
         return check(sessionId, QualityModels.MISSING_DATA_NOT_RETRIEVED, false,
-                "Aucune demande de données restée sans réponse.", null);
+                "No data request was left unanswered.", null);
     }
 
     private QualityModels.QualityCheck excessiveRepetition(String sessionId, List<String> coachMessages) {
@@ -330,18 +329,18 @@ public class CoachQualityCheckService {
         if (repeated > 0 || greetings >= 2) {
             List<String> details = new ArrayList<>();
             if (repeated > 0) {
-                details.add(repeated + " phrase(s) reformulée(s) à l'identique");
+                details.add(repeated + " sentence(s) repeated identically");
             }
             if (greetings >= 2) {
-                details.add(greetings + " salutation(s) dans la même conversation");
+                details.add(greetings + " greeting(s) in the same conversation");
             }
             return check(sessionId, QualityModels.EXCESSIVE_REPETITION, true,
-                    "Répétition détectée : " + String.join(" et ", details)
-                            + " (contrôle prudent : une information nécessaire au raisonnement n'est pas une erreur).",
+                    "Repetition detected: " + String.join(" and ", details)
+                            + " (prudent check: information needed for the reasoning is not an error).",
                     0.5);
         }
         return check(sessionId, QualityModels.EXCESSIVE_REPETITION, false,
-                "Aucune répétition significative détectée.", null);
+                "No significant repetition detected.", null);
     }
 
     // ------------------------------------------------------------------ utilitaires

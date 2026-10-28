@@ -1,103 +1,103 @@
-# Guide IA — Assurance Emprunteur Immobilier SG
+# AI guide — SG Mortgage Protection Insurance
 
 ## Structure
 
-Le JSON utilise `produits` pour un objet produit unique. Il contient :
-- objectifs ;
-- obligation ;
-- tarification ;
-- formules ;
-- dictionnaire des garanties ;
-- quotité ;
-- délégation d'assurance ;
-- souscription ;
-- règles de recommandation.
+The JSON uses `produits` for a single product object. It contains:
+- objectives;
+- obligation;
+- pricing;
+- plans;
+- guarantee dictionary;
+- insured share;
+- insurance delegation;
+- subscription;
+- recommendation rules.
 
 ## Obligation
 
-Le bloc `obligation` distingue explicitement :
-- `obligatoire_legalement: false` ;
+The `obligation` block explicitly distinguishes:
+- `obligatoire_legalement: false`;
 - `generalement_exigee_par_sg_pour_octroi_credit: true`.
 
-Ces deux affirmations ne sont pas contradictoires. L'IA doit préserver cette distinction et ne pas dire simplement « l'assurance est légalement obligatoire ».
+These two statements are not contradictory. The AI must preserve this distinction and must not simply say "the insurance is legally mandatory".
 
-## Tarification
+## Pricing
 
-- `cotisation_constante: true` : caractéristique indiquée.
-- `tarif_personnalise: true` : ne jamais inventer un tarif générique.
+- `cotisation_constante: true`: characteristic indicated.
+- `tarif_personnalise: true`: never invent a generic price.
 
-## Formules et cibles
+## Plans and targets
 
-Les formules distinguent :
-- résidence principale ou secondaire ;
-- investissement locatif ;
-- senior ;
+The plans distinguish:
+- primary or secondary residence;
+- rental investment;
+- senior;
 - BFM.
 
-`cible` oriente vers la formule correspondant au projet/profil.
+`cible` guides towards the plan corresponding to the project/profile.
 
-`eligibilite_indicative` est volontairement qualifiée d'indicative : l'âge fourni doit servir à orienter/vérifier, pas à inventer des conditions supplémentaires.
+`eligibilite_indicative` is deliberately described as indicative: the age provided must be used to guide/check, not to invent additional conditions.
 
-## Garanties
+## Guarantees
 
-Le dictionnaire global `garanties` définit les sigles et certaines descriptions :
-- décès ;
-- PTIA ;
-- ITT ;
-- ITP ;
-- IPT ;
-- IPP ;
-- aide à la famille ;
-- perte d'emploi.
+The global `garanties` dictionary defines the acronyms and some descriptions:
+- death;
+- PTIA;
+- ITT;
+- ITP;
+- IPT;
+- IPP;
+- family support;
+- loss of employment.
 
-Une formule peut utiliser `garanties` ou `garanties_principales`. Respecter cette différence de libellé.
+A plan may use `garanties` or `garanties_principales`. Respect this difference in wording.
 
-La formule résidence principale/secondaire liste davantage de garanties ; investissement locatif et senior listent comme garanties principales décès et PTIA dans ce catalogue.
+The primary/secondary residence plan lists more guarantees; rental investment and senior list death and PTIA as main guarantees in this catalogue.
 
-Pour BFM, les garanties sont séparées selon `residence_principale` et `investissement_locatif_ou_senior`.
+For BFM, the guarantees are split between `residence_principale` and `investissement_locatif_ou_senior`.
 
 ## Options
 
-`perte_emploi` apparaît dans `options` pour la formule résidence principale/secondaire et le dictionnaire global la marque comme optionnelle. Elle ne doit pas être présentée comme incluse automatiquement.
+`perte_emploi` appears in `options` for the primary/secondary residence plan and the global dictionary marks it as optional. It must not be presented as automatically included.
 
-## Quotité
+## Insured share
 
-`quotite.description` définit la quotité comme le pourcentage du capital assuré pour chaque emprunteur.
+`quotite.description` defines the insured share as the percentage of the insured capital for each borrower.
 
-Les blocs `exemple_couple` et `couverture_renforcee_possible` sont des exemples/configurations possibles. Ne pas supposer qu'une répartition 50/50 ou 100/100 convient automatiquement à tous les dossiers.
+The `exemple_couple` and `couverture_renforcee_possible` blocks are possible examples/configurations. Do not assume that a 50/50 or 100/100 split automatically suits every case file.
 
-## Délégation d'assurance
+## Insurance delegation
 
-Le catalogue indique :
-- délégation possible ;
-- changement en cours de prêt possible ;
-- condition d'équivalence des garanties aux exigences SG ;
-- délai de réponse indiqué en jours ouvrés.
+The catalogue indicates:
+- delegation possible;
+- change during the loan possible;
+- condition of equivalence of guarantees with SG requirements;
+- response time indicated in business days.
 
-L'IA doit présenter la condition d'équivalence lorsqu'elle évoque la délégation.
+The AI must present the equivalence condition when it mentions delegation.
 
-## Souscription
+## Subscription
 
-`souscription` indique les possibilités en ligne/signature électronique et l'existence de formalités médicales si nécessaire. Ne pas affirmer qu'aucune formalité médicale ne sera demandée.
+`souscription` indicates the online/electronic signature possibilities and the existence of medical formalities if necessary. Do not state that no medical formality will be requested.
 
-## Règles de recommandation
+## Recommendation rules
 
-Les règles globales sont conditionnelles :
-- crédit résidence principale → proposer la formule correspondante ;
-- investissement locatif → proposer la formule correspondante ;
-- âge 65+ → vérifier l'offre senior ;
-- fonctionnaire → vérifier l'assurance BFM.
+The global rules are conditional:
+- primary residence loan → propose the corresponding plan;
+- rental investment → propose the corresponding plan;
+- age 65+ → check the senior offer;
+- civil servant → check the BFM insurance.
 
-Le verbe `verifier` est important : il ne signifie pas que le client est automatiquement éligible.
+The verb `verifier` (check) is important: it does not mean the customer is automatically eligible.
 
-## Recommandation
+## Recommendation
 
-Pour choisir une formule, déterminer au minimum :
-1. usage du bien financé ;
-2. profil senior ou non selon les informations disponibles ;
-3. appartenance éventuelle au profil BFM ;
-4. garanties nécessaires/exigées ;
-5. quotité souhaitée ou à étudier ;
-6. besoin éventuel d'option perte d'emploi.
+To choose a plan, determine at least:
+1. use of the financed property;
+2. senior profile or not according to the available information;
+3. possible membership of the BFM profile;
+4. necessary/required guarantees;
+5. desired insured share or share to be studied;
+6. possible need for the loss of employment option.
 
-Ne jamais inventer un tarif ou une garantie absente de la formule.
+Never invent a price or a guarantee absent from the plan.

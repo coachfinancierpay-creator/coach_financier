@@ -46,7 +46,7 @@ class CreditSimulationServiceTest {
                 .simulateFromGrid("sg_credit_auto_expresso", new BigDecimal("15000"), 48).orElseThrow();
 
         assertEquals("sg_credit_auto_expresso__08", simulation.getRuleId());
-        assertEquals("Crédit Auto Expresso", simulation.getProductName());
+        assertEquals("Expresso Auto Loan", simulation.getProductName());
         assertEquals(0, new BigDecimal("5.49").compareTo(simulation.getTaegPercent()));
         assertEquals(48, simulation.getDurationMonths());
         assertTrue(simulation.getMonthlyPayment().compareTo(new BigDecimal("340")) > 0
@@ -105,9 +105,9 @@ class CreditSimulationServiceTest {
         CreditSimulation simulation = serviceFor(DATA_DIR)
                 .simulateFromGrid("sg_credit_expresso", new BigDecimal("10000"), 48).orElseThrow();
 
-        assertTrue(simulation.getDisclaimer().contains("non contractuelle"));
-        assertTrue(simulation.getDisclaimer().contains("souscription"));
-        assertTrue(simulation.getHypotheses().contains("assurance facultative"));
+        assertTrue(simulation.getDisclaimer().contains("non-contractual"));
+        assertTrue(simulation.getDisclaimer().contains("subscription"));
+        assertTrue(simulation.getHypotheses().contains("optional insurance"));
     }
 
     @Test
@@ -118,7 +118,7 @@ class CreditSimulationServiceTest {
         Optional<String> refusal = service.refusal("sg_alterna", new BigDecimal("5000"), 24);
 
         assertTrue(refusal.isPresent());
-        assertTrue(refusal.get().contains("renouvelable"), "Motif attendu : " + refusal.get());
+        assertTrue(refusal.get().contains("Revolving credit"), "Motif attendu : " + refusal.get());
     }
 
     @Test
@@ -127,17 +127,17 @@ class CreditSimulationServiceTest {
 
         assertTrue(service.simulateFromGrid("produit_inexistant", new BigDecimal("10000"), 48).isEmpty());
         assertTrue(service.refusal("produit_inexistant", new BigDecimal("10000"), 48).orElseThrow()
-                .contains("absent de la grille"));
+                .contains("not found in the rate grid"));
 
         // Crédit Auto Expresso : 12 à 84 mois selon la tranche ⇒ 6 mois n'est couvert par aucune règle.
         assertTrue(service.simulateFromGrid("sg_credit_auto_expresso", new BigDecimal("15000"), 6).isEmpty());
         assertTrue(service.refusal("sg_credit_auto_expresso", new BigDecimal("15000"), 6).orElseThrow()
-                .contains("Aucune règle"));
+                .contains("No rule in the grid"));
 
         // Montant et durée absents : on ne suppose jamais une valeur manquante.
-        assertTrue(service.refusal("sg_credit_auto_expresso", null, 48).orElseThrow().contains("Montant"));
+        assertTrue(service.refusal("sg_credit_auto_expresso", null, 48).orElseThrow().contains("amount"));
         assertTrue(service.refusal("sg_credit_auto_expresso", new BigDecimal("15000"), null).orElseThrow()
-                .contains("Durée"));
+                .contains("term"));
     }
 
     @Test
@@ -173,7 +173,7 @@ class CreditSimulationServiceTest {
 
         assertTrue(service.simulateFromGrid("prod_trop_cher", new BigDecimal("2000"), 24).isEmpty(),
                 "Un TAEG au-delà du taux d'usure de la grille n'est pas chiffré");
-        assertTrue(service.refusal("prod_trop_cher", new BigDecimal("2000"), 24).orElseThrow().contains("usure"));
+        assertTrue(service.refusal("prod_trop_cher", new BigDecimal("2000"), 24).orElseThrow().contains("usury"));
     }
 
     @Test

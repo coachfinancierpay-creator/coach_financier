@@ -170,8 +170,8 @@ public class FinancialAnalysisService {
 
     /** Libellé français de la fenêtre des 3 derniers mois (ex. « juin – août 2026 »). */
     private static String formatPeriodLabel(YearMonth from, YearMonth to) {
-        DateTimeFormatter monthOnly = DateTimeFormatter.ofPattern("MMMM", Locale.FRENCH);
-        DateTimeFormatter fullMonth = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.FRENCH);
+        DateTimeFormatter monthOnly = DateTimeFormatter.ofPattern("MMMM", Locale.ENGLISH);
+        DateTimeFormatter fullMonth = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
         if (from.getYear() == to.getYear()) {
             return from.format(monthOnly) + " – " + to.format(fullMonth);
         }

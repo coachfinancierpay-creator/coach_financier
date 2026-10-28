@@ -17,9 +17,9 @@ public class CustomerDirectoryService {
     private static final Pattern LEGACY_CUSTOMER_ID = Pattern.compile("DEMO([0-9]+)");
 
     private static final List<Agency> AGENCIES = List.of(
-            new Agency("03101", "Agence de Paris"),
-            new Agency("02360", "Agence de Strasbourg"),
-            new Agency("01280", "Agence de Lille"));
+            new Agency("03101", "Paris Branch"),
+            new Agency("02360", "Strasbourg Branch"),
+            new Agency("01280", "Lille Branch"));
 
     private static final Map<String, String> LEGACY_IDS = Map.ofEntries(
             Map.entry("DEMO001", "QJA6874"),

@@ -8,7 +8,7 @@
   },
   "produit": {
     "id": "sg_assurance_auto",
-    "nom": "Assurance Auto SG",
+    "nom": "SG Car Insurance",
     "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-auto",
     "type": "assurance_automobile",
     "souscription_en_ligne": true,
@@ -16,7 +16,7 @@
     "formules": [
       {
         "id": "sg_auto_tiers",
-        "nom": "Tiers",
+        "nom": "Third Party",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-auto",
         "niveau_protection": 1,
         "tarif_indicatif_mensuel": {
@@ -49,7 +49,7 @@
       },
       {
         "id": "sg_auto_tiers_plus",
-        "nom": "Tiers+",
+        "nom": "Third Party+",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-auto",
         "niveau_protection": 2,
         "tarif_indicatif_mensuel": {
@@ -92,7 +92,7 @@
       },
       {
         "id": "sg_auto_tous_risques",
-        "nom": "Tous Risques",
+        "nom": "Comprehensive",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-auto",
         "niveau_protection": 3,
         "tarif_indicatif_mensuel": {
@@ -149,7 +149,7 @@
       },
       {
         "id": "sg_auto_tous_risques_plus",
-        "nom": "Tous Risques+",
+        "nom": "Comprehensive+",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-auto",
         "niveau_protection": 4,
         "tarif_indicatif_mensuel": {

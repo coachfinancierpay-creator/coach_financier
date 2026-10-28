@@ -8,7 +8,7 @@
   },
   "produits": {
     "id": "sg_assurance_emprunteur_immobilier",
-    "nom": "Assurance Emprunteur Immobilier SG",
+    "nom": "SG Mortgage Protection Insurance",
     "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/assurance-emprunteur",
     "famille": "assurance_emprunteur",
     "assureur_principal": "Sogecap",
@@ -28,7 +28,7 @@
     "formules": [
       {
         "id": "sg_ade_residence_principale_secondaire",
-        "nom": "Résidence principale ou secondaire",
+        "nom": "Primary or secondary residence",
         "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/assurance-emprunteur",
         "cible": [
           "residence_principale",
@@ -52,7 +52,7 @@
       },
       {
         "id": "sg_ade_investissement_locatif",
-        "nom": "Investissement locatif",
+        "nom": "Rental investment",
         "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/assurance-emprunteur",
         "cible": [
           "investisseur_locatif"
@@ -64,7 +64,7 @@
       },
       {
         "id": "sg_ade_senior",
-        "nom": "Assurance Emprunteur Senior",
+        "nom": "Senior Mortgage Protection Insurance",
         "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/assurance-emprunteur",
         "cible": [
           "emprunteur_senior"
@@ -79,7 +79,7 @@
       },
       {
         "id": "sg_ade_bfm",
-        "nom": "Assurance Emprunteur BFM",
+        "nom": "BFM Mortgage Protection Insurance",
         "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/assurance-emprunteur",
         "cible": [
           "fonctionnaire",
@@ -110,32 +110,32 @@
     ],
     "garanties": {
       "deces": {
-        "description": "Remboursement du capital restant dû selon la quotité assurée."
+        "description": "Repayment of the outstanding capital according to the insured share."
       },
       "PTIA": {
-        "nom": "Perte Totale et Irréversible d'Autonomie"
+        "nom": "Total and Irreversible Loss of Autonomy"
       },
       "ITT": {
-        "nom": "Incapacité Temporaire Totale de Travail"
+        "nom": "Total Temporary Incapacity to Work"
       },
       "ITP": {
-        "nom": "Incapacité Temporaire Partielle de Travail"
+        "nom": "Partial Temporary Incapacity to Work"
       },
       "IPT": {
-        "nom": "Invalidité Permanente Totale"
+        "nom": "Total Permanent Disability"
       },
       "IPP": {
-        "nom": "Invalidité Permanente Partielle"
+        "nom": "Partial Permanent Disability"
       },
       "aide_a_la_famille": {
-        "description": "Couverture de certains arrêts de travail pour s'occuper d'un enfant gravement malade."
+        "description": "Cover for certain periods of work stoppage to care for a seriously ill child."
       },
       "perte_emploi": {
         "optionnelle": true
       }
     },
     "quotite": {
-      "description": "Pourcentage du capital assuré pour chaque emprunteur.",
+      "description": "Percentage of the insured capital for each borrower.",
       "exemple_couple": {
         "emprunteur_1_pct": 50,
         "emprunteur_2_pct": 50,

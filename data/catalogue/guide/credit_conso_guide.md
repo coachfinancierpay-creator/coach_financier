@@ -1,102 +1,102 @@
-# Guide IA — Crédit à la consommation
+# AI guide — Consumer loan
 
 ## Structure
 
-Le fichier contient `catalogue` puis une liste `offres`. Chaque offre est identifiée par `id` et `nom`.
+The file contains a `catalogue` then an `offres` list. Each offer is identified by `id` and `nom`.
 
-## Champs de classification
+## Classification fields
 
-- `famille` : famille fonctionnelle (prêt personnel, auto, étudiant, regroupement, BFM, etc.).
-- `type_credit` : fonctionnement du crédit, par exemple amortissable, renouvelable ou regroupement.
-- `cible` : profils auxquels l'offre est destinée.
-- `distributeur`, `preteur` : distinguent la distribution SG du prêteur lorsque la Banque Française Mutualiste intervient.
+- `famille`: functional family (personal loan, car, student, consolidation, BFM, etc.).
+- `type_credit`: how the credit works, for example amortising, revolving or consolidation.
+- `cible`: profiles the offer is intended for.
+- `distributeur`, `preteur`: distinguish SG distribution from the lender when Banque Française Mutualiste is involved.
 
-## Adéquation au besoin
+## Suitability to the need
 
-- `projets_adaptes` : usages pour lesquels l'offre est pertinente.
-- `projets_exclus` : projets explicitement exclus.
-- `credits_exclus` : catégories de crédits ne pouvant pas être intégrées à une opération de regroupement.
-- `besoin_complementaire_possible` : possibilité indiquée d'intégrer un besoin supplémentaire.
+- `projets_adaptes`: uses for which the offer is relevant.
+- `projets_exclus`: explicitly excluded projects.
+- `credits_exclus`: categories of credit that cannot be included in a consolidation operation.
+- `besoin_complementaire_possible`: indicated possibility of including an additional need.
 
-`projets_adaptes` n'implique pas à lui seul que le crédit soit juridiquement affecté à l'achat.
+`projets_adaptes` does not on its own imply that the credit is legally earmarked for the purchase.
 
-## Éligibilité
+## Eligibility
 
-`eligibilite` contient les critères connus : âge, statut, inscription dans l'enseignement supérieur, appartenance à la fonction publique/BFM, compte SG, etc.
+`eligibilite` contains the known criteria: age, status, higher education enrolment, public sector/BFM membership, SG account, etc.
 
-`cible` est un positionnement ; `eligibilite` doit être considérée comme plus forte pour déterminer l'accès à l'offre.
+`cible` is a positioning; `eligibilite` must be considered stronger when determining access to the offer.
 
-Une valeur telle que `"limite_age": null` signifie que la limite n'est pas renseignée dans le catalogue.
+A value such as `"limite_age": null` means the limit is not documented in the catalogue.
 
-## Montant
+## Amount
 
-Dans `montant` :
-- `minimum` / `maximum` : bornes indiquées ;
-- `maximum_public` : maximum publié ; `null` = non renseigné ;
-- `reponse_principe_immediate_jusqua` : seuil lié à la réponse de principe, pas plafond du crédit ;
-- `minimum_virement` : montant minimal d'une utilisation/virement ;
-- `montant_unique` : minimum et maximum identiques correspondent à un montant unique ;
-- `determination` : règle textuelle de détermination du montant ;
-- `devise` : unité monétaire.
+In `montant`:
+- `minimum` / `maximum`: bounds indicated;
+- `maximum_public`: published maximum; `null` = not documented;
+- `reponse_principe_immediate_jusqua`: threshold linked to the approval in principle, not the credit ceiling;
+- `minimum_virement`: minimum amount of a drawdown/transfer;
+- `montant_unique`: identical minimum and maximum correspond to a single amount;
+- `determination`: textual rule for determining the amount;
+- `devise`: monetary unit.
 
-## Durée
+## Term
 
-- `minimum_mois`, `maximum_mois` : plage de durée.
-- `duree_unique` : indique une durée fixe lorsque les deux bornes sont identiques.
+- `minimum_mois`, `maximum_mois`: term range.
+- `duree_unique`: indicates a fixed term when both bounds are identical.
 
-## Taux et coût
+## Rate and cost
 
-Dans `taux` :
-- `type` : fixe ou autre fonctionnement ;
-- `taeg` / `taeg_fixe_pct` : TAEG renseigné dans le catalogue ;
-- `depend_du_dossier` : le taux affiché ne doit pas être présenté comme garanti à tous les clients ;
-- `depend_de_la_duree` : le taux dépend de la durée ;
-- `conditions_preferentielles` : signale un positionnement préférentiel.
+In `taux`:
+- `type`: fixed or other behaviour;
+- `taeg` / `taeg_fixe_pct`: APR documented in the catalogue;
+- `depend_du_dossier`: the displayed rate must not be presented as guaranteed for all customers;
+- `depend_de_la_duree`: the rate depends on the term;
+- `conditions_preferentielles`: signals preferential positioning.
 
-`frais_dossier: 0` signifie que le catalogue indique zéro frais de dossier pour l'offre concernée.
+`frais_dossier: 0` means the catalogue indicates zero arrangement fees for the offer concerned.
 
-## Crédit renouvelable
+## Revolving credit
 
-Pour Alterna, `fonctionnement` décrit la réserve :
-- `reserve_reutilisable` ;
-- intérêts sur les sommes utilisées ;
-- coût lorsque la réserve n'est pas utilisée.
+For Alterna, `fonctionnement` describes the reserve:
+- `reserve_reutilisable`;
+- interest on the amounts used;
+- cost when the reserve is not used.
 
-Ne pas comparer un crédit renouvelable et un prêt amortissable uniquement sur la mensualité. La règle `vigilance` demande explicitement une comparaison du coût total.
+Do not compare a revolving credit and an amortising loan on the monthly payment alone. The `vigilance` rule explicitly requires a comparison of the total cost.
 
-## Souplesse et remboursement
+## Flexibility and repayment
 
-`flexibilite` peut contenir :
-- mensualités modulables ;
-- report d'échéances ;
-- différé ;
-- remboursement anticipé ;
-- nombre maximal de reports.
+`flexibilite` may contain:
+- adjustable monthly payments;
+- instalment deferral;
+- grace period;
+- early repayment;
+- maximum number of deferrals.
 
-`remboursement_anticipe` peut aussi être un objet avec `possible` et `sans_frais`.
+`remboursement_anticipe` may also be an object with `possible` and `sans_frais`.
 
-## Assurance et caution
+## Insurance and surety
 
-- `assurance_emprunteur.disponible` : assurance proposée.
-- `assurance_emprunteur.obligatoire` : obligation indiquée dans le catalogue.
-- `caution.generalement_requise` : ne pas transformer « généralement » en « toujours ».
-- `alternative_sans_caution_personnelle` : solution alternative décrite pour le prêt étudiant.
+- `assurance_emprunteur.disponible`: insurance offered.
+- `assurance_emprunteur.obligatoire`: obligation indicated in the catalogue.
+- `caution.generalement_requise`: do not turn "generally" into "always".
+- `alternative_sans_caution_personnelle`: alternative solution described for the student loan.
 
-## Règles de recommandation
+## Recommendation rules
 
-Appliquer d'abord l'éligibilité, puis :
-- `forte_priorite_si` / `priorite_tres_elevee_si` ;
-- `priorite_si` ;
-- `comparaison_obligatoire_avec` ;
-- `eviter_si` ;
+Apply eligibility first, then:
+- `forte_priorite_si` / `priorite_tres_elevee_si`;
+- `priorite_si`;
+- `comparaison_obligatoire_avec`;
+- `eviter_si`;
 - `vigilance`.
 
-Cas importants :
-- un étudiant éligible doit faire comparer le prêt étudiant avec un prêt personnel générique ;
-- un client éligible BFM doit faire examiner les offres BFM correspondantes ;
-- un regroupement de crédits doit être évalué sur le coût total, pas uniquement sur la baisse de mensualité ;
-- un besoin récurrent de petite trésorerie peut correspondre au renouvelable, mais la vigilance coût reste prioritaire.
+Important cases:
+- an eligible student must have the student loan compared with a generic personal loan;
+- a BFM-eligible customer must have the corresponding BFM offers examined;
+- a loan consolidation must be assessed on the total cost, not only on the reduction of the monthly payment;
+- a recurring need for small cash amounts may correspond to revolving credit, but the cost vigilance remains a priority.
 
-## Valeurs absentes
+## Missing values
 
-Ne pas inventer un maximum, un TAEG ou une durée lorsque le champ est absent ou `null`.
+Do not invent a maximum, an APR or a term when the field is absent or `null`.

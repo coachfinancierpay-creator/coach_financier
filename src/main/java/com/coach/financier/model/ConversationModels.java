@@ -62,7 +62,7 @@ public final class ConversationModels {
          */
         public synchronized void rewind(int messageCount) {
             if (messageCount < 0 || messageCount > transcript.size()) {
-                throw new IllegalArgumentException("Position de retour invalide : " + messageCount);
+                throw new IllegalArgumentException("Invalid return position: " + messageCount);
             }
             transcript.subList(messageCount, transcript.size()).clear();
             messages.clear();

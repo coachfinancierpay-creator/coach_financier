@@ -81,7 +81,7 @@ public class PromptOptimizationStore {
     /** Répertoire d'une campagne (l'identifiant est validé : aucune traversée de chemin possible). */
     public Path campaignDir(String campaignId) {
         if (campaignId == null || !CAMPAIGN_ID.matcher(campaignId).matches()) {
-            throw new IllegalArgumentException("Identifiant de campagne invalide : " + campaignId);
+            throw new IllegalArgumentException("Invalid campaign id: " + campaignId);
         }
         return properties.campaignsDir().resolve(campaignId);
     }
@@ -96,7 +96,7 @@ public class PromptOptimizationStore {
     public void create(PromptOptimizationModels.Campaign campaign, PromptOptimizationModels.Snapshot snapshot) {
         Path dir = campaignDir(campaign.campaignId());
         if (Files.isRegularFile(dir.resolve(CAMPAIGN_FILE))) {
-            throw new IllegalStateException("Campagne déjà existante : " + campaign.campaignId());
+            throw new IllegalStateException("Campaign already exists: " + campaign.campaignId());
         }
         saveSnapshot(snapshot);
         saveCampaign(campaign);
@@ -119,7 +119,7 @@ public class PromptOptimizationStore {
 
     public PromptOptimizationModels.Campaign require(String campaignId) {
         return find(campaignId).orElseThrow(
-                () -> new IllegalArgumentException("Campagne inconnue : " + campaignId));
+                () -> new IllegalArgumentException("Unknown campaign: " + campaignId));
     }
 
     /** Campagnes connues, de la plus récemment modifiée à la plus ancienne. */
@@ -298,7 +298,7 @@ public class PromptOptimizationStore {
     /** Écrit un fil (écriture ATOMIQUE, comme les autres états de l'atelier). */
     public void saveThread(PromptOptimizationModels.ConversationThread thread) {
         if (thread == null || thread.threadId().isBlank()) {
-            throw new IllegalArgumentException("Fil de conversation sans identifiant.");
+            throw new IllegalArgumentException("Conversation thread without an id.");
         }
         writeJson(threadFile(thread.threadId()), thread);
     }
@@ -339,7 +339,7 @@ public class PromptOptimizationStore {
 
     private Path threadFile(String threadId) {
         if (threadId == null || !CAMPAIGN_ID.matcher(threadId).matches()) {
-            throw new IllegalArgumentException("Identifiant de fil de conversation invalide : " + threadId);
+            throw new IllegalArgumentException("Invalid conversation thread id: " + threadId);
         }
         return threadsDir().resolve(threadId + ".json");
     }
@@ -361,7 +361,7 @@ public class PromptOptimizationStore {
     public <T> T withCampaignLock(String campaignId, Supplier<T> action) {
         ReentrantLock lock = campaignLocks.computeIfAbsent(campaignId, key -> new ReentrantLock());
         if (!lock.tryLock()) {
-            throw new IllegalStateException("Un traitement est déjà en cours pour la campagne " + campaignId);
+            throw new IllegalStateException("A run is already in progress for campaign " + campaignId);
         }
         try {
             return action.get();
@@ -385,7 +385,7 @@ public class PromptOptimizationStore {
                 Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException e) {
-            throw new IllegalStateException("Écriture impossible : " + file, e);
+            throw new IllegalStateException("Unable to write: " + file, e);
         }
     }
 
@@ -429,7 +429,7 @@ public class PromptOptimizationStore {
         try {
             JsonlFiles.append(file, List.of(objectMapper.writeValueAsString(value)), writeLock);
         } catch (Exception e) {
-            throw new IllegalStateException("Écriture JSONL impossible : " + file, e);
+            throw new IllegalStateException("Unable to write JSONL: " + file, e);
         }
     }
 }

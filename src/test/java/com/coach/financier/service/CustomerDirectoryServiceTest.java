@@ -15,7 +15,7 @@ class CustomerDirectoryServiceTest {
 
         assertEquals("QJA6874", profile.customerId());
         assertEquals("03101", profile.agency().code());
-        assertEquals("Agence de Paris", profile.agency().name());
+        assertEquals("Paris Branch", profile.agency().name());
         assertTrue(profile.agency().code().matches("[0-9]{5}"));
     }
 }

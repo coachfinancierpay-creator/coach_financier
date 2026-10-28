@@ -73,7 +73,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   })
 
   if (!response.ok) {
-    let detail = `Erreur HTTP ${response.status}`
+    let detail = `HTTP error ${response.status}`
     try {
       const body = await response.json()
       detail = body?.message ?? body?.error ?? detail
@@ -247,7 +247,7 @@ export async function clearLogs(): Promise<void> {
     headers: { Accept: 'application/json' },
   })
   if (!response.ok) {
-    let detail = `Erreur HTTP ${response.status}`
+    let detail = `HTTP error ${response.status}`
     try {
       const body = await response.json()
       detail = body?.message ?? body?.error ?? detail
@@ -317,7 +317,7 @@ export async function fetchMarketingReport(date?: string): Promise<MarketingRepo
     headers: { Accept: 'application/json' },
   })
   if (response.status === 204) return null
-  if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`)
+  if (!response.ok) throw new Error(`HTTP error ${response.status}`)
   return (await response.json()) as MarketingReport
 }
 
@@ -346,14 +346,14 @@ export function marketingProductsCsvUrl(period: MarketingPeriod, from?: string, 
 
 /** Libellés client des motifs d'insatisfaction (le CODE reste la clé analytique). */
 export const QUALITY_REASONS: { code: string; label: string }[] = [
-  { code: 'NOT_ANSWERING_QUESTION', label: "La réponse ne répondait pas à ma question" },
-  { code: 'HARD_TO_UNDERSTAND', label: 'Les explications étaient difficiles à comprendre' },
-  { code: 'TOO_LONG', label: 'Les réponses étaient trop longues' },
-  { code: 'TOO_REPETITIVE', label: 'Les réponses étaient trop répétitives' },
-  { code: 'PRODUCT_NOT_RELEVANT', label: 'Les produits proposés ne correspondaient pas à mon besoin' },
-  { code: 'MISSING_INFORMATION', label: 'Il manquait des informations' },
-  { code: 'ACTION_NOT_POSSIBLE', label: "Je n'ai pas pu réaliser l'action souhaitée" },
-  { code: 'OTHER', label: 'Autre' },
+  { code: 'NOT_ANSWERING_QUESTION', label: 'The answer did not address my question' },
+  { code: 'HARD_TO_UNDERSTAND', label: 'The explanations were hard to understand' },
+  { code: 'TOO_LONG', label: 'The answers were too long' },
+  { code: 'TOO_REPETITIVE', label: 'The answers were too repetitive' },
+  { code: 'PRODUCT_NOT_RELEVANT', label: 'The products offered did not match my needs' },
+  { code: 'MISSING_INFORMATION', label: 'Information was missing' },
+  { code: 'ACTION_NOT_POSSIBLE', label: 'I could not complete the action I wanted' },
+  { code: 'OTHER', label: 'Other' },
 ]
 
 /** Filtres de la page Qualité. */
@@ -413,7 +413,7 @@ export async function fetchQualityReport(date?: string): Promise<QualityReport |
     headers: { Accept: 'application/json' },
   })
   if (response.status === 204) return null
-  if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`)
+  if (!response.ok) throw new Error(`HTTP error ${response.status}`)
   return (await response.json()) as QualityReport
 }
 
@@ -441,46 +441,46 @@ export function qualitySatisfactionCsvUrl(period: QualityPeriod, from?: string, 
 
 /** Zones corrigeables par le conseiller (§5 de la spécification). */
 export const ADVISOR_AREAS: { code: string; label: string }[] = [
-  { code: 'SUMMARY', label: 'Résumé de la conversation' },
-  { code: 'CUSTOMER_NEED', label: 'Compréhension du besoin client' },
-  { code: 'PROJECT_DETECTION', label: 'Projet détecté' },
-  { code: 'PRODUCT_RELEVANCE', label: "Produit proposé / produit d'intérêt" },
-  { code: 'INTEREST_LEVEL', label: "Niveau d'intérêt du client" },
-  { code: 'NEXT_ACTION', label: 'Suivi conseillé' },
-  { code: 'CLIENT_EMAIL', label: 'Email préparé pour le client' },
-  { code: 'MISSING_INFORMATION', label: 'Information importante manquante' },
-  { code: 'OTHER', label: 'Autre' },
+  { code: 'SUMMARY', label: 'Conversation summary' },
+  { code: 'CUSTOMER_NEED', label: 'Understanding of the customer need' },
+  { code: 'PROJECT_DETECTION', label: 'Detected project' },
+  { code: 'PRODUCT_RELEVANCE', label: 'Recommended product / product of interest' },
+  { code: 'INTEREST_LEVEL', label: 'Customer interest level' },
+  { code: 'NEXT_ACTION', label: 'Recommended follow-up' },
+  { code: 'CLIENT_EMAIL', label: 'Email prepared for the customer' },
+  { code: 'MISSING_INFORMATION', label: 'Important missing information' },
+  { code: 'OTHER', label: 'Other' },
 ]
 
 /** Motifs structurés (§6). */
 export const ADVISOR_REASONS: { code: string; label: string }[] = [
-  { code: 'WRONG', label: 'Erreur' },
-  { code: 'INCOMPLETE', label: 'Incomplet' },
-  { code: 'NOT_RELEVANT', label: 'Non pertinent' },
-  { code: 'TOO_VERBOSE', label: 'Trop verbeux' },
-  { code: 'TOO_GENERIC', label: 'Trop générique' },
-  { code: 'MISSING_CONTEXT', label: 'Contexte manquant' },
-  { code: 'WRONG_PRODUCT', label: "Mauvais produit" },
-  { code: 'WRONG_INTEREST_LEVEL', label: "Mauvais niveau d'intérêt" },
-  { code: 'UNSUPPORTED_RECOMMENDATION', label: 'Recommandation non étayée' },
-  { code: 'OTHER', label: 'Autre' },
+  { code: 'WRONG', label: 'Error' },
+  { code: 'INCOMPLETE', label: 'Incomplete' },
+  { code: 'NOT_RELEVANT', label: 'Not relevant' },
+  { code: 'TOO_VERBOSE', label: 'Too verbose' },
+  { code: 'TOO_GENERIC', label: 'Too generic' },
+  { code: 'MISSING_CONTEXT', label: 'Missing context' },
+  { code: 'WRONG_PRODUCT', label: 'Wrong product' },
+  { code: 'WRONG_INTEREST_LEVEL', label: 'Wrong interest level' },
+  { code: 'UNSUPPORTED_RECOMMENDATION', label: 'Unsupported recommendation' },
+  { code: 'OTHER', label: 'Other' },
 ]
 
 /** Motifs d'un produit jugé non pertinent (§7). */
 export const ADVISOR_PRODUCT_REASONS: { code: string; label: string }[] = [
-  { code: 'CUSTOMER_NOT_INTERESTED', label: 'Client non intéressé' },
-  { code: 'INCOMPATIBLE_WITH_NEED', label: 'Produit incompatible avec le besoin' },
-  { code: 'INTEREST_OVERESTIMATED', label: 'Intérêt surestimé' },
-  { code: 'MENTION_ONLY', label: 'Produit seulement mentionné' },
-  { code: 'OTHER', label: 'Autre' },
+  { code: 'CUSTOMER_NOT_INTERESTED', label: 'Customer not interested' },
+  { code: 'INCOMPATIBLE_WITH_NEED', label: 'Product incompatible with the need' },
+  { code: 'INTEREST_OVERESTIMATED', label: 'Interest overestimated' },
+  { code: 'MENTION_ONLY', label: 'Product only mentioned' },
+  { code: 'OTHER', label: 'Other' },
 ]
 
 /** Exploitabilité de l'email préparé (§11). */
 export const ADVISOR_EMAIL_ASSESSMENTS: { code: string; label: string }[] = [
-  { code: 'READY_TO_USE', label: 'Prêt à utiliser' },
-  { code: 'MINOR_EDITS', label: 'Modifications mineures' },
-  { code: 'MAJOR_EDITS', label: 'Modifications importantes' },
-  { code: 'UNUSABLE', label: 'Non utilisable' },
+  { code: 'READY_TO_USE', label: 'Ready to use' },
+  { code: 'MINOR_EDITS', label: 'Minor edits' },
+  { code: 'MAJOR_EDITS', label: 'Major edits' },
+  { code: 'UNUSABLE', label: 'Unusable' },
 ]
 
 /** Niveaux d'intérêt conservés tels quels (valeur IA et correction conseiller). */
@@ -527,7 +527,7 @@ export async function fetchAdvisorDossier(sessionId: string): Promise<AdvisorDos
     { headers: { Accept: 'application/json' } },
   )
   if (response.status === 404 || response.status === 204) return null
-  if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`)
+  if (!response.ok) throw new Error(`HTTP error ${response.status}`)
   return (await response.json()) as AdvisorDossierView
 }
 
@@ -561,7 +561,7 @@ export async function fetchAdvisorReport(date?: string): Promise<AdvisorReport |
     headers: { Accept: 'application/json' },
   })
   if (response.status === 204) return null
-  if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`)
+  if (!response.ok) throw new Error(`HTTP error ${response.status}`)
   return (await response.json()) as AdvisorReport
 }
 

@@ -1,39 +1,39 @@
-cascade - ARBRE DE DÉCISION — ASSURANCE HABITATION
+cascade - DECISION TREE — HOME INSURANCE
 ========================================
 
-Rôle : déterminer si une assurance habitation est requise et quelle formule recommander selon la situation d'occupation.
-Utilisation : suivre les étapes dans l'ordre ; appliquer la première condition qui correspond au client.
+Role: determine whether home insurance is required and which plan to recommend according to the occupancy situation.
+Usage: follow the steps in order; apply the first condition that matches the customer.
 
 
-ÉTAPE 1 — Périmètre
-- SI le client n'occupe PAS de logement : ALORS aucune assurance habitation à proposer (sortir).
-- SINON : passer à l'étape 2.
+STEP 1 — Scope
+- IF the customer does NOT occupy a dwelling: THEN no home insurance to propose (exit).
+- OTHERWISE: go to step 2.
 
 
-ÉTAPE 2 — Statut d'occupation du client
-- Locataire :
-  ALORS assurance habitation OBLIGATOIRE. Choisir le niveau :
-    - budget serré              → formule « Initiale »
-    - protection standard       → formule « Confort »
-    - protection renforcée      → formule « Optimale »
-- Propriétaire occupant :
-  ALORS assurance habitation fortement recommandée. Choisir :
-    - logement simple / petit budget → « Initiale »
-    - usage courant                  → « Confort »
-    - logement de valeur / forte protection → « Optimale »
-- Étudiant :
-  ALORS proposer la « Formule Étudiante ».
-- Propriétaire bailleur / logement non occupé :
-  ALORS proposer la « Formule PNO » (propriétaire non occupant).
+STEP 2 — Customer's occupancy status
+- Tenant:
+  THEN home insurance is MANDATORY. Choose the level:
+    - tight budget               → « Initial » plan
+    - standard protection        → « Comfort » plan
+    - enhanced protection        → « Optimal » plan
+- Owner-occupier:
+  THEN home insurance is strongly recommended. Choose:
+    - simple dwelling / small budget → « Initial »
+    - standard use                   → « Comfort »
+    - high-value dwelling / strong protection → « Optimal »
+- Student:
+  THEN propose the « Student plan ».
+- Landlord owner / unoccupied dwelling:
+  THEN propose the « Non-occupant owner plan ».
 
 
-ÉTAPE 3 — Ajustement selon les risques du logement
-Tenir compte de : valeur du mobilier ; objets de valeur ; localisation ; maison ou appartement ; étage ; dépendances ; historique de sinistres ; risque vol ; équipements.
+STEP 3 — Adjustment according to the dwelling's risks
+Take into account: value of the furniture; valuables; location; house or flat; floor; outbuildings; claims history; theft risk; equipment.
 
 
-ÉTAPE 4 — Options et garanties utiles
-- Ajouter les options / garanties pertinentes selon le profil et le logement.
+STEP 4 — Useful options and guarantees
+- Add the relevant options / guarantees according to the profile and the dwelling.
 
 
-ÉTAPE 5 — Réponse au client (LLM)
-Expliquer en français la recommandation retenue et pourquoi.
+STEP 5 — Answer to the customer (LLM)
+Explain in English the recommendation retained and why.

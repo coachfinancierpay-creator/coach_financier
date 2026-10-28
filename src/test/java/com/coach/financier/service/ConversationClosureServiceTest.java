@@ -142,7 +142,7 @@ class ConversationClosureServiceTest {
         assertTrue(response.rejectedProducts().contains("Assurance Auto SG – Tous Risques"));
         assertFalse(response.preparedCustomerEmail().body().contains("Tous Risques"));
         assertTrue(response.preparedCustomerEmail().body().contains("Crédit Auto"));
-        assertTrue(response.warnings().stream().anyMatch(w -> w.toLowerCase().contains("refusé")));
+        assertTrue(response.warnings().stream().anyMatch(w -> w.toLowerCase().contains("rejected")));
         verify(mailService, times(1)).sendWithAttachments(eq(ADVISOR), anyString(), anyString(),
                 anyBoolean(), any());
     }
@@ -156,14 +156,14 @@ class ConversationClosureServiceTest {
         SuiviModels.CloseConversationResponse response = service().close("s1", null);
 
         String body = response.advisorEmail().body();
-        assertTrue(body.contains("Évaluer le suivi du Coach"),
+        assertTrue(body.contains("Rate the Coach's follow-up"),
                 "Le mail conseiller doit contenir le bloc d'évaluation (§41)");
         assertTrue(body.contains("#/advisor-feedback/session/s1"),
                 "Le lien doit cibler directement le dossier de la conversation (§42)");
-        assertTrue(body.contains("[URL|Évaluer le suivi du Coach|http://localhost:9898/#/advisor-feedback/session/s1]"),
+        assertTrue(body.contains("[URL|Rate the Coach's follow-up|http://localhost:9898/#/advisor-feedback/session/s1]"),
                 "Le lien doit respecter le format [URL|nom|url] pour être cliquable dans les clients mail");
         // §45 : aucune donnée personnelle dans l'URL (ni email client, ni nom du conseiller).
-        String link = body.substring(body.indexOf("[URL|Évaluer le suivi du Coach|"));
+        String link = body.substring(body.indexOf("[URL|Rate the Coach's follow-up|"));
         link = link.substring(0, link.indexOf(']'));
         assertFalse(link.contains("Michel@gmail.com"), "Aucun email client dans le lien");
         assertFalse(link.contains("Jean Martin"), "Aucun nom dans le lien");
@@ -174,15 +174,15 @@ class ConversationClosureServiceTest {
         // Lien « dossier client » : il ouvre DIRECTEMENT la pop-in du dossier dans la page Centre d'appels
         // (l'URL de l'outil conseiller n'est qu'un repli quand aucune IHM n'est configurée).
         assertTrue(body.contains(
-                        "Dossier client : [URL|Ouvrir le dossier du client|http://localhost:9898/#/centre-appels/s1]"),
+                        "Customer case file: [URL|Open the customer case file|http://localhost:9898/#/centre-appels/s1]"),
                 "Le mail conseiller ouvre le dossier dans la page Centre d'appels");
-        String dossierLink = body.substring(body.indexOf("[URL|Ouvrir le dossier du client|"));
+        String dossierLink = body.substring(body.indexOf("[URL|Open the customer case file|"));
         dossierLink = dossierLink.substring(0, dossierLink.indexOf(']'));
         assertFalse(dossierLink.contains("Michel@gmail.com"), "Aucun email client dans le lien du dossier");
         assertFalse(dossierLink.contains("Jean Martin"), "Aucun nom dans le lien du dossier");
         assertFalse(body.contains("https://particuliers.sg.fr]"),
                 "L'outil conseiller externe n'est plus utilisé quand l'IHM est configurée");
-        assertFalse(response.preparedCustomerEmail().body().contains("Ouvrir le dossier du client"),
+        assertFalse(response.preparedCustomerEmail().body().contains("Open the customer case file"),
                 "Le brouillon client ne doit pas contenir le lien interne du conseiller");
     }
 
@@ -197,14 +197,14 @@ class ConversationClosureServiceTest {
         SuiviModels.CloseConversationResponse response = service().close("s1", null);
 
         String body = response.advisorEmail().body();
-        assertFalse(body.contains("Consulter l'historique de la conversation"),
+        assertFalse(body.contains("View the conversation history"),
                 "Le mail ne contient plus le bloc d'historique de la conversation");
         assertFalse(body.contains("#/conversation/"),
                 "Aucun lien vers la page d'historique dans le mail conseiller");
-        assertTrue(body.contains("[URL|Ouvrir le dossier du client|http://localhost:9898/#/centre-appels/s1]"),
+        assertTrue(body.contains("[URL|Open the customer case file|http://localhost:9898/#/centre-appels/s1]"),
                 "Le dossier s'ouvre depuis la page Centre d'appels");
         // Le brouillon client ne reçoit jamais les liens internes du conseiller.
-        assertFalse(response.preparedCustomerEmail().body().contains("Ouvrir le dossier du client"));
+        assertFalse(response.preparedCustomerEmail().body().contains("Open the customer case file"));
         assertFalse(response.preparedCustomerEmail().body().contains("#/centre-appels/"));
     }
 
@@ -226,14 +226,14 @@ class ConversationClosureServiceTest {
 
         assertEquals("SENT", mailStatus.getValue(),
                 "La trace de clôture porte l'état d'envoi du mail (affiché sur la page Logs)");
-        assertTrue(agent.getValue().toLowerCase().contains("suivi"));
-        assertTrue(prompt.getValue().contains("=== PROMPT SYSTÈME"));
-        assertTrue(prompt.getValue().contains("CONTEXTE DE CLÔTURE"));
+        assertTrue(agent.getValue().toLowerCase().contains("follow-up"));
+        assertTrue(prompt.getValue().contains("=== SYSTEM PROMPT"));
+        assertTrue(prompt.getValue().contains("CLOSURE CONTEXT"));
         assertTrue(debug.getValue().contains("[SUIVI]"));
         assertTrue(debug.getValue().contains("mailStatus=SENT"));
         assertTrue(debug.getValue().contains("mailSent=true"));
         assertTrue(debug.getValue().contains("mailTarget=smtp.gmail.com:587"));
-        assertTrue(debug.getValue().contains("mailError=(aucune)"));
+        assertTrue(debug.getValue().contains("mailError=(none)"));
     }
 
     @Test
@@ -254,7 +254,7 @@ class ConversationClosureServiceTest {
         String debug = captureSuiviDebug();
         assertTrue(debug.contains("mailStatus=MAIL_UNAVAILABLE"));
         assertTrue(debug.contains("mailSent=false"));
-        assertTrue(debug.contains("mailError=service mail indisponible : mot de passe d'application non configuré"));
+        assertTrue(debug.contains("mailError=mail service unavailable: mot de passe d'application non configuré"));
     }
 
     @Test
@@ -270,12 +270,12 @@ class ConversationClosureServiceTest {
         SuiviModels.CloseConversationResponse response = service().close("s1", null);
 
         assertEquals("SEND_FAILED", response.status());
-        assertTrue(response.warnings().stream().anyMatch(w -> w.contains("Mail conseiller NON envoyé")));
+        assertTrue(response.warnings().stream().anyMatch(w -> w.contains("Advisor email NOT sent")));
 
         String debug = captureSuiviDebug();
         assertTrue(debug.contains("mailStatus=SEND_FAILED"));
         assertTrue(debug.contains("mailSent=false"));
-        assertTrue(debug.contains("mailError=échec de l'envoi à " + ADVISOR + " via smtp.gmail.com:587"));
+        assertTrue(debug.contains("mailError=failed to send to " + ADVISOR + " via smtp.gmail.com:587"));
         assertTrue(debug.contains("AuthenticationFailedException — 535-5.7.8 Username and Password not accepted"));
     }
 
@@ -320,7 +320,7 @@ class ConversationClosureServiceTest {
         assertEquals("NO_CONVERSATION", response.status());
         assertNull(response.attachmentName());
         assertTrue(response.sentTo().isEmpty());
-        assertTrue(response.warnings().stream().anyMatch(w -> w.toLowerCase().contains("aucune conversation")));
+        assertTrue(response.warnings().stream().anyMatch(w -> w.toLowerCase().contains("no conversation")));
         verify(mailService, never()).sendWithAttachments(anyString(), anyString(), anyString(),
                 anyBoolean(), any());
         verify(aiLogService, never()).log(anyString(), anyString(), anyList(), anyInt(), anyLong(),
@@ -353,20 +353,20 @@ class ConversationClosureServiceTest {
         SuiviModels.CloseConversationResponse response = service().close("s1", null);
 
         String body = response.advisorEmail().body();
-        assertTrue(body.contains("**Score de sens commercial : "),
+        assertTrue(body.contains("**Sales score: "),
                 "Le mail conseiller porte le score de sens commercial, en gras (Markdown du projet)");
-        assertTrue(UrlLinkRenderer.toHtml(body).contains("<strong>Score de sens commercial :"),
+        assertTrue(UrlLinkRenderer.toHtml(body).contains("<strong>Sales score: "),
                 "Dans le mail HTML, le score apparaît en gras");
         assertFalse(UrlLinkRenderer.toText(body).contains("**"),
                 "Le mail en texte brut ne contient aucun astérisque de gras");
         assertTrue(body.contains("/100 — "),
                 "Le score est lisible sous la forme « 72/100 — Priorité haute »");
-        assertTrue(body.contains("Pourquoi ce score :"),
+        assertTrue(body.contains("Why this score:"),
                 "Le score est expliqué en une phrase courte");
-        assertTrue(body.contains("Contacter le client : [URL|Appeler le client|tel:" + DEMO_PHONE + "]"),
+        assertTrue(body.contains("Contact the customer: [URL|Call the customer|tel:" + DEMO_PHONE + "]"),
                 "Le mail conseiller propose le lien d'appel du client (numéro de configuration)");
         // Le score et le téléphone sont des informations INTERNES du conseiller.
-        assertFalse(response.preparedCustomerEmail().body().contains("Score de sens commercial"),
+        assertFalse(response.preparedCustomerEmail().body().contains("Sales score"),
                 "Le brouillon client ne doit jamais contenir le score commercial");
         assertFalse(response.preparedCustomerEmail().body().contains(DEMO_PHONE),
                 "Le brouillon client ne doit jamais contenir le numéro de téléphone");
@@ -383,9 +383,9 @@ class ConversationClosureServiceTest {
                         AIModels.AIProvider.MOCK, true, false));
 
         String body = response.advisorEmail().body();
-        assertTrue(body.contains("[URL|Voir le RDV|#]"));
-        assertFalse(body.contains("Voir le RDV : [URL|Voir le RDV|#]"));
-        assertFalse(body.contains("Prendre rendez-vous avec un conseiller"));
+        assertTrue(body.contains("[URL|View appointment|#]"));
+        assertFalse(body.contains("View appointment: [URL|View appointment|#]"));
+        assertFalse(body.contains("Book an appointment with an advisor"));
     }
 
     @Test
@@ -397,7 +397,7 @@ class ConversationClosureServiceTest {
         service().close("s1", new SuiviModels.CloseConversationRequest(null, null, null, false,
                 AIModels.AIProvider.MOCK, false, true));
 
-        verify(callCenterStatusStore).save("s1", "A_CONTACTER", "A contacter", "NOUVEAU", null);
+        verify(callCenterStatusStore).save("s1", "A_CONTACTER", "To contact", "NOUVEAU", null);
     }
 
     @Test

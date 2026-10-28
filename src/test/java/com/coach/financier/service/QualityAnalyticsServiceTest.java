@@ -77,9 +77,9 @@ class QualityAnalyticsServiceTest {
             checkStore.append(List.of(check("s" + index, QualityModels.EXCESSIVE_REPETITION, false, today)));
         }
         feedbackStore.appendDemo(List.of(
-                feedback("f1", "s0", 5, List.of(), "Échanges clairs et utiles", today),
+                feedback("f1", "s0", 5, List.of(), "Clear and useful exchanges", today),
                 feedback("f2", "s1", 4, List.of(), "", today),
-                feedback("f3", "s2", 2, List.of(QualityModels.TOO_REPETITIVE), "Le Coach répétait les mêmes chiffres", today)));
+                feedback("f3", "s2", 2, List.of(QualityModels.TOO_REPETITIVE), "The Coach kept repeating the same numbers", today)));
 
         QualityModels.QualityAggregates aggregates = analytics.compute(today, today,
                 QualityModels.QualityFilter.none());
@@ -101,7 +101,7 @@ class QualityAnalyticsServiceTest {
 
         QualityModels.ReasonMetric reason = aggregates.feedbackCategories().get(0);
         assertEquals(QualityModels.TOO_REPETITIVE, reason.reason());
-        assertEquals("Les réponses étaient trop répétitives", reason.label());
+        assertEquals("The answers were too repetitive", reason.label());
         assertEquals(1, reason.count());
 
         // Thèmes de commentaires (heuristique locale, jamais une IA).

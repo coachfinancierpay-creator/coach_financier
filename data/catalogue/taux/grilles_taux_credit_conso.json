@@ -1,10 +1,10 @@
 {
-  "title": "Grilles de taux DEMO alignées sur credit_conso.json",
+  "title": "DEMO rate grids aligned with credit_conso.json",
   "as_of": "2026-09-19",
   "status": "DEMO_SYNTHETIC_NOT_OFFICIAL_SG_RATE_SCHEDULE",
-  "warning": "Grilles fictives de démonstration. Identifiants/nom/tags/contraintes tirés de credit_conso.json ; TAEG des règles synthétiques et non tarifs officiels SG/BFM. Ne pas confondre credit_conso.offres[].taux.taeg avec la grille démonstration.",
-  "rates_are": "TAEG annuel (en pourcentage) pour une simulation hors assurance facultative et sous hypothèse de frais de dossier démonstratifs = 0 EUR. Lorsqu’un produit officiel prévoit des frais, appliquer le calcul TAEG correctement avant usage réel.",
-  "calculation": "Pour prêts amortissables sans frais ni différé: taux mensuel = (1+TAEG/100)^(1/12)-1; mensualité = capital * i / (1-(1+i)^(-nombre_mois)); si TAEG 0, capital/nombre_mois. Arrondir et corriger dernière échéance.",
+  "warning": "Fictitious demo grids. Identifiers/name/tags/constraints taken from credit_conso.json; APRs come from synthetic rules and are not official SG/BFM rates. Do not confuse credit_conso.offres[].taux.taeg with the demo grid.",
+  "rates_are": "Annual APR (as a percentage) for a simulation excluding optional insurance and assuming demo arrangement fees = 0 EUR. Where an official product provides for fees, apply the APR calculation correctly before real use.",
+  "calculation": "For amortising loans with no fees and no deferral: monthly rate = (1+APR/100)^(1/12)-1; monthly payment = capital * i / (1-(1+i)^(-number_months)); if APR is 0, capital/number_months. Round and adjust the last instalment.",
   "usury_q3_2026": {
     "up_to_3000_eur": 23.53,
     "over_3000_up_to_6000_eur": 15.67,
@@ -16,7 +16,7 @@
   "real_market_benchmarks_not_sg_grids": [
     {
       "provider": "Franfinance",
-      "product": "Prêt personnel",
+      "product": "Personal loan",
       "amount_eur": 15000,
       "duration_months": 48,
       "taeg_percent": 4.89,
@@ -25,7 +25,7 @@
     },
     {
       "provider": "Franfinance",
-      "product": "Crédit auto",
+      "product": "Car loan",
       "amount_eur": 10000,
       "duration_months": 12,
       "taeg_percent": 2.49,
@@ -34,21 +34,21 @@
     },
     {
       "provider": "SG",
-      "product": "Prêt Jeune Actif",
+      "product": "Young Professional Loan",
       "min_advertised_taeg_percent": 5.55,
       "source": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-jeune-actif"
     }
   ],
   "products": [
     {
-      "name": "Crédit Expresso",
+      "name": "Expresso Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1000,
       "amount_max_eur": 75000,
       "duration_min_months": 12,
       "duration_max_months": 84,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/credit-conso-expresso",
-      "source_notes": "Plafond 75 000 EUR: convention de démonstration, pas plafond SG vérifié. Plafond absent du catalogue : amount_max_eur est uniquement la borne des règles de démonstration.",
+      "source_notes": "Ceiling 75 000 EUR: demo convention, not a verified SG ceiling. Ceiling absent from the catalogue: amount_max_eur is only the bound of the demo rules.",
       "rules": [
         {
           "amount_min_eur": 1000,
@@ -143,7 +143,7 @@
       ],
       "legacy_code": "expresso",
       "id": "sg_credit_expresso",
-      "nom": "Crédit Expresso",
+      "nom": "Expresso Loan",
       "famille": "pret_personnel",
       "type_credit": "amortissable_non_affecte",
       "cible": [
@@ -202,14 +202,14 @@
       "amount_max_eur_demo_only": 75000
     },
     {
-      "name": "Crédit Auto Expresso",
+      "name": "Expresso Auto Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1000,
       "amount_max_eur": 75000,
       "duration_min_months": 12,
       "duration_max_months": 84,
       "official_product_url": "https://particuliers.sg.fr/emprunter/credit-auto-deux-roues/credit-auto-expresso",
-      "source_notes": "Plafond 75 000 EUR: convention de démo; Franfinance publie 4,89% pour 15 000 EUR/48 mois, mais il ne s’agit pas du barème SG. Plafond absent du catalogue : amount_max_eur est uniquement la borne des règles de démonstration.",
+      "source_notes": "Ceiling 75 000 EUR: demo convention; Franfinance publishes 4,89% for 15 000 EUR/48 months, but this is not the SG rate schedule. Ceiling absent from the catalogue: amount_max_eur is only the bound of the demo rules.",
       "rules": [
         {
           "amount_min_eur": 1000,
@@ -304,7 +304,7 @@
       ],
       "legacy_code": "auto_expresso",
       "id": "sg_credit_auto_expresso",
-      "nom": "Crédit Auto Expresso",
+      "nom": "Expresso Auto Loan",
       "famille": "credit_auto",
       "type_credit": "credit_amortissable",
       "cible": [
@@ -350,14 +350,14 @@
       "amount_max_eur_demo_only": 75000
     },
     {
-      "name": "Crédit renouvelable Alterna",
+      "name": "Alterna Revolving Credit",
       "loan_type": "revolving",
       "amount_min_eur": 150,
       "amount_max_eur": 21500,
       "duration_min_months": 1,
       "duration_max_months": 120,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-credit-renouvelable-alterna",
-      "source_notes": "Les seuils portent sur l’encours utilisé, pas sur la réserve autorisée. Durée 1-120 mois: borne technique de démonstration, pas une durée contractuelle SG. Les règles de taux concernent le montant utilisé (>=150 € pour un virement) ; crédit renouvelable : ne pas calculer automatiquement comme prêt amortissable à échéances constantes.",
+      "source_notes": "Thresholds apply to the amount drawn, not to the authorised reserve. Term 1-120 months: demo technical bound, not an SG contractual term. Rate rules apply to the amount used (>=150 € for a transfer); revolving credit: do not automatically calculate it as an amortising loan with constant instalments.",
       "rules": [
         {
           "amount_min_eur": 150,
@@ -458,7 +458,7 @@
       ],
       "legacy_code": "alterna",
       "id": "sg_alterna",
-      "nom": "Crédit renouvelable Alterna",
+      "nom": "Alterna Revolving Credit",
       "famille": "credit_renouvelable",
       "type_credit": "renouvelable",
       "cible": [
@@ -485,7 +485,7 @@
           "besoin_long_terme",
           "client_risque_surendettement"
         ],
-        "vigilance": "Comparer systématiquement le coût total avec un prêt personnel amortissable."
+        "vigilance": "Always compare the total cost with an amortising personal loan."
       },
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-credit-renouvelable-alterna",
       "devise": "EUR",
@@ -502,17 +502,17 @@
         "taeg": 16.9
       },
       "duration_catalogue_non_precisee": true,
-      "amount_basis": "montant_utilise (virement >=150 €); reserve autorisee >=1500 € distincte du montant utilisé"
+      "amount_basis": "amount_used (transfer >=150 €); authorised reserve >=1500 € separate from the amount used"
     },
     {
-      "name": "Crédit Expresso Jeune Actif",
+      "name": "Expresso Young Professional Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 7000,
       "duration_min_months": 12,
       "duration_max_months": 60,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-jeune-actif",
-      "source_notes": "SG annonce « à partir de 5,55% TAEG fixe » sans publier les combinaisons montant/durée ; attribution des taux aux tranches = fictive.",
+      "source_notes": "SG advertises “from 5,55% fixed APR” without publishing the amount/term combinations; assignment of rates to brackets = fictitious.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -607,7 +607,7 @@
       ],
       "legacy_code": "expresso_jeune_actif",
       "id": "sg_expresso_jeune_actif",
-      "nom": "Crédit Expresso Jeune Actif",
+      "nom": "Expresso Young Professional Loan",
       "famille": "pret_personnel_jeune",
       "type_credit": "amortissable_non_affecte",
       "cible": [
@@ -658,14 +658,14 @@
       }
     },
     {
-      "name": "Prêt Étudiant Évolutif",
+      "name": "Progressive Student Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1000,
       "amount_max_eur": 120000,
       "duration_min_months": 12,
       "duration_max_months": 120,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-etudiant-evolutif",
-      "source_notes": "Différé et décaissement fractionné à simuler séparément. Au-delà de 75 000 EUR, ne pas appliquer automatiquement le contrôle d’usure des crédits consommation ordinaires.",
+      "source_notes": "Deferral and staged drawdown must be simulated separately. Above 75 000 EUR, do not automatically apply the ordinary consumer credit usury check.",
       "rules": [
         {
           "amount_min_eur": 1000,
@@ -760,7 +760,7 @@
       ],
       "legacy_code": "etudiant_evolutif",
       "id": "sg_pret_etudiant_evolutif",
-      "nom": "Prêt Étudiant Évolutif",
+      "nom": "Progressive Student Loan",
       "famille": "pret_etudiant",
       "type_credit": "pret_etudiant_amortissable",
       "cible": [
@@ -813,14 +813,14 @@
       }
     },
     {
-      "name": "Prêt Permis à 1 € par jour",
+      "name": "€1-a-day Driving Licence Loan",
       "loan_type": "fixed",
       "amount_min_eur": 600,
       "amount_max_eur": 1200,
       "duration_min_months": 20,
       "duration_max_months": 40,
       "official_product_url": "https://particuliers.sg.fr/emprunter/credit-auto-deux-roues/pret-permis-1-euro-jour",
-      "source_notes": "Taux 0% officiel, remboursement de 30 EUR/mois sauf dernière échéance; les 800/1000 EUR ont une échéance finale de 20/10 EUR respectivement.",
+      "source_notes": "Official 0% rate, repayment of 30 EUR/month except the last instalment; the 800/1000 EUR cases have a final instalment of 20/10 EUR respectively.",
       "rules": [
         {
           "amount_min_eur": 600,
@@ -865,7 +865,7 @@
       ],
       "legacy_code": "permis_1_euro",
       "id": "sg_permis_1_euro_jour",
-      "nom": "Prêt Permis à 1 € par jour",
+      "nom": "€1-a-day Driving Licence Loan",
       "famille": "pret_permis",
       "type_credit": "pret_aide",
       "cible": [
@@ -897,14 +897,14 @@
       "duration_catalogue_non_precisee": true
     },
     {
-      "name": "Crédit Compact",
+      "name": "Compact Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 75000,
       "duration_min_months": 12,
       "duration_max_months": 84,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/credit-compact",
-      "source_notes": "Plafond 75 000 EUR = convention de démo; rachat de crédits consommation hors crédit immobilier. Plafond absent du catalogue : amount_max_eur est uniquement la borne des règles de démonstration.",
+      "source_notes": "Ceiling 75 000 EUR = demo convention; consumer credit consolidation excluding mortgages. Ceiling absent from the catalogue: amount_max_eur is only the bound of the demo rules.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -999,7 +999,7 @@
       ],
       "legacy_code": "compact",
       "id": "sg_credit_compact",
-      "nom": "Crédit Compact",
+      "nom": "Compact Loan",
       "famille": "regroupement_credits",
       "type_credit": "regroupement_credit_amortissable",
       "cible": [
@@ -1024,7 +1024,7 @@
           "client_cherche_reduire_mensualites",
           "client_cherche_simplifier_budget"
         ],
-        "vigilance": "Une mensualité réduite peut résulter d'un allongement de la durée et augmenter le coût total du crédit."
+        "vigilance": "A lower monthly payment may result from a longer term and increase the total cost of the loan."
       },
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/credit-compact",
       "devise": "EUR",
@@ -1044,14 +1044,14 @@
       "amount_max_eur_demo_only": 75000
     },
     {
-      "name": "Prêt BFM Liberté",
+      "name": "BFM Freedom Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 75000,
       "duration_min_months": 6,
       "duration_max_months": 96,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-conso-bfm-liberte",
-      "source_notes": "Frais de dossier SG: zéro; taux démo fictifs.",
+      "source_notes": "SG arrangement fees: zero; fictitious demo rates.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -1146,7 +1146,7 @@
       ],
       "legacy_code": "bfm_liberte",
       "id": "bfm_liberte",
-      "nom": "Prêt BFM Liberté",
+      "nom": "BFM Freedom Loan",
       "famille": "pret_personnel_fonction_publique",
       "type_credit": "amortissable_non_affecte",
       "cible": [
@@ -1173,7 +1173,7 @@
       "regles_recommandation": {
         "priorite_si": [
           "client_eligible_bfm",
-          "bfm_eligible à true",
+          "bfm_eligible is true",
           "besoin >= 1500"
         ],
         "comparaison_obligatoire_avec": [
@@ -1197,14 +1197,14 @@
       }
     },
     {
-      "name": "Prêt BFM Jeunes Actifs",
+      "name": "BFM Young Professionals Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 3000,
       "duration_min_months": 6,
       "duration_max_months": 36,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-bfm-jeunes-actifs",
-      "source_notes": "Frais de dossier SG: zéro; taux démo fictifs.",
+      "source_notes": "SG arrangement fees: zero; fictitious demo rates.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -1239,7 +1239,7 @@
       ],
       "legacy_code": "bfm_jeunes_actifs",
       "id": "bfm_jeunes_actifs",
-      "nom": "Prêt BFM Jeunes Actifs",
+      "nom": "BFM Young Professionals Loan",
       "famille": "pret_jeune_fonction_publique",
       "type_credit": "amortissable_non_affecte",
       "cible": [],
@@ -1272,14 +1272,14 @@
       "catalogue_taux_reference": null
     },
     {
-      "name": "Prêt Avance BFM",
+      "name": "BFM Advance Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 1500,
       "duration_min_months": 24,
       "duration_max_months": 24,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-avance-bfm",
-      "source_notes": "1 500 EUR/24 mois, TAEG fixe 0%, frais de dossier 0 EUR : conditions publiques SG.",
+      "source_notes": "1 500 EUR/24 months, 0% fixed APR, 0 EUR arrangement fees: public SG terms.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -1294,7 +1294,7 @@
       ],
       "legacy_code": "bfm_avance",
       "id": "bfm_avance",
-      "nom": "Prêt Avance BFM",
+      "nom": "BFM Advance Loan",
       "famille": "pret_fonction_publique_taux_zero",
       "type_credit": "amortissable_non_affecte",
       "cible": [],
@@ -1317,7 +1317,7 @@
           "client_eligible",
           "besoin_environ_1500"
         ],
-        "raison": "Financement à TAEG fixe de 0 %."
+        "raison": "Financing at a 0 % fixed APR."
       },
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-avance-bfm",
       "devise": "EUR",
@@ -1337,14 +1337,14 @@
       }
     },
     {
-      "name": "Prêt BFM Élève",
+      "name": "BFM Student Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 20000,
       "duration_min_months": 6,
       "duration_max_months": 48,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-bfm-eleve",
-      "source_notes": "Frais de dossier SG: zéro; taux démo fictifs.",
+      "source_notes": "SG arrangement fees: zero; fictitious demo rates.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -1439,7 +1439,7 @@
       ],
       "legacy_code": "bfm_eleve",
       "id": "bfm_eleve",
-      "nom": "Prêt BFM Élève",
+      "nom": "BFM Student Loan",
       "famille": "pret_etudiant_fonction_publique",
       "type_credit": null,
       "cible": [],
@@ -1474,14 +1474,14 @@
       "catalogue_taux_reference": null
     },
     {
-      "name": "Prêt BFM Mobilité / Reconversion",
+      "name": "BFM Mobility / Career Change Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 20000,
       "duration_min_months": 6,
       "duration_max_months": 48,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-bfm-mobilite-reconversion",
-      "source_notes": "Frais de dossier SG: zéro; taux démo fictifs.",
+      "source_notes": "SG arrangement fees: zero; fictitious demo rates.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -1576,7 +1576,7 @@
       ],
       "legacy_code": "bfm_mobilite_reconversion",
       "id": "bfm_mobilite_reconversion",
-      "nom": "Prêt BFM Mobilité / Reconversion",
+      "nom": "BFM Mobility / Career Change Loan",
       "famille": "pret_mobilite_professionnelle",
       "type_credit": "amortissable_non_affecte",
       "cible": [],
@@ -1619,14 +1619,14 @@
       }
     },
     {
-      "name": "Prêt BFM Perspective",
+      "name": "BFM Perspective Loan",
       "loan_type": "fixed",
       "amount_min_eur": 1500,
       "amount_max_eur": 75000,
       "duration_min_months": 6,
       "duration_max_months": 96,
       "official_product_url": "https://particuliers.sg.fr/emprunter/pret-credit-consommation/pret-bfm-perspective",
-      "source_notes": "SG annonce frais de dossier 1% plafonnés à 120 EUR. Par simplicité en démo, frais de dossier simulés 0 EUR, TAEG et frais réels à recalculer pour un cas réaliste.",
+      "source_notes": "SG advertises arrangement fees of 1% capped at 120 EUR. For simplicity in the demo, arrangement fees are simulated at 0 EUR; APR and real fees must be recalculated for a realistic case.",
       "rules": [
         {
           "amount_min_eur": 1500,
@@ -1721,7 +1721,7 @@
       ],
       "legacy_code": "bfm_perspective",
       "id": "bfm_perspective",
-      "nom": "Prêt BFM Perspective",
+      "nom": "BFM Perspective Loan",
       "famille": "regroupement_credits_fonction_publique",
       "type_credit": "regroupement_credits",
       "cible": [
@@ -1773,5 +1773,5 @@
       "url"
     ]
   },
-  "rate_resolution": "Une règle applicable si amount_min_eur <= montant <= amount_max_eur ET duration_min_months <= duree <= duration_max_months. Pour Alterna, montant = utilisation et non plafond de réserve. Refuser hors limites catalogues ou absence de règle; ne pas extrapoler."
+  "rate_resolution": "A rule applies if amount_min_eur <= amount <= amount_max_eur AND duration_min_months <= term <= duration_max_months. For Alterna, amount = usage and not the reserve ceiling. Refuse outside catalogue limits or when no rule exists; do not extrapolate."
 }

@@ -251,25 +251,25 @@ public class QualityAnalyticsService {
     static Set<String> detectThemes(String comment) {
         String text = normalizeForKeywords(comment);
         Set<String> themes = new LinkedHashSet<>();
-        if (matches(text, "repet|toujours les memes|meme chose|redit|se repete|redite")) {
+        if (matches(text, "repeat|same thing|same numbers|reiterat|repetitive|repeats")) {
             themes.add(QualityModels.TOO_REPETITIVE);
         }
-        if (matches(text, "\\blong|verbeux|trop de texte|trop de detail")) {
+        if (matches(text, "\\blong|verbose|too much text|too much detail")) {
             themes.add(QualityModels.TOO_LONG);
         }
-        if (matches(text, "comprend|compris|clair|compliqu|confus|jargon|technique")) {
+        if (matches(text, "understand|understood|clear|complicat|confus|jargon|technical")) {
             themes.add(QualityModels.HARD_TO_UNDERSTAND);
         }
-        if (matches(text, "manqu|manque|incomplet|pas assez|peu d'information|pas precis")) {
+        if (matches(text, "missing|lack|incomplete|not enough|little information|not precise")) {
             themes.add(QualityModels.MISSING_INFORMATION);
         }
-        if (matches(text, "produit|offre|pas adapt|hors sujet|ne correspond")) {
+        if (matches(text, "product|offer|not suitable|out of scope|does not match")) {
             themes.add(QualityModels.PRODUCT_NOT_RELEVANT);
         }
-        if (matches(text, "simulateur|mensualit|impossible|pas possible|je n'ai pas pu|bloque")) {
+        if (matches(text, "simulator|monthly payment|impossible|not possible|couldn't|blocked")) {
             themes.add(QualityModels.ACTION_NOT_POSSIBLE);
         }
-        if (matches(text, "reponse|repondu|question")) {
+        if (matches(text, "answer|answered|question")) {
             themes.add(QualityModels.NOT_ANSWERING_QUESTION);
         }
         if (themes.isEmpty()) {
@@ -428,10 +428,10 @@ public class QualityAnalyticsService {
         long currentAnomalies = checks.stream().filter(QualityModels.QualityCheck::detected).count();
         long previousAnomalies = previousChecks.stream().filter(QualityModels.QualityCheck::detected).count();
 
-        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "feedback", "Avis reçus",
+        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "feedback", "Reviews received",
                 currentFeedback, previousFeedbackCount, evolution((double) currentFeedback,
                 (double) previousFeedbackCount)));
-        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "anomalies", "Anomalies détectées",
+        trends.add(new MarketingModels.TrendMetric("OVERVIEW", "anomalies", "Issues detected",
                 currentAnomalies, previousAnomalies, evolution((double) currentAnomalies,
                 (double) previousAnomalies)));
 

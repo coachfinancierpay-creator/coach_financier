@@ -123,12 +123,12 @@ export interface DirectoryQuery {
 
 /** Statuts d'avancement d'un dossier, dans l'ordre du cycle de vie (mêmes codes que le backend). */
 export const DOSSIER_STATUSES: DossierStatusOption[] = [
-  { code: 'NOUVEAU', label: 'Nouveau' },
-  { code: 'A_CONTACTER', label: 'A contacter' },
-  { code: 'CONTACTE', label: 'Contacté' },
-  { code: 'QUALIFIE', label: 'Qualifié' },
-  { code: 'RDV', label: 'RDV planifié' },
-  { code: 'CONCLU', label: 'Conclu' },
-  { code: 'PERDU', label: 'Sans suite' },
-  { code: 'CLOTURE', label: 'Clôturé' },
+  { code: 'NOUVEAU', label: 'New' },
+  { code: 'A_CONTACTER', label: 'To contact' },
+  { code: 'CONTACTE', label: 'Contacted' },
+  { code: 'QUALIFIE', label: 'Qualified' },
+  { code: 'RDV', label: 'Appointment booked' },
+  { code: 'CONCLU', label: 'Won' },
+  { code: 'PERDU', label: 'No follow-up' },
+  { code: 'CLOTURE', label: 'Closed' },
 ]

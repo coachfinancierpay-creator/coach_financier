@@ -63,8 +63,8 @@ class AgentFilesPromptTest {
         assertFalse(prompt.contains("[agent]"));
         assertFalse(prompt.contains("[[["));
         assertFalse(prompt.contains("]]]"));
-        assertTrue(prompt.contains("CONTINUITÉ DE CONVERSATION"), "l'agent principal est inclus");
-        assertFalse(prompt.contains("Crédit à la consommation"), "aucun agent spécialisé n'est inclus");
+        assertTrue(prompt.contains("CONVERSATION CONTINUITY"), "l'agent principal est inclus");
+        assertFalse(prompt.contains("Consumer Loan"), "aucun agent spécialisé n'est inclus");
     }
 
     /** Agent spécialisé : gabarit + agent principal + agent du thème, sans marqueur visible. */
@@ -74,16 +74,16 @@ class AgentFilesPromptTest {
 
         assertFalse(prompt.contains("[[["));
         assertFalse(prompt.contains("]]]"));
-        assertTrue(prompt.contains("CONTINUITÉ DE CONVERSATION"), "l'agent principal est inclus");
-        assertTrue(prompt.contains("Crédit à la consommation"), "l'agent spécialisé est inclus");
+        assertTrue(prompt.contains("CONVERSATION CONTINUITY"), "l'agent principal est inclus");
+        assertTrue(prompt.contains("Consumer Loan"), "l'agent spécialisé est inclus");
     }
 
     /** Les deux agents de l'atelier sont chargés depuis ./agent (et non depuis le repli de sécurité). */
     @Test
     void promptLabAgentsUseTheirRealPromptFiles() {
-        assertTrue(AgentFiles.promptControllerSystemPrompt().contains("STABILITÉ"),
+        assertTrue(AgentFiles.promptControllerSystemPrompt().contains("STABILITY"),
                 "le vrai prompt du contrôleur est chargé (pas le repli)");
-        assertTrue(AgentFiles.promptEditorSystemPrompt().contains("ANTI-SURAPPRENTISSAGE"),
+        assertTrue(AgentFiles.promptEditorSystemPrompt().contains("ANTI-OVERFITTING"),
                 "le vrai prompt de l'éditeur est chargé (pas le repli)");
     }
 
@@ -106,11 +106,11 @@ class AgentFilesPromptTest {
     void theSimulatedClientAsksItsLastAllowedQuestion() {
         String prompt = AgentFiles.promptClientSystemPrompt();
 
-        assertTrue(prompt.contains("La question numéro `depth` est ta DERNIÈRE question AUTORISÉE"),
+        assertTrue(prompt.contains("Question number `depth` is your LAST AUTHORISED question"),
                 "la dernière question autorisée doit être posée : " + prompt);
-        assertTrue(prompt.contains("n'anticipe JAMAIS la clôture à cause du compteur"),
+        assertTrue(prompt.contains("NEVER anticipate the closure because of the counter"),
                 "aucune clôture ne doit être provoquée par le compteur de profondeur");
-        assertFalse(prompt.contains("tu conclus le scénario (`endConversation` à `true`) au lieu de relancer"),
+        assertFalse(prompt.contains("you conclude the scenario (`endConversation` set to `true`) instead of asking"),
                 "la règle qui faisait perdre la dernière question ne doit pas revenir");
     }
 
@@ -123,13 +123,13 @@ class AgentFilesPromptTest {
     void theCallbackTokenIsDocumentedInThePrincipalPrompt() {
         String prompt = AgentFiles.systemPromptFor(AgentFiles.GENERIC_THEME);
 
-        assertTrue(prompt.contains("[RAPPEL|Être rappelé par un conseiller]"),
+        assertTrue(prompt.contains("[RAPPEL|Get a callback from an advisor]"),
                 "le jeton de rappel fait partie du format des liens : " + prompt);
-        assertTrue(prompt.contains("[URL|Prendre rendez-vous avec un conseiller|"),
+        assertTrue(prompt.contains("[URL|Book an appointment with an advisor|"),
                 "le lien de rendez-vous reste proposé en même temps que le rappel");
-        assertTrue(prompt.contains("dans les plus brefs délais"),
+        assertTrue(prompt.contains("as soon as possible"),
                 "le prompt décrit le message de la pop-in (recontacter dans les plus brefs délais)");
-        assertTrue(prompt.contains("SANS URL"),
+        assertTrue(prompt.contains("WITHOUT a URL"),
                 "le jeton ne doit jamais être transformé en lien ni accompagné d'une adresse inventée");
     }
 
@@ -147,9 +147,9 @@ class AgentFilesPromptTest {
     void theConsumerCreditAgentOffersTheCallbackTokenToo() {
         String prompt = AgentFiles.systemPromptFor("credit_conso");
 
-        assertTrue(prompt.contains("[RAPPEL|Être rappelé par un conseiller]"),
+        assertTrue(prompt.contains("[RAPPEL|Get a callback from an advisor]"),
                 "l'agent crédit conso propose aussi le rappel conseiller");
-        assertTrue(prompt.contains("SANS URL"),
+        assertTrue(prompt.contains("WITHOUT a URL"),
                 "le jeton de rappel n'est jamais transformé en lien (aucune adresse de rappel n'existe)");
     }
 
@@ -170,18 +170,18 @@ class AgentFilesPromptTest {
         // copie dont les espaces sont normalisés, sinon une phrase coupée entre deux lignes échapperait au test.
         String flat = prompt.replaceAll("\\s+", " ");
 
-        assertTrue(flat.contains("montant du crédit, durée, mensualité, TAEG fixe, coût total du crédit, "
-                        + "montant total dû"),
+        assertTrue(flat.contains("loan amount, term, monthly payment, fixed APR, total cost of the loan, "
+                        + "total amount due"),
                 "les colonnes d'un chiffrage doivent être listées, dans cet ordre : " + prompt);
-        for (String figure : new String[]{"taux d'intérêt débiteur annuel fixe", "frais de dossier",
-                "coût total du crédit", "montant total dû"}) {
+        for (String figure : new String[]{"fixed annual borrowing rate", "arrangement fees",
+                "total cost of the loan", "total amount due"}) {
             assertTrue(flat.contains(figure), "information obligatoire absente : " + figure);
         }
-        assertTrue(flat.contains("TABLEAU"),
+        assertTrue(flat.contains("TABLE"),
                 "la simulation est restituée sous forme de tableau (une ligne par durée)");
-        assertTrue(flat.contains("non renseigné"),
+        assertTrue(flat.contains("not documented"),
                 "une donnée absente se déclare « non renseigné » : jamais une case vide ni une valeur inventée");
-        assertTrue(flat.contains("N'ajoute pas de colonne supplémentaire"),
+        assertTrue(flat.contains("Do not add any additional column"),
                 "le tableau reste borné aux colonnes utiles (lisibilité dans la bulle de chat)");
     }
 
@@ -194,13 +194,13 @@ class AgentFilesPromptTest {
     void theInternalVocabularyIsNeverShownToTheClient() {
         String principal = AgentFiles.systemPromptFor(AgentFiles.GENERIC_THEME);
 
-        assertTrue(principal.contains("Vocabulaire interne"),
+        assertTrue(principal.contains("Internal vocabulary"),
                 "la règle est présente dans l'agent principal (chargé par tous les agents)");
-        assertTrue(principal.contains("d'après l'arbre de décision"),
+        assertTrue(principal.contains("based on the decision tree"),
                 "le terme interdit est cité en exemple de ce qu'il ne faut pas écrire");
-        assertTrue(principal.contains("d'après votre projet et votre situation"),
+        assertTrue(principal.contains("based on your project and your situation"),
                 "une formulation de remplacement est fournie au Coach");
-        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("« arbre de décision »"),
+        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("\"decision tree\""),
                 "l'agent crédit conso rappelle de ne pas nommer l'arbre de décision");
     }
 
@@ -209,13 +209,13 @@ class AgentFilesPromptTest {
     void bankingAcronymsAreExplainedUnlessTheClientUsedThemFirst() {
         String principal = AgentFiles.systemPromptFor(AgentFiles.GENERIC_THEME);
 
-        assertTrue(principal.contains("Acronymes bancaires — expliquer la première occurrence"),
+        assertTrue(principal.contains("Banking acronyms — explain the first occurrence"),
                 "la règle de pédagogie des acronymes est présente dans l'agent principal");
-        assertTrue(principal.contains("son intitulé en toutes lettres, puis l'acronyme entre parenthèses"),
+        assertTrue(principal.contains("first write its full name, then the acronym in brackets"),
                 "un acronyme introduit par le Coach doit être développé");
-        assertTrue(principal.contains("Si le client a utilisé lui-même cet acronyme ou ce sigle avant toi"),
+        assertTrue(principal.contains("If the customer has used this acronym or abbreviation before you"),
                 "l'exception pour un acronyme déjà utilisé par le client est explicitement documentée");
-        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("TAEG, PEA, PER, RIB ou IBAN"),
+        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("APR, PEA, PER, RIB or IBAN"),
                 "la règle transverse est composée dans le prompt de l'agent crédit conso");
     }
 
@@ -228,17 +228,17 @@ class AgentFilesPromptTest {
     void theCoachMustSoundHumanAndVaryItsOpening() {
         String principal = AgentFiles.systemPromptFor(AgentFiles.GENERIC_THEME);
 
-        assertTrue(principal.contains("Ne jamais réutiliser la même phrase d'ouverture"),
+        assertTrue(principal.contains("Never reuse the same opening sentence"),
                 "la règle anti-répétition de l'accroche est présente");
-        assertTrue(principal.contains("« Bonne nouvelle : ... »"),
+        assertTrue(principal.contains("\"Good news: ...\""),
                 "l'accroche constatée en réel est citée comme formule à ne pas répéter");
-        assertTrue(principal.contains("Parler comme une personne, pas comme un robot"),
+        assertTrue(principal.contains("Speak like a person, not like a robot"),
                 "la section de ton humain est présente");
-        assertTrue(principal.contains("la même phrase recopiée mot pour mot"),
+        assertTrue(principal.contains("never the same sentence copied word for word"),
                 "les mentions obligatoires restent dues, mais reformulées");
-        assertTrue(principal.contains("ne reprend pas celle de ma réponse précédente"),
+        assertTrue(principal.contains("does not repeat the one from my previous answer"),
                 "la checklist finale fait vérifier l'accroche");
-        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("Ne jamais réutiliser la même phrase d'ouverture"),
+        assertTrue(AgentFiles.systemPromptFor("credit_conso").contains("Never reuse the same opening sentence"),
                 "la règle transverse est bien composée dans le prompt de l'agent crédit conso");
     }
 }

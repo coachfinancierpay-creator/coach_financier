@@ -144,7 +144,7 @@ public class DataRequestService {
             base = base.substring(0, base.length() - ".txt".length());
         }
         String label = base.replace('_', ' ').trim();
-        return path != null && path.contains("/cascade/") ? "Règles de décision " + label : label;
+        return path != null && path.contains("/cascade/") ? "Decision rules " + label : label;
     }
 
     /**

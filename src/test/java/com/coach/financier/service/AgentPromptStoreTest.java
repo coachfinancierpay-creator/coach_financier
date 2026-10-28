@@ -21,7 +21,7 @@ class AgentPromptStoreTest {
                 .orElse(null);
 
         assertNotNull(suivi, "L'agent de suivi doit apparaître dans la liste déroulante");
-        assertEquals("Agent de suivi (fin de conversation)", suivi.get("libelle"));
+        assertEquals("Follow-up agent (end of conversation)", suivi.get("libelle"));
         assertEquals("suivi.txt", suivi.get("file"));
     }
 
@@ -39,8 +39,8 @@ class AgentPromptStoreTest {
         String content = store.read(AgentPromptStore.SUIVI_KEY);
 
         assertNotNull(content);
-        assertTrue(content.contains("BROUILLON"), "Le prompt de suivi doit décrire le brouillon d'email client");
-        assertTrue(content.contains("conseiller"));
+        assertTrue(content.contains("DRAFT"), "Le prompt de suivi doit décrire le brouillon d'email client");
+        assertTrue(content.contains("advisor"));
     }
 
     @Test
@@ -51,7 +51,7 @@ class AgentPromptStoreTest {
                 .orElse(null);
 
         assertNotNull(marketing, "L'agent analyste marketing doit apparaître dans la liste déroulante");
-        assertEquals("Agent analyste marketing", marketing.get("libelle"));
+        assertEquals("Marketing analyst agent", marketing.get("libelle"));
         assertEquals("marketing.txt", marketing.get("file"));
 
         // La clé doit résoudre le fichier éditable ./agent/marketing.txt
@@ -76,7 +76,7 @@ class AgentPromptStoreTest {
                 .orElse(null);
 
         assertNotNull(quality, "L'agent analyste qualité doit apparaître dans la liste déroulante");
-        assertEquals("Agent analyste qualité & satisfaction", quality.get("libelle"));
+        assertEquals("Quality & satisfaction analyst agent", quality.get("libelle"));
         assertEquals("qualite_coach_client.txt", quality.get("file"));
 
         // La clé doit résoudre le fichier éditable ./agent/qualite_coach_client.txt
@@ -101,14 +101,14 @@ class AgentPromptStoreTest {
                 .orElse(null);
 
         assertNotNull(controller, "L'agent contrôleur de l'atelier doit apparaître dans la liste déroulante");
-        assertEquals("Atelier prompts — agent contrôleur (Agent B)", controller.get("libelle"));
+        assertEquals("Prompt Lab — controller agent (Agent B)", controller.get("libelle"));
         assertEquals("prompt_controller.txt", controller.get("file"));
         assertEquals("prompt_controller.txt", store.fileNameOf(AgentPromptStore.PROMPT_CONTROLLER_KEY));
 
         String content = store.read(AgentPromptStore.PROMPT_CONTROLLER_KEY);
         assertNotNull(content);
         assertTrue(content.length() > 500, "Le prompt contrôleur doit être un vrai prompt (pas le repli)");
-        assertTrue(content.contains("UNIQUEMENT"), "La sortie JSON stricte doit être imposée");
+        assertTrue(content.contains("answer ONLY with this JSON"), "La sortie JSON stricte doit être imposée");
         assertTrue(content.contains("requiresHumanOrBusinessReview"), "Le contrat JSON doit être explicite");
         assertTrue(content.contains("source"), "Le diagnostic doit distinguer PROMPT / DATA / BACKEND_RULE");
 
@@ -125,7 +125,7 @@ class AgentPromptStoreTest {
                 .orElse(null);
 
         assertNotNull(editor, "L'agent éditeur de l'atelier doit apparaître dans la liste déroulante");
-        assertEquals("Atelier prompts — agent éditeur (Agent A)", editor.get("libelle"));
+        assertEquals("Prompt Lab — editor agent (Agent A)", editor.get("libelle"));
         assertEquals("prompt_editor.txt", editor.get("file"));
         assertEquals("prompt_editor.txt", store.fileNameOf(AgentPromptStore.PROMPT_EDITOR_KEY));
 

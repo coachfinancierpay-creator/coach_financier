@@ -33,8 +33,9 @@ public class MockAIService implements AIService {
     public IntentClassification classifyIntent(String userMessage, String currentProjectDescription,
                                                AIModels.AIProvider provider) {
         String m = userMessage == null ? "" : userMessage.toLowerCase();
-        if (containsAny(m, "vacances", "météo", "football", "coupe du monde", "recette", "programmation")) {
-            return IntentClassification.outOfScope("La demande ne concerne pas les finances personnelles.");
+        if (containsAny(m, "vacances", "météo", "football", "coupe du monde", "recette", "programmation",
+                "holidays", "weather", "world cup", "recipe", "programming")) {
+            return IntentClassification.outOfScope("The request does not relate to personal finance.");
         }
         IntentClassification c = new IntentClassification();
         c.setInScope(true);
@@ -43,24 +44,27 @@ public class MockAIService implements AIService {
         Map<String, String> current = parseCurrentProject(currentProjectDescription);
         boolean refers = containsAny(m, "pour mon cas", "mon projet", "ce projet", "3 fois", "trois fois",
                 "moitié", "moitié comptant", "celui-ci", "cette voiture", "le crédit", "financer",
-                "finalement", "en fait");
+                "finalement", "en fait", "for my case", "my project", "this project", "three times",
+                "half", "that car", "the loan", "finance", "finally", "actually");
         c.setRefersToCurrentProject(refers);
 
-        if (containsAny(m, "crédit", "credit", "prêt", "pret", "financement", "en 3 fois", "plusieurs fois", "échéance")) {
+        if (containsAny(m, "crédit", "credit", "prêt", "pret", "financement", "en 3 fois", "plusieurs fois", "échéance",
+                "loan", "financing", "instalment", "installment", "repayment")) {
             c.setIntent(FinancialIntent.FINANCING_REQUEST);
-        } else if (containsAny(m, "permettre", "raisonnable", "puis-je", "puis je", "capacité", "peut-on", "affordable")) {
+        } else if (containsAny(m, "permettre", "raisonnable", "puis-je", "puis je", "capacité", "peut-on", "affordable",
+                "can i afford", "afford", "reasonable", "capacity", "can we")) {
             c.setIntent(FinancialIntent.AFFORDABILITY_CHECK);
-        } else if (containsAny(m, "moins cher", "comparer", "comparaison")) {
+        } else if (containsAny(m, "moins cher", "comparer", "comparaison", "cheaper", "compare", "comparison")) {
             c.setIntent(FinancialIntent.COMPARE_OPTIONS);
-        } else if (containsAny(m, "finalement", "en fait", "plutôt", "en définitive")) {
+        } else if (containsAny(m, "finalement", "en fait", "plutôt", "en définitive", "finally", "actually", "rather", "in the end")) {
             c.setIntent(FinancialIntent.PROJECT_UPDATE);
-        } else if (containsAny(m, "assurance", "mutuelle", "assureur", "garantie")) {
+        } else if (containsAny(m, "assurance", "mutuelle", "assureur", "garantie", "insurance", "insurer", "cover", "guarantee")) {
             c.setIntent(FinancialIntent.PRODUCT_INFORMATION);
-        } else if (containsAny(m, "acheter", "achat", "veux", "besoin", "veut")) {
+        } else if (containsAny(m, "acheter", "achat", "veux", "besoin", "veut", "buy", "purchase", "want", "need")) {
             c.setIntent(FinancialIntent.PURCHASE);
-        } else if (containsAny(m, "budget", "dépense", "depense", "dépenses")) {
+        } else if (containsAny(m, "budget", "dépense", "depense", "dépenses", "expenses", "spending")) {
             c.setIntent(FinancialIntent.BUDGET_ANALYSIS);
-        } else if (containsAny(m, "épargne", "epargne", "livret", "épargner")) {
+        } else if (containsAny(m, "épargne", "epargne", "livret", "épargner", "savings", "save", "passbook")) {
             c.setIntent(FinancialIntent.SAVINGS_ANALYSIS);
         } else {
             c.setIntent(FinancialIntent.OTHER);
@@ -87,9 +91,9 @@ public class MockAIService implements AIService {
         if (amount != null) c.setAmount(amount);
         if (object != null && (c.getProjectObject() == null || refers)) c.setProjectObject(object);
 
-        boolean hasNewInfo = amount != null && !containsAny(m, "mon cas", "mon projet");
+        boolean hasNewInfo = amount != null && !containsAny(m, "mon cas", "mon projet", "my case", "my project");
         c.setProjectChanged(c.getProjectType() != ProjectType.UNKNOWN && (hasNewInfo || !refers || c.getIntent() == FinancialIntent.PROJECT_UPDATE));
-        c.setReason("Classification démo (mots-clés).");
+        c.setReason("Demo classification (keywords).");
         return c;
     }
 
@@ -114,17 +118,24 @@ public class MockAIService implements AIService {
 
     private static String detectProjectType(String m) {
         // Placé avant VEHICLE : « assurance auto » doit rester INSURANCE (sinon « auto » ferait VEHICLE).
-        if (containsAny(m, "assurance", "mutuelle", "assureur", "garantie")) return "INSURANCE";
-        if (containsAny(m, "clio", "tesla", "voiture", "véhicule", "vehicule", "auto ", "auto'", "moto", "utilitaire")) return "VEHICLE";
-        if (containsAny(m, "maison", "appartement", "résidence", "immo", "acheter un logement")) return "REAL_ESTATE_PURCHASE";
-        if (containsAny(m, "cuisine", "salle de bain", "rénovation", "renovation", "travaux", "isolation", "refaire")) return "HOME_WORK";
-        if (containsAny(m, "ordinateur", "macbook", "pc gamer", "télévision", "television", "smartphone", "portable")) return "ELECTRONICS";
-        if (containsAny(m, "canapé", "canape", "meuble", "lit", "ameublement")) return "FURNITURE";
-        if (containsAny(m, "vacances", "voyage", "billet d'avion")) return "TRAVEL";
-        if (containsAny(m, "formation", "études", "etudes", "école", "ecole", "scolarité")) return "EDUCATION";
-        if (containsAny(m, "mariage", "noces")) return "WEDDING";
-        if (containsAny(m, "soin", "dentiste", "opération", "operation", "santé")) return "HEALTH_EXPENSE";
-        if (containsAny(m, "regroupement", "restructurer", "crédits")) return "DEBT_RESTRUCTURING";
+        if (containsAny(m, "assurance", "mutuelle", "assureur", "garantie", "insurance", "insurer", "cover", "guarantee")) return "INSURANCE";
+        if (containsAny(m, "clio", "tesla", "voiture", "véhicule", "vehicule", "auto ", "auto'", "moto", "utilitaire",
+                "car ", " car", "vehicle", "motorbike", "van")) return "VEHICLE";
+        if (containsAny(m, "maison", "appartement", "résidence", "immo", "acheter un logement",
+                "house", "apartment", "flat", "property", "real estate", "buy a home")) return "REAL_ESTATE_PURCHASE";
+        if (containsAny(m, "cuisine", "salle de bain", "rénovation", "renovation", "travaux", "isolation", "refaire",
+                "kitchen", "bathroom", "renovate", "renovation", "home improvement", "insulation", "redo")) return "HOME_WORK";
+        if (containsAny(m, "ordinateur", "macbook", "pc gamer", "télévision", "television", "smartphone", "portable",
+                "computer", "laptop", "tv", "phone")) return "ELECTRONICS";
+        if (containsAny(m, "canapé", "canape", "meuble", "lit", "ameublement",
+                "sofa", "couch", "furniture", "bed")) return "FURNITURE";
+        if (containsAny(m, "vacances", "voyage", "billet d'avion", "holiday", "trip", "travel", "flight")) return "TRAVEL";
+        if (containsAny(m, "formation", "études", "etudes", "école", "ecole", "scolarité",
+                "training", "studies", "school", "tuition", "course")) return "EDUCATION";
+        if (containsAny(m, "mariage", "noces", "wedding")) return "WEDDING";
+        if (containsAny(m, "soin", "dentiste", "opération", "operation", "santé",
+                "care", "dentist", "surgery", "health")) return "HEALTH_EXPENSE";
+        if (containsAny(m, "regroupement", "restructurer", "crédits", "consolidation", "restructure", "debts")) return "DEBT_RESTRUCTURING";
         return null;
     }
 
@@ -159,13 +170,13 @@ public class MockAIService implements AIService {
                                     AIModels.BankingContextMode contextMode,
                                     Map<String, Object> additionalData,
                                     List<ConversationModels.Message> history, AIModels.AIProvider provider) {
-        String answer = "Mode démo actif. Sur la base de vos données bancaires, votre revenu mensuel moyen est de "
-                + money(financialSummary.averageMonthlyIncome()) + " € et vos dépenses mensuelles moyennes sont de "
-                + money(financialSummary.averageMonthlyExpenses()) + " €. Votre solde courant est d'environ "
-                + money(financialSummary.currentAccountBalance()) + " € et votre épargne de "
+        String answer = "Demo mode is active. Based on your banking data, your average monthly income is "
+                + money(financialSummary.averageMonthlyIncome()) + " € and your average monthly expenses are "
+                + money(financialSummary.averageMonthlyExpenses()) + " €. Your current account balance is about "
+                + money(financialSummary.currentAccountBalance()) + " € and your savings are "
                 + money(financialSummary.savingsBalance()) + " €.\n\n"
-                + "Pour une réponse IA détaillée, configurez OPENAI_API_KEY ou DEEPSEEK_API_KEY et choisissez le fournisseur correspondant.";
-        return new AIModels.AIAnswer(AIModels.AIStatus.ANSWER, answer, null, Map.of(), "Analyse financière calculée côté backend.", null);
+                + "For a detailed AI answer, configure OPENAI_API_KEY or DEEPSEEK_API_KEY and select the matching provider.";
+        return new AIModels.AIAnswer(AIModels.AIStatus.ANSWER, answer, null, Map.of(), "Financial analysis computed by the backend.", null);
     }
 
     /**
@@ -187,9 +198,9 @@ public class MockAIService implements AIService {
 
     /** Message unique expliquant pourquoi l'atelier exige un fournisseur IA réel. */
     public static final String NO_REAL_PROVIDER_MESSAGE =
-            "L'atelier d'optimisation des prompts nécessite un fournisseur IA réel (GPT, DEEPSEEK ou "
-            + "LOCAL — modèle servi localement) : "
-            + "le mode démo ne produit pas de réponse dépendant du prompt.";
+            "The prompt optimisation workshop requires a real AI provider (GPT, DEEPSEEK or "
+            + "LOCAL — locally served model): "
+            + "demo mode does not produce any answer that depends on the prompt.";
 
     /**
      * L'atelier compare les RÉPONSES RÉELLES du Coach à une question figée : cela n'a de sens qu'avec un
@@ -252,7 +263,7 @@ public class MockAIService implements AIService {
             else assistantTexts.add(content);
         }
 
-        String mainProject = "Projet non précisé";
+        String mainProject = "Project not specified";
         List<String> otherProjects = new ArrayList<>();
         if (!projects.isEmpty()) {
             mainProject = describeProject(projects.get(0));
@@ -264,13 +275,13 @@ public class MockAIService implements AIService {
         List<String> preferences = new ArrayList<>();
         String normalizedUser = normalize(String.join(" \n ", userTexts));
         if (normalizedUser.contains("epargne") || normalizedUser.contains("preserver")) {
-            preferences.add("Souhaite préserver une partie de son épargne.");
+            preferences.add("Wants to keep part of their savings.");
         }
         if (normalizedUser.contains("apport") || normalizedUser.contains("comptant")) {
-            preferences.add("Semble ouvert à un financement partiel (apport, paiement comptant).");
+            preferences.add("Appears open to partial financing (down payment, cash payment).");
         }
         if (normalizedUser.contains("mensualite") || normalizedUser.contains("par mois")) {
-            preferences.add("Attention portée au montant de la mensualité.");
+            preferences.add("Pays attention to the monthly payment amount.");
         }
 
         List<SuiviModels.ProductOfInterest> interests = new ArrayList<>();
@@ -288,16 +299,16 @@ public class MockAIService implements AIService {
             String reason;
             if (rejected) {
                 level = "REJECTED";
-                reason = "Le client a explicitement écarté cette offre.";
+                reason = "The customer explicitly ruled out this offer.";
             } else if (highUser) {
                 level = "HIGH";
-                reason = "Le client a demandé des précisions, comparé ou montré un intérêt explicite.";
+                reason = "The customer asked for details, compared options or showed explicit interest.";
             } else if (mediumAssistant) {
                 level = "MEDIUM";
-                reason = "Offre recommandée par le coach, cohérente avec le projet.";
+                reason = "Offer recommended by the coach, consistent with the project.";
             } else {
                 level = "LOW";
-                reason = "Offre chargée dans le contexte mais non discutée avec le client.";
+                reason = "Offer loaded in the context but not discussed with the customer.";
             }
             interests.add(new SuiviModels.ProductOfInterest(id, name, category, level, reason, url));
         }
@@ -314,8 +325,8 @@ public class MockAIService implements AIService {
         return new SuiviModels.SuiviResult(
                 new SuiviModels.ConversationSummary(mainProject, otherProjects, preferences),
                 interests,
-                new SuiviModels.EmailContent("Suivi client — " + mainProject, advisorEmail),
-                new SuiviModels.EmailContent("Votre projet : " + mainProject, customerEmail),
+                new SuiviModels.EmailContent("Customer follow-up — " + mainProject, advisorEmail),
+                new SuiviModels.EmailContent("Your project: " + mainProject, customerEmail),
                 marketingDrafts(projects, interests));
     }
 
@@ -341,7 +352,7 @@ public class MockAIService implements AIService {
                     new com.coach.financier.model.MarketingModels.MarketingEventDraft(
                             com.coach.financier.model.MarketingModels.PRODUCT_RECOMMENDED,
                             null, null, interest.productId(), interest.name(), interest.category(),
-                            null, null, "Offre présentée par le coach.", null, 0.8);
+                            null, null, "Offer presented by the coach.", null, 0.8);
             drafts.add(recommended);
             if ("REJECTED".equals(level)) {
                 drafts.add(new com.coach.financier.model.MarketingModels.MarketingEventDraft(
@@ -362,53 +373,53 @@ public class MockAIService implements AIService {
                                      List<SuiviModels.ProductOfInterest> interests, String customerName,
                                      String customerReference, String advisorName) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Bonjour").append(advisorName == null ? "" : " " + advisorName).append(",\n\n");
-        sb.append("Voici la synthèse du suivi client");
+        sb.append("Hello").append(advisorName == null ? "" : " " + advisorName).append(",\n\n");
+        sb.append("Here is the customer follow-up summary");
         if (customerName != null && !customerName.isBlank()) {
             sb.append(" ").append(customerName);
         }
         if (customerReference != null && !customerReference.isBlank()) {
-            sb.append(" (réf. ").append(customerReference).append(")");
+            sb.append(" (ref. ").append(customerReference).append(")");
         }
         sb.append(".\n\n");
-        sb.append("Projet du client\n").append(mainProject).append("\n\n");
+        sb.append("Customer project\n").append(mainProject).append("\n\n");
         if (!otherProjects.isEmpty()) {
-            sb.append("Autres sujets évoqués\n");
+            sb.append("Other topics discussed\n");
             for (String project : otherProjects) sb.append("- ").append(project).append('\n');
             sb.append('\n');
         }
         if (!preferences.isEmpty()) {
-            sb.append("Préférences importantes\n");
+            sb.append("Important preferences\n");
             for (String preference : preferences) sb.append("- ").append(preference).append('\n');
             sb.append('\n');
         }
-        sb.append("Produits / offres d'intérêt\n");
+        sb.append("Products / offers of interest\n");
         boolean any = false;
         for (SuiviModels.ProductOfInterest interest : interests) {
             if ("LOW".equals(interest.interestLevel()) || "REJECTED".equals(interest.interestLevel())) continue;
             any = true;
             sb.append("- ").append(interest.name());
             if (interest.category() != null) sb.append(" (").append(interest.category()).append(')');
-            sb.append(" — intérêt ").append(interest.interestLevel()).append(" : ").append(interest.interestReason());
+            sb.append(" — interest ").append(interest.interestLevel()).append(": ").append(interest.interestReason());
             if (interest.productUrl() != null) {
-                sb.append(" [URL|Voir l'offre|").append(interest.productUrl()).append(']');
+                sb.append(" [URL|View the offer|").append(interest.productUrl()).append(']');
             }
             sb.append('\n');
         }
-        if (!any) sb.append("- Aucun produit n'a été clairement demandé ; voir les échanges.\n");
+        if (!any) sb.append("- No product was clearly requested; see the exchanges.\n");
         sb.append('\n');
         List<String> rejected = interests.stream()
                 .filter(i -> "REJECTED".equals(i.interestLevel())).map(SuiviModels.ProductOfInterest::name).toList();
         if (!rejected.isEmpty()) {
-            sb.append("Points restant à confirmer\n- Le client a écarté : ")
-                    .append(String.join(", ", rejected)).append(". Ne pas reproposer sans échange.\n\n");
+            sb.append("Points still to confirm\n- The customer ruled out: ")
+                    .append(String.join(", ", rejected)).append(". Do not offer again without a discussion.\n\n");
         }
-        sb.append("Suivi conseillé\n- Reprendre contact avec le client pour confirmer son besoin et vérifier l'éligibilité, ")
-                .append("puis vérifier le chiffrage à partir de la grille de taux et préparer l'offre ferme ")
-                .append("(la souscription fait foi).\n\n");
-        sb.append("Vous trouverez en pièce jointe un brouillon d'email préparé à destination du client, basé sur les ")
-                .append("besoins et centres d'intérêt identifiés pendant l'échange. Merci de le vérifier et de l'adapter ")
-                .append("si nécessaire avant tout envoi. Le contenu n'a pas encore été envoyé au client.");
+        sb.append("Recommended follow-up\n- Contact the customer again to confirm their need and check eligibility, ")
+                .append("then verify the pricing from the rate grid and prepare the firm offer ")
+                .append("(the subscription is the binding document).\n\n");
+        sb.append("You will find attached a draft email prepared for the customer, based on the ")
+                .append("needs and interests identified during the discussion. Please review and adapt it ")
+                .append("if necessary before sending. The content has not been sent to the customer yet.");
         return sb.toString();
     }
 
@@ -419,27 +430,27 @@ public class MockAIService implements AIService {
         if (customerName != null && !customerName.isBlank()) {
             firstName = customerName.trim().split("\\s+")[0];
         }
-        sb.append("Bonjour").append(firstName == null ? "" : " " + firstName).append(",\n\n");
-        sb.append("Suite à votre échange avec notre Coach Financier au sujet de ").append(mainProject)
-                .append(", voici les solutions susceptibles de vous intéresser :\n\n");
+        sb.append("Hello").append(firstName == null ? "" : " " + firstName).append(",\n\n");
+        sb.append("Following your conversation with our Financial Coach about ").append(mainProject)
+                .append(", here are the solutions that may interest you:\n\n");
         for (SuiviModels.ProductOfInterest interest : interests) {
             if (!"HIGH".equals(interest.interestLevel()) && !"MEDIUM".equals(interest.interestLevel())) continue;
             sb.append("- ").append(interest.name());
-            if (interest.interestReason() != null) sb.append(" : ").append(interest.interestReason());
+            if (interest.interestReason() != null) sb.append(": ").append(interest.interestReason());
             if (interest.productUrl() != null) {
-                sb.append(" [URL|En savoir plus|").append(interest.productUrl()).append(']');
+                sb.append(" [URL|Learn more|").append(interest.productUrl()).append(']');
             }
             sb.append('\n');
         }
         sb.append('\n');
         if (appointmentUrl != null && !appointmentUrl.isBlank()) {
-            sb.append("Pour en discuter, vous pouvez [URL|prendre rendez-vous avec votre conseiller|")
+            sb.append("To discuss this, you can [URL|book an appointment with your advisor|")
                     .append(appointmentUrl).append("].\n\n");
         } else {
-            sb.append("N'hésitez pas à contacter votre conseiller pour en discuter.\n\n");
+            sb.append("Feel free to contact your advisor to discuss this.\n\n");
         }
-        sb.append("Bien cordialement,\n");
-        sb.append(advisorName == null || advisorName.isBlank() ? "Votre conseiller" : advisorName);
+        sb.append("Kind regards,\n");
+        sb.append(advisorName == null || advisorName.isBlank() ? "Your advisor" : advisorName);
         return sb.toString();
     }
 
@@ -457,7 +468,7 @@ public class MockAIService implements AIService {
             if (sb.length() > 0) sb.append(" — ");
             sb.append(amount).append(" €");
         }
-        return sb.length() == 0 ? "Projet non précisé" : sb.toString();
+        return sb.length() == 0 ? "Project not specified" : sb.toString();
     }
 
     /** Un texte mentionne-t-il le produit ? (nom complet ou mots-clés distinctifs) */
@@ -499,7 +510,8 @@ public class MockAIService implements AIService {
     private static boolean isRejection(String text) {
         String value = normalize(text);
         return containsAny(value, "pas interesse", "pas intéressé", "non merci", "je refuse", "refuse cette",
-                "trop cher", "sans interet", "sans intérêt", "finalement pas");
+                "trop cher", "sans interet", "sans intérêt", "finalement pas",
+                "not interested", "no thanks", "i refuse", "refuse this", "too expensive", "not worth", "finally not");
     }
 
     private static String normalize(String value) {
@@ -560,28 +572,28 @@ public class MockAIService implements AIService {
             reportDate = aggregates.dateTo() == null ? reportDate : aggregates.dateTo();
             com.coach.financier.model.MarketingModels.MarketingOverview overview = aggregates.overview();
             if (overview != null) {
-                summary.add(item("Volume analysé", overview.conversationCount() + " conversation(s) analysée(s), "
-                        + overview.sessionsWithInterest() + " avec intérêt produit, "
-                        + overview.highInterestCount() + " intérêt(s) HIGH.", "HIGH"));
-                summary.add(item("Intentions fortes", overview.subscriptionIntentCount()
-                        + " intention(s) de souscription et " + overview.appointmentRequestCount()
-                        + " demande(s) de rendez-vous.", "HIGH"));
+                summary.add(item("Volume analysed", overview.conversationCount() + " conversation(s) analysed, "
+                        + overview.sessionsWithInterest() + " with product interest, "
+                        + overview.highInterestCount() + " HIGH interest(s).", "HIGH"));
+                summary.add(item("Strong intentions", overview.subscriptionIntentCount()
+                        + " subscription intention(s) and " + overview.appointmentRequestCount()
+                        + " appointment request(s).", "HIGH"));
                 if (overview.unmetNeedCount() > 0) {
-                    summary.add(item("Besoins non couverts", overview.unmetNeedCount()
-                            + " besoin(s) exprimé(s) sans offre clairement adaptée.", "HIGH"));
+                    summary.add(item("Unmet needs", overview.unmetNeedCount()
+                            + " need(s) expressed without a clearly suitable offer.", "HIGH"));
                     alerts.add(new com.coach.financier.model.MarketingModels.MarketingAlert("IMPORTANT",
-                            "Besoins non couverts", overview.unmetNeedCount()
-                            + " besoin(s) sans solution adaptée sur la période."));
+                            "Unmet needs", overview.unmetNeedCount()
+                            + " need(s) without a suitable solution over the period."));
                 }
                 if (overview.missingInformationCount() > 0) {
                     alerts.add(new com.coach.financier.model.MarketingModels.MarketingAlert("WATCH",
-                            "Informations produit manquantes", overview.missingInformationCount()
-                            + " question(s) sans réponse dans le catalogue."));
+                            "Missing product information", overview.missingInformationCount()
+                            + " unanswered question(s) in the catalogue."));
                 }
                 opportunities.add(new com.coach.financier.model.MarketingModels.MarketingOpportunity(
-                        "Enrichir la connaissance produit",
-                        "Les questions clients non couvertes par le catalogue fournissent des pistes d'enrichissement.",
-                        "Étudier les informations produit manquantes les plus fréquentes avant toute décision."));
+                        "Enrich product knowledge",
+                        "Customer questions not covered by the catalogue provide leads for enrichment.",
+                        "Study the most frequent missing product information before any decision."));
             }
             for (com.coach.financier.model.MarketingModels.TrendMetric trend : aggregates.trends()) {
                 if (mainTrends.size() >= 5 || trend.evolutionPercent() == null) continue;
@@ -591,32 +603,32 @@ public class MockAIService implements AIService {
                         trend.current() + " vs " + trend.previous() + " (" + trend.evolutionPercent() + " %)"));
                 if (Math.abs(trend.evolutionPercent()) >= 50) {
                     alerts.add(new com.coach.financier.model.MarketingModels.MarketingAlert("WATCH",
-                            (up ? "Hausse" : "Baisse") + " marquée : " + trend.entityName(),
-                            "Variation de " + trend.evolutionPercent() + " % — à confirmer sur plusieurs périodes."));
+                            (up ? "Sharp rise" : "Sharp drop") + ": " + trend.entityName(),
+                            "Change of " + trend.evolutionPercent() + " % — to be confirmed over several periods."));
                 }
             }
             for (com.coach.financier.model.MarketingModels.ProductMetric product : aggregates.products()) {
                 if (recommendations.size() >= 5 || product.recommendedSessions() == 0) continue;
-                String rate = product.interestRate() == null ? "non calculable"
+                String rate = product.interestRate() == null ? "not computable"
                         : Math.round(product.interestRate() * 1000) / 10.0 + " %";
                 recommendations.add(new com.coach.financier.model.MarketingModels.RecommendationPerformance(
                         product.productId(), product.productName(),
-                        "Recommandé dans " + product.recommendedSessions() + " session(s), "
-                        + product.interestedSessions() + " avec intérêt réel (taux " + rate + ")."));
+                        "Recommended in " + product.recommendedSessions() + " session(s), "
+                        + product.interestedSessions() + " with real interest (rate " + rate + ")."));
             }
             for (com.coach.financier.model.MarketingModels.RejectionMetric rejection : aggregates.rejections()) {
                 if (friction.size() >= 4) break;
                 friction.add(new com.coach.financier.model.MarketingModels.FrictionItem(rejection.reasonCategory(),
-                        rejection.count() + " refus" + (rejection.share() == null ? ""
+                        rejection.count() + " rejection(s)" + (rejection.share() == null ? ""
                                 : " (" + Math.round(rejection.share() * 1000) / 10.0 + " %)") + "."));
             }
             for (com.coach.financier.model.MarketingModels.CrossSellMetric pair : aggregates.crossSell()) {
                 if (crossSell.size() >= 4) break;
                 crossSell.add(new com.coach.financier.model.MarketingModels.CrossSellInsight(
                         pair.sourceProductName(), pair.targetProductName(),
-                        pair.commonSessions() + " session(s) communes"
+                        pair.commonSessions() + " shared session(s)"
                                 + (pair.rate() == null ? "" : " (" + Math.round(pair.rate() * 100) + " %)")
-                                + " — association à étudier comme piste de parcours."));
+                                + " — association to study as a journey lead."));
             }
             for (com.coach.financier.model.MarketingModels.UnmetNeedMetric need : aggregates.unmetNeeds()) {
                 if (unmetNeeds.size() >= 4) break;
@@ -627,14 +639,14 @@ public class MockAIService implements AIService {
                 if (missingInfo.size() >= 4) break;
                 missingInfo.add(new com.coach.financier.model.MarketingModels.MissingInfoInsight(
                         info.productId(), info.productName(),
-                        info.count() + " question(s) sans réponse (" + info.reasonCategory() + ")."));
+                        info.count() + " unanswered question(s) (" + info.reasonCategory() + ")."));
             }
         }
 
         return new com.coach.financier.model.MarketingModels.MarketingReport(
                 reportDate, summary, mainTrends, recommendations, friction, crossSell, unmetNeeds, missingInfo,
                 List.of(), alerts.size() > 8 ? alerts.subList(0, 8) : alerts, opportunities,
-                "Rapport généré en mode démo à partir des statistiques agrégées.",
+                "Report generated in demo mode from the aggregated statistics.",
                 java.time.Instant.now().toString(), "MOCK", Boolean.TRUE, null);
     }
 
@@ -668,11 +680,11 @@ public class MockAIService implements AIService {
 
         String reportDate = LocalDate.now().toString();
         String status = com.coach.financier.model.QualityModels.STATUS_INSUFFICIENT;
-        String satisfactionSummary = "Aucun avis exploitable sur la période : les données fournies ne "
-                + "permettent pas de conclure sur la satisfaction client.";
-        String complianceSummary = "Aucun contrôle exploitable sur la période : les données fournies ne "
-                + "permettent pas d'évaluer la conformité du Coach.";
-        String crossSummary = "Le croisement satisfaction × conformité n'est pas exploitable sur la période.";
+        String satisfactionSummary = "No usable review over the period: the data provided does not "
+                + "allow any conclusion on customer satisfaction.";
+        String complianceSummary = "No usable check over the period: the data provided does not "
+                + "allow assessing the Coach's compliance.";
+        String crossSummary = "The satisfaction × compliance cross-analysis is not usable over the period.";
 
         if (aggregates != null) {
             reportDate = aggregates.dateTo() == null ? reportDate : aggregates.dateTo();
@@ -682,22 +694,22 @@ public class MockAIService implements AIService {
                     aggregates.satisfactionVsCompliance();
 
             if (satisfaction != null && satisfaction.feedbackCount() > 0) {
-                satisfactionSummary = satisfaction.feedbackCount() + " avis reçu(s) sur "
-                        + satisfaction.conversationsClosed() + " conversation(s) terminée(s)"
-                        + (satisfaction.averageRating() == null ? "" : ", note moyenne "
+                satisfactionSummary = satisfaction.feedbackCount() + " review(s) received for "
+                        + satisfaction.conversationsClosed() + " closed conversation(s)"
+                        + (satisfaction.averageRating() == null ? "" : ", average rating "
                         + satisfaction.averageRating() + " / 5")
-                        + (satisfaction.positiveRate() == null ? "" : ", avis positifs "
-                        + percent(satisfaction.positiveRate()) + ", avis négatifs "
+                        + (satisfaction.positiveRate() == null ? "" : ", positive reviews "
+                        + percent(satisfaction.positiveRate()) + ", negative reviews "
                         + percent(satisfaction.negativeRate()) + ".")
                         + (satisfaction.sufficientSample() ? ""
-                        : " Le volume d'avis reste limité : ces observations sont préliminaires.");
+                        : " The review volume remains limited: these observations are preliminary.");
                 if (satisfaction.averageRating() != null && satisfaction.averageRating() >= 4) {
-                    positivePoints.add("La satisfaction moyenne est élevée ("
+                    positivePoints.add("Average satisfaction is high ("
                             + satisfaction.averageRating() + " / 5).");
                 }
                 if (satisfaction.positiveRate() != null && satisfaction.positiveRate() >= 0.7) {
                     positivePoints.add(percent(satisfaction.positiveRate())
-                            + " des avis sont positifs (4 ou 5 étoiles).");
+                            + " of the reviews are positive (4 or 5 stars).");
                 }
                 if (!satisfaction.sufficientSample()) {
                     status = com.coach.financier.model.QualityModels.STATUS_INSUFFICIENT;
@@ -710,28 +722,28 @@ public class MockAIService implements AIService {
 
             for (com.coach.financier.model.QualityModels.ReasonMetric reason : aggregates.feedbackCategories()) {
                 if (irritants.size() >= 5) break;
-                irritants.add(reason.label() + " (" + reason.count() + " avis"
-                        + (reason.evolutionPercent() == null ? "" : ", évolution "
+                irritants.add(reason.label() + " (" + reason.count() + " review(s)"
+                        + (reason.evolutionPercent() == null ? "" : ", change "
                         + reason.evolutionPercent() + " %") + ")");
             }
             for (com.coach.financier.model.QualityModels.CommentTheme theme : aggregates.commentThemes()) {
                 if (irritants.size() >= 5) break;
-                irritants.add(theme.label() + " — " + theme.count() + " commentaire(s)");
+                irritants.add(theme.label() + " — " + theme.count() + " comment(s)");
             }
 
             if (compliance != null && compliance.checksRun() > 0) {
                 long creditViolations = detected(aggregates, com.coach.financier.model.QualityModels
                         .CREDIT_SIMULATION_VIOLATION);
-                complianceSummary = compliance.checksRun() + " contrôle(s) exécuté(s), "
-                        + compliance.anomalies() + " anomalie(s) dont " + compliance.highAnomalies()
-                        + " de sévérité HIGH.";
+                complianceSummary = compliance.checksRun() + " check(s) run, "
+                        + compliance.anomalies() + " issue(s) including " + compliance.highAnomalies()
+                        + " of HIGH severity.";
                 if (creditViolations == 0) {
-                    complianceSummary += " Aucun chiffrage de crédit hors grille de taux n'a été détecté.";
+                    complianceSummary += " No credit pricing outside the rate grid was detected.";
                 }
                 for (com.coach.financier.model.QualityModels.CheckMetric check : aggregates.qualityChecks()) {
                     if (check.detected() == 0) continue;
-                    String line = check.label() + " : " + check.detected() + " détection(s) sur "
-                            + check.checksRun() + " contrôle(s) exécuté(s) (sévérité " + check.severity() + ")";
+                    String line = check.label() + ": " + check.detected() + " detection(s) out of "
+                            + check.checksRun() + " check(s) run (severity " + check.severity() + ")";
                     if (com.coach.financier.model.QualityModels.SEVERITY_HIGH.equals(check.severity())) {
                         criticalIssues.add(line);
                     } else {
@@ -744,23 +756,23 @@ public class MockAIService implements AIService {
             }
 
             if (matrix != null) {
-                crossSummary = "Croisement sur les avis reçus : " + matrix.satisfiedCompliant()
-                        + " client(s) satisfait(s) avec Coach conforme, " + matrix.satisfiedAnomaly()
-                        + " satisfait(s) avec anomalie, " + matrix.unsatisfiedCompliant()
-                        + " insatisfait(s) avec Coach CONFORME, " + matrix.unsatisfiedAnomaly()
-                        + " insatisfait(s) avec anomalie réelle.";
+                crossSummary = "Cross-analysis of the reviews received: " + matrix.satisfiedCompliant()
+                        + " satisfied customer(s) with a compliant Coach, " + matrix.satisfiedAnomaly()
+                        + " satisfied with an issue, " + matrix.unsatisfiedCompliant()
+                        + " unsatisfied with a COMPLIANT Coach, " + matrix.unsatisfiedAnomaly()
+                        + " unsatisfied with a real issue.";
                 if (matrix.unsatisfiedCompliant() > 0) {
-                    notableCases.add("Insatisfaction client alors que le Coach a correctement appliqué les "
-                            + "règles : l'amélioration doit porter sur la pédagogie et l'explication de la "
-                            + "règle, pas sur la règle elle-même.");
+                    notableCases.add("Customer dissatisfaction although the Coach correctly applied the "
+                            + "rules: the improvement must focus on teaching and explaining the "
+                            + "rule, not on the rule itself.");
                 }
                 if (matrix.unsatisfiedAnomaly() > 0) {
-                    notableCases.add("Cas prioritaire : insatisfaction ET anomalie confirmée côté Coach ("
+                    notableCases.add("Priority case: dissatisfaction AND confirmed Coach issue ("
                             + matrix.unsatisfiedAnomaly() + ").");
                 }
                 if (matrix.satisfiedAnomaly() > 0) {
-                    notableCases.add("Anomalie(s) non ressentie(s) par le client ("
-                            + matrix.satisfiedAnomaly() + ") : à corriger même si la satisfaction est bonne.");
+                    notableCases.add("Issue(s) not felt by the customer ("
+                            + matrix.satisfiedAnomaly() + "): to be fixed even if satisfaction is good.");
                 }
             }
 
@@ -772,14 +784,14 @@ public class MockAIService implements AIService {
                     .CREDIT_SIMULATION_VIOLATION);
             if (simulationRefusals > 0 && creditViolations == 0) {
                 friction.add(new com.coach.financier.model.QualityModels.RuleFriction(
-                        "Chiffrage de crédit attendu mais non réalisé (grille de taux non utilisée)",
-                        simulationRefusals + " avis mentionnent une action impossible (renvoi vers le "
-                                + "simulateur officiel) alors qu'aucun chiffrage hors grille n'a été détecté : "
-                                + "la règle est respectée, l'attente du client ne l'est pas.",
+                        "Credit pricing expected but not provided (rate grid not used)",
+                        simulationRefusals + " review(s) mention an impossible action (referral to the "
+                                + "official simulator) while no pricing outside the grid was detected: "
+                                + "the rule is respected, the customer's expectation is not.",
                         Boolean.TRUE,
-                        "Rappeler au Coach qu'il peut chiffrer à partir de la grille de taux en précisant que la "
-                                + "simulation est indicative et que la souscription fait foi, et fournir le lien du "
-                                + "simulateur officiel pour l'offre ferme."));
+                        "Remind the Coach that it can quote from the rate grid while stating that the "
+                                + "simulation is indicative and that the subscription is the binding document, and provide the link to the "
+                                + "official simulator for the firm offer."));
             }
 
             for (com.coach.financier.model.MarketingModels.TrendMetric trend : aggregates.trends()) {
@@ -793,47 +805,47 @@ public class MockAIService implements AIService {
                 }
                 trends.add(new com.coach.financier.model.QualityModels.QualityTrend(type, trend.entityName(),
                         trend.current() + " vs " + trend.previous() + " (" + trend.evolutionPercent()
-                                + " %) sur la période précédente."));
+                                + " %) versus the previous period."));
             }
 
             if (!criticalIssues.isEmpty()) {
                 improvements.add(new com.coach.financier.model.QualityModels.PriorityImprovement(
-                        "HIGH", "Corriger les anomalies critiques détectées",
+                        "HIGH", "Fix the critical issues detected",
                         String.join(" | ", criticalIssues),
-                        "Analyser chaque anomalie HIGH (vérifier les messages concernés) puis corriger la "
-                                + "règle ou la formulation fautive.",
-                        "Réduction des anomalies critiques et sécurisation de la conformité."));
+                        "Analyse each HIGH issue (check the messages concerned) then fix the "
+                                + "faulty rule or wording.",
+                        "Fewer critical issues and stronger compliance."));
                 alerts.add(new com.coach.financier.model.QualityModels.QualityAlert("IMPORTANT",
-                        "Anomalies critiques détectées",
-                        criticalIssues.size() + " type(s) d'anomalie de sévérité HIGH sur la période."));
+                        "Critical issues detected",
+                        criticalIssues.size() + " type(s) of HIGH severity issue over the period."));
             }
             if (!irritants.isEmpty()) {
                 improvements.add(new com.coach.financier.model.QualityModels.PriorityImprovement(
-                        "MEDIUM", "Traiter le principal irritant client",
+                        "MEDIUM", "Address the main customer irritant",
                         irritants.get(0),
-                        "Tester une réponse plus concise et moins répétitive sur les questions de suivi, "
-                                + "sans modifier les garde-fous métier.",
-                        "Meilleure lisibilité perçue et satisfaction en hausse."));
+                        "Test a more concise and less repetitive answer on follow-up questions, "
+                                + "without changing the business safeguards.",
+                        "Better perceived readability and higher satisfaction."));
             }
             if (matrix != null && matrix.unsatisfiedCompliant() > 0) {
                 improvements.add(new com.coach.financier.model.QualityModels.PriorityImprovement(
-                        "MEDIUM", "Mieux expliquer les règles qui frustrent",
-                        matrix.unsatisfiedCompliant() + " client(s) insatisfait(s) alors que le Coach était "
-                                + "conforme.",
-                        "Rappeler que le chiffrage s'appuie sur la grille de taux (simulation indicative, la "
-                                + "souscription fait foi) et fournir le lien du simulateur officiel.",
-                        "Frustration réduite sans affaiblir la conformité."));
+                        "MEDIUM", "Explain frustrating rules better",
+                        matrix.unsatisfiedCompliant() + " unsatisfied customer(s) while the Coach was "
+                                + "compliant.",
+                        "Remind that pricing is based on the rate grid (indicative simulation, the "
+                                + "subscription is binding) and provide the link to the official simulator.",
+                        "Reduced frustration without weakening compliance."));
             }
             if (satisfaction != null && !satisfaction.sufficientSample()) {
                 alerts.add(new com.coach.financier.model.QualityModels.QualityAlert("WATCH",
-                        "Échantillon d'avis limité",
-                        "Le volume d'avis est faible : les observations doivent être confirmées sur "
-                                + "plusieurs périodes."));
+                        "Limited review sample",
+                        "The review volume is low: the observations must be confirmed over "
+                                + "several periods."));
             }
             if (satisfaction != null && satisfaction.negativeRate() != null && satisfaction.negativeRate() >= 0.2) {
                 alerts.add(new com.coach.financier.model.QualityModels.QualityAlert("WATCH",
-                        "Part d'avis négatifs élevée",
-                        percent(satisfaction.negativeRate()) + " des avis sont négatifs (1 ou 2 étoiles)."));
+                        "High share of negative reviews",
+                        percent(satisfaction.negativeRate()) + " of the reviews are negative (1 or 2 stars)."));
             }
         }
 
@@ -849,9 +861,9 @@ public class MockAIService implements AIService {
                         issues, criticalIssues),
                 new com.coach.financier.model.QualityModels.SatisfactionVsCompliance(crossSummary, notableCases),
                 friction, trends, improvements, alerts,
-                "Rapport généré en mode démo à partir des statistiques agrégées : satisfaction client et "
-                        + "conformité du Coach restent deux dimensions distinctes, aucune anomalie n'est "
-                        + "déduite d'une mauvaise note.",
+                "Report generated in demo mode from the aggregated statistics: customer satisfaction and "
+                        + "Coach compliance remain two distinct dimensions, no issue is "
+                        + "inferred from a bad rating.",
                 java.time.Instant.now().toString(), "MOCK", Boolean.TRUE, null);
     }
 
@@ -902,22 +914,22 @@ public class MockAIService implements AIService {
 
         String reportDate = LocalDate.now().toString();
         String status = com.coach.financier.model.AdvisorFeedbackModels.STATUS_INSUFFICIENT;
-        String summaryText = "Aucun feedback conseiller exploitable sur la période : les données fournies ne "
-                + "permettent pas de conclure sur la pertinence du travail du Coach.";
-        String interestSummary = "Aucune correction de niveau d'intérêt fournie.";
-        String nextActionSummary = "Aucune évaluation du suivi conseillé fournie.";
-        String emailSummary = "Aucune évaluation d'email fournie.";
+        String summaryText = "No usable advisor feedback over the period: the data provided does not "
+                + "allow any conclusion on the relevance of the Coach's work.";
+        String interestSummary = "No interest level correction provided.";
+        String nextActionSummary = "No assessment of the recommended follow-up provided.";
+        String emailSummary = "No email assessment provided.";
 
         if (aggregates != null) {
             reportDate = aggregates.dateTo() == null ? reportDate : aggregates.dateTo();
             com.coach.financier.model.AdvisorFeedbackModels.AdvisorKpis kpis = aggregates.kpis();
             if (kpis != null && kpis.feedbackCount() > 0) {
-                summaryText = kpis.sessionsEvaluated() + " dossier(s) évalué(s) : "
-                        + percent(kpis.relevantRate()) + " jugé(s) pertinents, "
-                        + percent(kpis.needsImprovementRate()) + " à améliorer, "
-                        + percent(kpis.incorrectRate()) + " incorrects."
+                summaryText = kpis.sessionsEvaluated() + " case file(s) evaluated: "
+                        + percent(kpis.relevantRate()) + " judged relevant, "
+                        + percent(kpis.needsImprovementRate()) + " to improve, "
+                        + percent(kpis.incorrectRate()) + " incorrect."
                         + (kpis.sufficientSample() ? ""
-                        : " Le volume de retours reste limité : ces observations sont préliminaires.");
+                        : " The feedback volume remains limited: these observations are preliminary.");
                 status = kpis.relevantRate() != null && kpis.relevantRate() >= 0.7
                         ? com.coach.financier.model.AdvisorFeedbackModels.STATUS_GOOD
                         : (kpis.incorrectRate() != null && kpis.incorrectRate() >= 0.15
@@ -925,35 +937,35 @@ public class MockAIService implements AIService {
                         : com.coach.financier.model.AdvisorFeedbackModels.STATUS_WATCH);
                 if (kpis.relevantRate() != null && kpis.relevantRate() >= 0.7) {
                     strengths.add(new com.coach.financier.model.AdvisorFeedbackModels.StrengthItem(
-                            "Analyses globalement validées",
-                            percent(kpis.relevantRate()) + " des dossiers évalués sont jugés pertinents par les "
-                                    + "conseillers."));
+                            "Analyses generally validated",
+                            percent(kpis.relevantRate()) + " of the case files evaluated are judged relevant by the "
+                                    + "advisors."));
                 }
                 if (kpis.emailReadyOrMinorRate() != null && kpis.emailReadyOrMinorRate() >= 0.6) {
                     strengths.add(new com.coach.financier.model.AdvisorFeedbackModels.StrengthItem(
-                            "Emails préparés exploitables",
-                            percent(kpis.emailReadyOrMinorRate()) + " des emails évalués sont prêts à l'emploi ou "
-                                    + "ne demandent que des modifications mineures."));
+                            "Usable prepared emails",
+                            percent(kpis.emailReadyOrMinorRate()) + " of the emails evaluated are ready to use or "
+                                    + "only require minor changes."));
                 }
                 if (kpis.productRelevanceRate() != null && kpis.productRelevanceRate() >= 0.8) {
                     strengths.add(new com.coach.financier.model.AdvisorFeedbackModels.StrengthItem(
-                            "Produits jugés pertinents",
-                            percent(kpis.productRelevanceRate()) + " des produits évalués sont validés par les "
-                                    + "conseillers."));
+                            "Products judged relevant",
+                            percent(kpis.productRelevanceRate()) + " of the products evaluated are validated by the "
+                                    + "advisors."));
                 }
             }
             for (com.coach.financier.model.AdvisorFeedbackModels.AreaMetric area : aggregates.areas()) {
                 if (issues.size() >= 5) break;
                 issues.add(new com.coach.financier.model.AdvisorFeedbackModels.IssueItem(area.area(),
-                        area.label() + " : " + area.count() + " correction(s) signalée(s)"
-                                + (area.evolutionPercent() == null ? "" : " (évolution "
+                        area.label() + ": " + area.count() + " correction(s) reported"
+                                + (area.evolutionPercent() == null ? "" : " (change "
                                 + area.evolutionPercent() + " %)"), "MEDIUM"));
             }
             for (com.coach.financier.model.AdvisorFeedbackModels.ReasonMetric reason : aggregates.reasons()) {
                 if (issues.size() >= 6) break;
                 issues.add(new com.coach.financier.model.AdvisorFeedbackModels.IssueItem(
                         com.coach.financier.model.AdvisorFeedbackModels.AREA_OTHER,
-                        "Motif « " + reason.label() + " » relevé " + reason.count() + " fois", "LOW"));
+                        "Reason \"" + reason.label() + "\" reported " + reason.count() + " times", "LOW"));
             }
             for (com.coach.financier.model.AdvisorFeedbackModels.ProductFeedbackMetric product : aggregates.products()) {
                 if (productAnalysis.size() >= 8) break;
@@ -963,66 +975,66 @@ public class MockAIService implements AIService {
                         : (product.relevanceRate() >= 0.5 ? "MIXED" : "NEGATIVE"));
                 productAnalysis.add(new com.coach.financier.model.AdvisorFeedbackModels.ProductAnalysisItem(
                         product.productId(), product.productName(),
-                        product.assessments() + " évaluation(s), " + product.relevant() + " pertinent(s), "
-                                + product.notRelevant() + " non pertinent(s), " + product.interestCorrections()
-                                + " correction(s) de niveau"
-                                + (product.addedByAdvisor() > 0 ? ", ajouté " + product.addedByAdvisor()
-                                + " fois par un conseiller" : ""), signal));
+                        product.assessments() + " assessment(s), " + product.relevant() + " relevant, "
+                                + product.notRelevant() + " not relevant, " + product.interestCorrections()
+                                + " level correction(s)"
+                                + (product.addedByAdvisor() > 0 ? ", added " + product.addedByAdvisor()
+                                + " times by an advisor" : ""), signal));
             }
             for (com.coach.financier.model.AdvisorFeedbackModels.InterestCorrectionMetric correction
                     : aggregates.interestCorrections()) {
                 if (overestimation.size() >= 5) break;
                 String direction = "HIGH".equals(correction.fromLevel()) || "MEDIUM".equals(correction.fromLevel())
-                        && "LOW".equals(correction.toLevel()) ? "surestimation" : "correction";
-                overestimation.add(correction.productName() + " : " + correction.fromLevel() + " → "
-                        + correction.toLevel() + " (" + correction.count() + " fois, " + direction + ")");
+                        && "LOW".equals(correction.toLevel()) ? "overestimation" : "correction";
+                overestimation.add(correction.productName() + ": " + correction.fromLevel() + " → "
+                        + correction.toLevel() + " (" + correction.count() + " times, " + direction + ")");
             }
             if (!aggregates.interestCorrections().isEmpty()) {
                 interestSummary = aggregates.kpis().interestCorrections()
-                        + " correction(s) de niveau d'intérêt : la valeur IA et la valeur conseiller sont "
-                        + "conservées séparément.";
+                        + " interest level correction(s): the AI value and the advisor value are "
+                        + "kept separately.";
             }
             if (!aggregates.emailQuality().isEmpty()) {
-                emailSummary = "Distribution des emails évalués : "
+                emailSummary = "Distribution of the emails evaluated: "
                         + aggregates.emailQuality().stream()
                         .map(item -> item.label() + " = " + item.count())
                         .collect(java.util.stream.Collectors.joining(", ")) + ".";
             }
             if (aggregates.kpis() != null && aggregates.kpis().productAssessments() > 0) {
-                nextActionSummary = "Le suivi conseillé est évalué par les conseillers ; "
-                        + aggregates.kpis().productAssessments() + " produit(s) évalué(s) sur la période.";
+                nextActionSummary = "The recommended follow-up is assessed by the advisors; "
+                        + aggregates.kpis().productAssessments() + " product(s) assessed over the period.";
             }
             for (com.coach.financier.model.MarketingModels.TrendMetric trend : aggregates.trends()) {
                 if (trends.size() >= 5 || trend.evolutionPercent() == null) continue;
                 trends.add(new com.coach.financier.model.AdvisorFeedbackModels.AdvisorTrend(
                         trend.evolutionPercent() > 0 ? "DEGRADING" : "IMPROVING",
                         trend.entityName(), trend.current() + " vs " + trend.previous() + " ("
-                                + trend.evolutionPercent() + " %) sur la période précédente."));
+                                + trend.evolutionPercent() + " %) versus the previous period."));
             }
             if (!aggregates.areas().isEmpty()) {
                 var top = aggregates.areas().get(0);
                 improvements.add(new com.coach.financier.model.AdvisorFeedbackModels.AdvisorPriorityImprovement(
-                        "MEDIUM", "Traiter la correction la plus fréquente",
-                        top.label() + " (" + top.count() + " signalement(s))",
-                        "Analyser les dossiers concernés et examiner les critères utilisés par le Coach, "
-                                + "sans modifier automatiquement de seuil ni de règle.",
-                        "Baisse des corrections manuelles et gain de temps pour les conseillers."));
+                        "MEDIUM", "Address the most frequent correction",
+                        top.label() + " (" + top.count() + " report(s))",
+                        "Analyse the case files concerned and examine the criteria used by the Coach, "
+                                + "without automatically changing any threshold or rule.",
+                        "Fewer manual corrections and time saved for the advisors."));
             }
             if (!overestimation.isEmpty()) {
                 improvements.add(new com.coach.financier.model.AdvisorFeedbackModels.AdvisorPriorityImprovement(
-                        "HIGH", "Réduire la surestimation des niveaux d'intérêt",
+                        "HIGH", "Reduce overestimation of interest levels",
                         String.join(" | ", overestimation),
-                        "Étudier les critères distinguant un intérêt explicite d'une simple demande "
-                                + "d'information (comparaison des dossiers corrigés).",
-                        "Meilleure priorisation commerciale et confiance accrue dans le dossier."));
-                watchPoints.add("Plusieurs niveaux d'intérêt corrigés par les conseillers : converger avec "
-                        + "les signaux produit.");
+                        "Study the criteria distinguishing explicit interest from a simple information "
+                                + "request (comparison of the corrected case files).",
+                        "Better sales prioritisation and greater trust in the case file."));
+                watchPoints.add("Several interest levels corrected by the advisors: converge with "
+                        + "the product signals.");
             }
             if (aggregates.kpis() != null && !aggregates.kpis().sufficientSample()) {
-                watchPoints.add("Volume de retours conseillers limité : confirmer sur plusieurs périodes.");
+                watchPoints.add("Limited advisor feedback volume: confirm over several periods.");
             }
             if (aggregates.demo()) {
-                watchPoints.add("Des feedbacks de démonstration (source=DEMO) sont présents sur la période.");
+                watchPoints.add("Demo feedbacks (source=DEMO) are present over the period.");
             }
         }
 
@@ -1038,8 +1050,8 @@ public class MockAIService implements AIService {
                 new com.coach.financier.model.AdvisorFeedbackModels.SectionAnalysis(nextActionSummary, List.of()),
                 new com.coach.financier.model.AdvisorFeedbackModels.SectionAnalysis(emailSummary, List.of()),
                 trends, improvements, watchPoints,
-                "Rapport généré en mode démo à partir des KPI calculés : il propose des pistes, il ne modifie "
-                        + "jamais automatiquement le Coach (prompt, règles, seuils, catalogue, code).",
+                "Report generated in demo mode from the computed KPIs: it suggests leads, it never automatically "
+                        + "modifies the Coach (prompt, rules, thresholds, catalogue, code).",
                 java.time.Instant.now().toString(), "MOCK", Boolean.TRUE, null);
     }
 

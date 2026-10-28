@@ -58,12 +58,12 @@ export default function AdvisorCallbackPopup() {
             {kind === 'appointment' ? <CalendarDays size={18} /> : <PhoneCall size={18} />}
           </span>
           <h2 id="callback-popup-title">
-            {kind === 'appointment' ? 'Prise de rendez-vous simulée' : 'Votre demande de rappel est prise en compte'}
+            {kind === 'appointment' ? 'Simulated appointment booking' : 'Your callback request has been received'}
           </h2>
           <button
             type="button"
             className="callback-popup-close"
-            aria-label="Fermer"
+            aria-label="Close"
             onClick={() => setOpen(false)}
           >
             <X size={16} />
@@ -73,30 +73,30 @@ export default function AdvisorCallbackPopup() {
         {kind === 'appointment' ? (
           <>
             <p className="callback-popup-text">
-              Dans une version complète, vous seriez redirigé vers la page de prise de rendez-vous avec un
-              conseiller.
+              In a full version, you would be redirected to the page for booking an appointment with an
+              advisor.
             </p>
             <p className="callback-popup-text">
-              Comme il s&rsquo;agit d&rsquo;un POC, ce message simule la prise de rendez-vous. Aucun créneau
-              n&rsquo;est réellement réservé.
+              As this is a POC, this message simulates the appointment booking. No time slot
+              is actually reserved.
             </p>
           </>
         ) : (
           <>
             <p className="callback-popup-text">
-              Un conseiller prendra contact avec vous <strong>dans les plus brefs délais</strong> pour faire le
-              point sur votre projet.
+              An advisor will contact you <strong>as soon as possible</strong> to review
+              your project.
             </p>
             <p className="callback-popup-text">
-              Pensez à garder votre téléphone à portée de main. Aucun rendez-vous n&rsquo;est encore fixé : le
-              conseiller vous proposera un créneau lors de son appel.
+              Keep your phone close at hand. No appointment is booked yet: the
+              advisor will offer you a time slot during the call.
             </p>
           </>
         )}
 
         <div className="qlt-popup-actions">
           <button type="button" className="callback-popup-ok" onClick={() => setOpen(false)}>
-            J&rsquo;ai compris
+            Got it
           </button>
         </div>
       </div>

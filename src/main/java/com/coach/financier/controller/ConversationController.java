@@ -50,7 +50,7 @@ public class ConversationController {
     public Map<String, Object> history(@PathVariable String sessionId) {
         ConversationModels.Conversation conversation = conversationService.find(sessionId);
         if (conversation == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation inconnue : " + sessionId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown conversation: " + sessionId);
         }
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("sessionId", sessionId);
@@ -64,10 +64,10 @@ public class ConversationController {
     public Map<String, Object> rewind(@PathVariable String sessionId, @RequestBody RewindRequest request) {
         ConversationModels.Conversation conversation = conversationService.find(sessionId);
         if (conversation == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation inconnue : " + sessionId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown conversation: " + sessionId);
         }
         if (request == null || request.messageCount() == null) {
-            throw new IllegalArgumentException("Le nombre de messages est obligatoire");
+            throw new IllegalArgumentException("The number of messages is required");
         }
         conversation.rewind(request.messageCount());
         return Map.of("sessionId", sessionId, "messageCount", conversation.transcript().size());
@@ -126,6 +126,6 @@ public class ConversationController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> badRequest(IllegalArgumentException error) {
         return Map.of("error", "BAD_REQUEST",
-                "message", error.getMessage() == null ? "Requête invalide" : error.getMessage());
+                "message", error.getMessage() == null ? "Invalid request" : error.getMessage());
     }
 }

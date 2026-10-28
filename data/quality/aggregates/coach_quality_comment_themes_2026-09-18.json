@@ -1,21 +1,21 @@
 [ {
   "theme" : "HARD_TO_UNDERSTAND",
-  "label" : "Les explications étaient difficiles à comprendre",
+  "label" : "The explanations were hard to understand",
   "count" : 3,
   "share" : 0.5
 }, {
   "theme" : "OTHER",
-  "label" : "Autre",
+  "label" : "Other",
   "count" : 1,
   "share" : 0.1667
 }, {
   "theme" : "MISSING_INFORMATION",
-  "label" : "Il manquait des informations",
+  "label" : "Information was missing",
   "count" : 1,
   "share" : 0.1667
 }, {
   "theme" : "PRODUCT_NOT_RELEVANT",
-  "label" : "Les produits proposés ne correspondaient pas à mon besoin",
+  "label" : "The products offered did not match my need",
   "count" : 1,
   "share" : 0.1667
 } ]

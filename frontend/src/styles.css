@@ -1546,6 +1546,24 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: flex-end;
   padding: 12px 18px; border-top: 1px solid #eef0f4; background: #fafbfc; border-radius: 0 0 14px 14px;
 }
+.cc-replay-delay {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600; color: #4b5563;
+}
+.cc-replay-delay input {
+  width: 56px; padding: 6px 8px; border: 1px solid #d7dbe2; border-radius: 8px;
+  font: inherit; text-align: right; color: #1f2937; background: #fff;
+}
+.cc-replay-delay input:focus {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
+.replay-space-hint {
+  display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--accent);
+}
+.replay-space-hint kbd {
+  padding: 1px 6px; border: 1px solid #d7dbe2; border-bottom-width: 2px; border-radius: 5px;
+  background: #fff; font: inherit; font-size: 11.5px; color: #1f2937;
+}
 .cc-score-box {
   display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap;
   background: #f8f9fb; border-radius: 12px; padding: 12px 14px;

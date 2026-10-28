@@ -58,18 +58,18 @@ public class AdvisorFeedbackDemoDataService {
                 List<AdvisorFeedbackModels.AdvisorIssue> issues = switch (assessment) {
                     case AdvisorFeedbackModels.INCORRECT -> List.of(
                             issue(AdvisorFeedbackModels.AREA_PROJECT_DETECTION, AdvisorFeedbackModels.REASON_WRONG,
-                                    "Projet confondu avec une demande d'information."),
+                                    "Project confused with an information request."),
                             issue(AdvisorFeedbackModels.AREA_PRODUCT_RELEVANCE,
                                     AdvisorFeedbackModels.REASON_UNSUPPORTED_RECOMMENDATION,
-                                    "Recommandation non étayée par les pièces disponibles."));
+                                    "Recommendation not supported by the available documents."));
                     case AdvisorFeedbackModels.NEEDS_IMPROVEMENT -> List.of(
                             issue(index % 2 == 0 ? AdvisorFeedbackModels.AREA_INTEREST_LEVEL
                                             : AdvisorFeedbackModels.AREA_CLIENT_EMAIL,
                                     index % 2 == 0 ? AdvisorFeedbackModels.REASON_WRONG_INTEREST_LEVEL
                                             : AdvisorFeedbackModels.REASON_TOO_GENERIC,
                                     index % 2 == 0
-                                            ? "Le client demandait uniquement des informations."
-                                            : "Email trop générique, à personnaliser."));
+                                            ? "The customer was only asking for information."
+                                            : "Email too generic, needs personalising."));
                     default -> List.of();
                 };
 
@@ -107,8 +107,8 @@ public class AdvisorFeedbackDemoDataService {
                                 ? "NO_EDIT" : (AdvisorFeedbackModels.EMAIL_MINOR.equals(emailAssessment)
                                 ? "MINOR_EDIT" : "MAJOR_EDIT"),
                         AdvisorFeedbackModels.RELEVANT.equals(assessment)
-                                ? (random.nextInt(3) == 0 ? "Synthèse conforme au dossier." : "")
-                                : "Bonne synthèse générale mais quelques éléments à reprendre.",
+                                ? (random.nextInt(3) == 0 ? "Summary consistent with the case file." : "")
+                                : "Good overall summary but a few points need rework.",
                         AdvisorFeedbackModels.SOURCE_DEMO,
                         AdvisorFeedbackModels.EVENT_CREATED,
                         1,
@@ -118,7 +118,7 @@ public class AdvisorFeedbackDemoDataService {
 
         List<AdvisorFeedbackModels.AdvisorFeedback> written = store.appendDemo(feedback);
         return new DemoResult(start.toString(), end.toString(), effectiveDays, written.size(),
-                "Feedbacks de démonstration (source=DEMO) — ne pas interpréter comme de vrais retours de conseillers.");
+                "Demo feedback (source=DEMO) — do not interpret as real advisor feedback.");
     }
 
     private static String pickAssessment(Random random, int dayIndex) {
@@ -157,7 +157,7 @@ public class AdvisorFeedbackDemoDataService {
             result.add(new AdvisorFeedbackModels.ProductFeedback(product.productId(), product.productName(),
                     aiLevel, productAssessment, advisorLevel, reason,
                     AdvisorFeedbackModels.PRODUCT_NOT_RELEVANT.equals(productAssessment)
-                            ? "Le client demandait uniquement des informations." : ""));
+                            ? "The customer was only asking for information." : ""));
         }
         return List.copyOf(result);
     }

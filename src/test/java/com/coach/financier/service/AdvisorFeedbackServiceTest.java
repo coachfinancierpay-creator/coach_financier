@@ -175,7 +175,7 @@ class AdvisorFeedbackServiceTest {
         String comment = store.latestBySession("s-clean").orElseThrow().comment();
         assertFalse(comment.contains("06 12 34 56 78"), "Téléphone masqué");
         assertFalse(comment.contains("jean.dupont@example.com"), "Email masqué");
-        assertTrue(comment.contains("masqué"), "Les données personnelles sont masquées avant stockage");
+        assertTrue(comment.contains("hidden"), "Les données personnelles sont masquées avant stockage");
 
         // Troncature : la longueur maximale configurée est respectée.
         service.submit(new AdvisorFeedbackModels.AdvisorFeedbackRequest("s-short",

@@ -51,8 +51,8 @@ class CoachQualityCheckServiceTest {
     @Test
     void creditSimulationViolation_whenCoachComputesItself() {
         ConversationModels.Conversation conversation = conversation(
-                "Combien je rembourserais pour 15000 € ?",
-                "Avec un taux de 4,5 %, la mensualité serait de 279 € par mois sur 60 mois.");
+                "How much would I repay for 15000 €?",
+                "With a rate of 4.5%, the monthly payment would be 279 € per month over 60 months.");
 
         QualityModels.QualityCheck check = checkOf(conversation, QualityModels.CREDIT_SIMULATION_VIOLATION);
 
@@ -64,9 +64,9 @@ class CoachQualityCheckServiceTest {
     void noCreditSimulationViolation_whenCoachRedirectsToOfficialSimulator() {
         // Cas A du prompt : le client critique le refus, mais le Coach est CONFORME.
         ConversationModels.Conversation conversation = conversation(
-                "Calculez-moi la mensualité de mon crédit !",
-                "Je ne peux pas réaliser de simulation de crédit : la mensualité doit être calculée dans "
-                        + "l'outil officiel. Vous pouvez l'estimer avec le simulateur officiel de la banque "
+                "Calculate the monthly payment of my loan!",
+                "I cannot perform a credit simulation: the monthly payment must be calculated in "
+                        + "the official tool. You can estimate it with the bank's official simulator "
                         + "(https://particuliers.sg.fr/vos-rendez-vous).");
 
         QualityModels.QualityCheck check = checkOf(conversation, QualityModels.CREDIT_SIMULATION_VIOLATION);
@@ -78,11 +78,11 @@ class CoachQualityCheckServiceTest {
     void noCreditSimulationViolation_whenTheCoachSimulatesFromTheProvidedRateGrid() {
         // Cas B du prompt : le Coach chiffre à partir de la GRILLE DE TAUX et rappelle que la souscription fait foi.
         ConversationModels.Conversation conversation = conversation(
-                "Combien je rembourserais pour 15 000 € ?",
-                "À partir de la grille de taux du crédit à la consommation, pour 15 000 € sur 48 mois, le TAEG "
-                        + "indicatif est de 5,49 % : la mensualité serait d'environ 348 € par mois. Cette "
-                        + "simulation est indicative et non contractuelle : seuls le contrat de prêt et la "
-                        + "souscription signés font foi.");
+                "How much would I repay for 15 000 €?",
+                "Based on the consumer loan rate grid, for 15 000 € over 48 months, the indicative APR "
+                        + "is 5.49%: the monthly payment would be around 348 € per month. This "
+                        + "simulation is indicative and non-contractual: only the signed loan agreement and the "
+                        + "subscription are binding.");
 
         QualityModels.QualityCheck check = checkOf(conversation, QualityModels.CREDIT_SIMULATION_VIOLATION);
 
@@ -94,9 +94,9 @@ class CoachQualityCheckServiceTest {
     void creditSimulationViolation_whenTheFigureIsPresentedAsContractual() {
         // Cas C du prompt : aucun taux de référence, et le chiffrage est présenté comme un engagement.
         ConversationModels.Conversation conversation = conversation(
-                "Combien je rembourserais pour 15 000 € ?",
-                "Pour 15 000 € sur 48 mois, la mensualité est de 348 € par mois : c'est l'engagement ferme "
-                        + "de la banque.");
+                "How much would I repay for 15 000 €?",
+                "For 15 000 € over 48 months, the monthly payment is 348 € per month: this is the bank's "
+                        + "firm commitment.");
 
         QualityModels.QualityCheck check = checkOf(conversation, QualityModels.CREDIT_SIMULATION_VIOLATION);
 
@@ -107,8 +107,8 @@ class CoachQualityCheckServiceTest {
     @Test
     void noCreditSimulationViolation_forExistingCreditReminder() {
         ConversationModels.Conversation conversation = conversation(
-                "Où en est mon crédit ?",
-                "Votre crédit en cours comporte une mensualité actuelle de 956 € par mois.");
+                "Where does my loan stand?",
+                "Your current loan has a current monthly payment of 956 € per month.");
 
         QualityModels.QualityCheck check = checkOf(conversation, QualityModels.CREDIT_SIMULATION_VIOLATION);
 
@@ -119,12 +119,12 @@ class CoachQualityCheckServiceTest {
     void creditSimulationViolation_whenATableOfFiguresIsGivenWithoutTheRateGrid() {
         // Le prompt autorise un TABLEAU comparant plusieurs durées : le contrôle doit aussi le couvrir.
         ConversationModels.Conversation conversation = conversation(
-                "Et si j'allonge la durée ?",
-                "Voici le comparatif :\n\n"
-                        + "| Durée | Mensualité | TAEG | Coût total | Montant total dû |\n"
+                "And if I lengthen the term?",
+                "Here is the comparison:\n\n"
+                        + "| Term | Monthly payment | APR | Total cost | Total amount due |\n"
                         + "|---|---|---|---|---|\n"
-                        + "| 48 mois | 347,87 € | 5,49 % | 1 697,61 € | 16 697,61 € |\n"
-                        + "| 60 mois | 285,00 € | 5,90 % | 1 600,00 € | 16 600,00 € |");
+                        + "| 48 months | 347,87 € | 5,49 % | 1 697,61 € | 16 697,61 € |\n"
+                        + "| 60 months | 285,00 € | 5,90 % | 1 600,00 € | 16 600,00 € |");
 
         QualityModels.QualityCheck check = checkOf(conversation, QualityModels.CREDIT_SIMULATION_VIOLATION);
 
@@ -236,8 +236,8 @@ class CoachQualityCheckServiceTest {
         assertFalse(sanitized.contains("06 12 34 56 78"));
         assertFalse(sanitized.contains("jean.dupont@example.com"));
         assertFalse(sanitized.contains("1234567890123456"));
-        assertTrue(sanitized.contains("[numéro masqué]"));
-        assertTrue(sanitized.contains("[email masqué]"));
+        assertTrue(sanitized.contains("[number hidden]"));
+        assertTrue(sanitized.contains("[email hidden]"));
     }
 
     // ------------------------------------------------------------------ helpers

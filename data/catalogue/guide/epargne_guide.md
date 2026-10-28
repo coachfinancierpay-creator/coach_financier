@@ -1,111 +1,111 @@
-# Guide IA — Épargne et placements
+# AI guide — Savings and investments
 
-## Objectif
+## Purpose
 
-Le fichier couvre des produits très différents : livrets réglementés/non réglementés, épargne logement, compte à terme, assurance-vie, PER et enveloppes boursières. Ils ne doivent pas être classés sur le seul rendement.
+The file covers very different products: regulated/non-regulated savings accounts, home savings, term deposits, life insurance, PER and equity wrappers. They must not be ranked on yield alone.
 
-## Critères principaux de comparaison
+## Main comparison criteria
 
-Pour recommander un produit, analyser :
-1. objectif du client ;
-2. besoin de liquidité ;
-3. horizon ;
-4. tolérance au risque/perte en capital ;
-5. éligibilité ;
-6. fiscalité décrite ;
-7. versement minimum/plafond ;
-8. rendement lorsqu'il est renseigné ;
-9. règles de recommandation.
+To recommend a product, analyse:
+1. the customer's goal;
+2. liquidity needs;
+3. horizon;
+4. risk/capital loss tolerance;
+5. eligibility;
+6. documented taxation;
+7. minimum/ceiling payment;
+8. yield when documented;
+9. recommendation rules.
 
-## Risque et garantie
+## Risk and guarantee
 
-Le schéma n'est pas uniforme :
-- `risque: "nul"` est une valeur simple ;
-- `risque: "perte_capital_possible"` indique un risque de perte ;
-- pour l'assurance-vie/PER, `risque` peut être un objet distinguant fonds euros et unités de compte ;
-- `capital_garanti` est un booléen lorsqu'il est fourni.
+The schema is not uniform:
+- `risque: "nul"` is a simple value;
+- `risque: "perte_capital_possible"` indicates a risk of loss;
+- for life insurance/PER, `risque` may be an object distinguishing the euro fund and the unit-linked funds;
+- `capital_garanti` is a boolean when provided.
 
-Ne jamais appliquer la garantie d'un fonds euros aux unités de compte.
+Never apply the euro fund guarantee to unit-linked funds.
 
-## Liquidité et disponibilité
+## Liquidity and availability
 
-- `liquidite: immediate` / `disponible` : fonds présentés comme disponibles.
-- l'assurance-vie décrit `rachat_partiel` et `rachat_total`.
-- le PER utilise `disponibilite` et indique un blocage de principe jusqu'à la retraite avec cas de déblocage.
-- le compte à terme indique un `retrait_anticipe` avec pénalités possibles.
+- `liquidite: immediate` / `disponible`: funds presented as available.
+- life insurance describes `rachat_partiel` and `rachat_total`.
+- the PER uses `disponibilite` and indicates a lock-up in principle until retirement with cases of release.
+- the term deposit indicates an `retrait_anticipe` with possible penalties.
 
-Une épargne de précaution doit privilégier la disponibilité avant la recherche de rendement.
+Emergency savings must favour availability before the search for yield.
 
-## Versements et plafonds
+## Payments and ceilings
 
-`versement` varie selon le produit :
-- `minimum`, `minimum_ouverture`, `initial_minimum` ;
-- versements périodiques ;
-- `plafond` / `plafond_reglementaire` ;
-- versement `unique` pour le compte à terme.
+`versement` varies by product:
+- `minimum`, `minimum_ouverture`, `initial_minimum`;
+- periodic payments;
+- `plafond` / `plafond_reglementaire`;
+- `unique` payment for the term deposit.
 
-`plafond: null` signifie plafond non renseigné dans le catalogue, pas absence certaine de plafond.
+`plafond: null` means ceiling not documented in the catalogue, not a certain absence of ceiling.
 
-## Rendement
+## Yield
 
-Les champs peuvent être :
-- `taux_net_annuel_pct` ;
-- `taux_standard_brut_pct` ;
-- `prime_fidelite_brute_pct` ;
-- taux par tranche ;
-- `taux: "taux_SG_en_vigueur"` ;
+The fields may be:
+- `taux_net_annuel_pct`;
+- `taux_standard_brut_pct`;
+- `prime_fidelite_brute_pct`;
+- rate by bracket;
+- `taux: "taux_SG_en_vigueur"`;
 - `taux_public: false`.
 
-Respecter `brut` versus `net`. Ne pas comparer directement un taux brut à un taux net sans tenir compte de cette différence.
+Respect `brut` versus `net`. Do not compare a gross rate directly with a net rate without allowing for this difference.
 
-`date_taux` indique la date associée au taux renseigné et doit être prise en compte pour les données susceptibles d'évoluer.
+`date_taux` indicates the date associated with the documented rate and must be taken into account for data likely to change.
 
-## Fiscalité
+## Taxation
 
-Le fichier décrit uniquement certains aspects :
-- exonération d'impôt/prélèvements pour certains livrets ;
-- caractère imposable pour certains livrets ;
-- avantage après cinq ans pour le PEA ;
-- déductibilité sous conditions pour le PER.
+The file describes only certain aspects:
+- tax/levy exemption for certain savings accounts;
+- taxable nature for certain savings accounts;
+- five-year advantage for the PEA;
+- deductibility under conditions for the PER.
 
-Ne pas compléter automatiquement avec des règles fiscales non présentes si la réponse doit rester strictement fondée sur le catalogue.
+Do not automatically supplement with tax rules that are not present if the answer must remain strictly based on the catalogue.
 
-## Épargne réglementée
+## Regulated savings
 
-Pour Livret A, LDDS, LEP et Livret Jeune, `eligibilite` et `nombre_maximum_par_personne` sont des contraintes structurantes.
+For Livret A, LDDS, LEP and Livret Jeune, `eligibilite` and `nombre_maximum_par_personne` are structuring constraints.
 
-Le LEP comporte une priorité très élevée sous réserve d'éligibilité. Ne pas le recommander comme accessible sans vérifier la condition de revenu.
+The LEP carries a very high priority subject to eligibility. Do not recommend it as accessible without checking the income condition.
 
-## Épargne logement
+## Home savings
 
-CEL et PEL comportent `droits_a_pret_immobilier`. Il s'agit d'un avantage lié au produit, pas d'une garantie d'obtention d'un prêt.
+CEL and PEL include `droits_a_pret_immobilier`. This is an advantage linked to the product, not a guarantee of obtaining a loan.
 
-Le PEL possède un `horizon` avec durée maximale de versements et clôture automatique indiquées dans le catalogue.
+The PEL has a `horizon` with maximum payment duration and automatic closure indicated in the catalogue.
 
-## Assurance-vie
+## Life insurance
 
-Érable Essentiel et Séquoia indiquent fonds euros et unités de compte. La présence d'unités de compte implique le risque de perte indiqué.
+Érable Essentiel and Séquoia indicate a euro fund and unit-linked funds. The presence of unit-linked funds implies the indicated risk of loss.
 
-`gestion` décrit les modes de gestion proposés.
+`gestion` describes the management modes offered.
 
-Ébène est décrit principalement par son `positionnement` et ses règles de recommandation ; ne pas inventer des seuils ou supports absents.
+Ébène is described mainly by its `positionnement` and its recommendation rules; do not invent absent thresholds or underlying funds.
 
 ## PER
 
-`objectif`, `disponibilite`, `sortie`, `fiscalite` et `risque` sont centraux. Le besoin de liquidité court terme et l'absence d'épargne de précaution sont explicitement des motifs pour éviter le produit.
+`objectif`, `disponibilite`, `sortie`, `fiscalite` and `risque` are central. The need for short-term liquidity and the absence of emergency savings are explicitly reasons to avoid the product.
 
-## PEA, PEA-PME et CTO
+## PEA, PEA-PME and CTO
 
-Ces produits comportent un risque de perte en capital.
+These products carry a risk of capital loss.
 
-- `horizon_recommande.minimum_annees` est une recommandation d'horizon.
-- `supports` décrit les instruments accessibles.
-- le CTO est notamment positionné lorsque le PEA ne correspond pas aux actifs recherchés ou lorsque l'accès aux marchés internationaux est souhaité.
+- `horizon_recommande.minimum_annees` is a recommended horizon.
+- `supports` describes the accessible instruments.
+- the CTO is notably positioned when the PEA does not match the assets sought or when access to international markets is desired.
 
-Ne pas recommander ces produits comme épargne de précaution lorsque les règles du catalogue indiquent le contraire.
+Do not recommend these products as emergency savings when the catalogue rules indicate the opposite.
 
-## Priorités
+## Priorities
 
-`priorite_avant` et `prioritaire_par_rapport_a` expriment une préférence explicite. Les utiliser après vérification de l'éligibilité.
+`priorite_avant` and `prioritaire_par_rapport_a` express an explicit preference. Use them after checking eligibility.
 
-Le rendement ne doit jamais être l'unique critère : risque, liquidité, horizon et fiscalité doivent être pris en compte.
+Yield must never be the only criterion: risk, liquidity, horizon and taxation must be taken into account.

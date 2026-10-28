@@ -184,13 +184,13 @@ public class AdvisorFeedbackReportService {
                 new AdvisorFeedbackModels.AdvisorReportPeriod(date.toString(), date.toString()),
                 new AdvisorFeedbackModels.AdvisorExecutiveSummary(
                         AdvisorFeedbackModels.STATUS_INSUFFICIENT,
-                        "Analyse IA indisponible : les indicateurs calculés restent consultables."),
+                        "AI analysis unavailable: the calculated indicators remain available."),
                 List.of(), List.of(), List.of(),
                 new AdvisorFeedbackModels.InterestLevelAnalysis("", List.of(), List.of()),
                 new AdvisorFeedbackModels.SectionAnalysis("", List.of()),
                 new AdvisorFeedbackModels.SectionAnalysis("", List.of()),
                 List.of(), List.of(), List.of(),
-                "Aucune analyse IA n'a pu être produite pour cette période.",
+                "No AI analysis could be produced for this period.",
                 Instant.now().toString(), null, Boolean.FALSE,
                 error == null ? null : error.getMessage());
     }

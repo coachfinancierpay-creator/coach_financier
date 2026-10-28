@@ -91,7 +91,7 @@ public class AgentPromptHistoryStore {
             Files.createDirectories(historyDir());
             Files.writeString(target, content == null ? "" : content, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Sauvegarde du prompt impossible : " + target, e);
+            throw new IllegalStateException("Unable to back up the prompt: " + target, e);
         }
         PromptBackup backup = new PromptBackup(backupId, agentKey, safeFile, target.getFileName().toString(),
                 zoneService.hash(content), reason, Instant.now().toString());

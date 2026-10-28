@@ -58,24 +58,24 @@ import type {
 } from './types.promptopt'
 
 const STATUS_LABELS: Record<CampaignStatus, string> = {
-  CREATED: 'Créée',
-  RUNNING: 'En cours',
-  STOP_REQUESTED: 'Arrêt demandé',
-  PAUSED: 'En pause',
-  COMPLETED: 'Terminée',
-  ACCEPTED: 'Version acceptée',
-  REJECTED: 'Campagne refusée',
-  ERROR: 'Erreur',
-  CANCELLED: 'Annulée',
+  CREATED: 'Created',
+  RUNNING: 'Running',
+  STOP_REQUESTED: 'Stop requested',
+  PAUSED: 'Paused',
+  COMPLETED: 'Completed',
+  ACCEPTED: 'Version accepted',
+  REJECTED: 'Campaign rejected',
+  ERROR: 'Error',
+  CANCELLED: 'Cancelled',
 }
 
-const SEVERITY_LABELS: Record<string, string> = { LOW: 'Mineure', MEDIUM: 'Significative', HIGH: 'Majeure' }
+const SEVERITY_LABELS: Record<string, string> = { LOW: 'Minor', MEDIUM: 'Significant', HIGH: 'Major' }
 const SOURCE_LABELS: Record<string, string> = {
-  PROMPT: 'Prompt (zone éditable)',
-  DATA: 'Données',
-  BACKEND_RULE: 'Règle backend',
-  MODEL_VARIABILITY: 'Variabilité du modèle',
-  UNKNOWN: 'Indéterminée',
+  PROMPT: 'Prompt (editable zone)',
+  DATA: 'Data',
+  BACKEND_RULE: 'Backend rule',
+  MODEL_VARIABILITY: 'Model variability',
+  UNKNOWN: 'Undetermined',
 }
 
 /** Aucun code technique n'est affiché brut (même règle que les autres pages du POC). */
@@ -90,7 +90,7 @@ function providerLabel(code: string): string {
   if (code === 'DEEPSEEK') return 'DeepSeek'
   if (code === 'GPT') return 'OpenAI'
   if (code === 'LOCAL') return 'Local (LM Studio)'
-  if (code === 'MOCK') return 'Mode démo'
+  if (code === 'MOCK') return 'Demo mode'
   return code || '—'
 }
 
@@ -102,24 +102,24 @@ function closureNotice(status: string, sendMail: boolean, archive: boolean, warn
   const parts: string[] = []
   switch (status) {
     case 'SENT':
-      parts.push('mail conseiller envoyé')
+      parts.push('advisor email sent')
       break
     case 'PREPARED':
-      parts.push(sendMail ? 'mail conseiller préparé' : 'pas de mail demandé')
+      parts.push(sendMail ? 'advisor email prepared' : 'no email requested')
       break
     case 'MAIL_UNAVAILABLE':
-      parts.push("mail conseiller NON envoyé (service mail indisponible) — dossier préparé")
+      parts.push("advisor email NOT sent (mail service unavailable) — case file prepared")
       break
     case 'SEND_FAILED':
-      parts.push("mail conseiller NON envoyé (erreur d'envoi) — dossier préparé")
+      parts.push("advisor email NOT sent (send error) — case file prepared")
       break
     default:
-      parts.push(`statut ${status || 'inconnu'}`)
+      parts.push(`status ${status || 'unknown'}`)
   }
   parts.push(archive
-    ? "conversation archivée, à retrouver dans la page Centre d'appels"
-    : "conversation non archivée (aucune trace au centre d'appels)")
-  const text = `Test clôturé — ${parts.join(' · ')}.`
+    ? "conversation archived, available in the Call center page"
+    : "conversation not archived (no record in the call center)")
+  const text = `Test closed — ${parts.join(' · ')}.`
   return warnings.length > 0 ? `${text} ${warnings.join(' ')}` : text
 }
 
@@ -172,7 +172,7 @@ function compactDiff(lines: DiffLine[]): DiffLine[] {
   lines.forEach((line, index) => {
     if (keep.has(index)) {
       if (skipped > 0) {
-        result.push({ type: 'same', text: `… ${skipped} ligne(s) identique(s) …` })
+        result.push({ type: 'same', text: `… ${skipped} unchanged line(s) …` })
         skipped = 0
       }
       result.push(line)
@@ -180,7 +180,7 @@ function compactDiff(lines: DiffLine[]): DiffLine[] {
       skipped += 1
     }
   })
-  if (skipped > 0) result.push({ type: 'same', text: `… ${skipped} ligne(s) identique(s) …` })
+  if (skipped > 0) result.push({ type: 'same', text: `… ${skipped} unchanged line(s) …` })
   return result
 }
 
@@ -388,7 +388,7 @@ export default function PromptLab() {
         }
       })
       .catch((err) => {
-        if (active) setError(err instanceof Error ? err.message : 'Erreur de chargement.')
+        if (active) setError(err instanceof Error ? err.message : 'Loading error.')
       })
     return () => {
       active = false
@@ -450,7 +450,7 @@ export default function PromptLab() {
       setDetail(current)
       if (current.thread) setThread(current.thread)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur de rafraîchissement.')
+      setError(err instanceof Error ? err.message : 'Refresh error.')
     }
   }, [])
 
@@ -475,7 +475,7 @@ export default function PromptLab() {
           await iteratePromptCampaign(campaignId)
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erreur pendant l'itération.")
+        setError(err instanceof Error ? err.message : 'Iteration error.')
       } finally {
         runningRef.current = false
         setBusy(false)
@@ -492,7 +492,7 @@ export default function PromptLab() {
     try {
       await action()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Action impossible.')
+      setError(err instanceof Error ? err.message : 'Action failed.')
     } finally {
       setBusy(false)
     }
@@ -585,8 +585,8 @@ export default function PromptLab() {
     const texte = turn.question.trim()
     if (turn.endConversation || !texte) {
       setNotice(texte
-        ? `Le client met fin au scénario : « ${texte} »`
-        : `Le client n'a plus de question — scénario terminé${turn.reason ? ` (${turn.reason})` : ''}.`)
+        ? `The customer ends the scenario: “${texte}”`
+        : `The customer has no further questions — scenario complete${turn.reason ? ` (${turn.reason})` : ''}.`)
       return null
     }
     return texte
@@ -636,7 +636,7 @@ export default function PromptLab() {
     if (state.status === 'REJECTED' || state.status === 'CANCELLED') return null
     const version = state.currentCandidateVersion || state.basePromptVersion
     const result = await acceptPromptVersion(campaignId, version)
-    setNotice(`Cycle accepté pour la conversation : ${result.message}`)
+    setNotice(`Cycle accepted for the conversation: ${result.message}`)
     await refresh(campaignId)
     return { campaignId, version }
   }
@@ -659,10 +659,10 @@ export default function PromptLab() {
       if (clientStopRef.current) break
       if (!question) {
         if (asked >= clientDepth) {
-          setNotice(`Profondeur atteinte : ${asked} question(s) du client — scénario terminé.`)
+          setNotice(`Depth reached: ${asked} customer question(s) — scenario complete.`)
           break
         }
-        setClientQuestion('le client rédige sa question…')
+        setClientQuestion('the customer is writing their question…')
         const posee = await askClient(asked + 1, currentThreadId)
         if (!posee) {
           setClientQuestion(null)
@@ -677,11 +677,11 @@ export default function PromptLab() {
       question = ''
       if (!started) break
       currentThreadId = started.threadId
-      setNotice(`Cycle ${started.campaignId} : ${iterations} itération(s) sur la question du client.`)
+      setNotice(`Cycle ${started.campaignId}: ${iterations} iteration(s) on the customer question.`)
       await drive(started.campaignId)
       asked += 1
       if (!autoPromote) {
-        setNotice(`Question ${asked}/${clientDepth} traitée. Validez une version (promouvoir, ou « accepter sans changement »), puis « QUESTION SUIVANTE ».`)
+        setNotice(`Question ${asked}/${clientDepth} processed. Validate a version (promote, or “accept without change”), then “NEXT QUESTION”.`)
         break
       }
       if (clientStopRef.current) break
@@ -695,7 +695,7 @@ export default function PromptLab() {
   async function startClientScenario(pending?: string) {
     if (clientRunning || busy) return
     if (!clientBrief.trim()) {
-      setError('Décrivez le client (son profil et son projet) avant de lancer le scénario.')
+      setError('Describe the customer (profile and project) before starting the scenario.')
       return
     }
     clientStopRef.current = false
@@ -708,11 +708,11 @@ export default function PromptLab() {
       // « PROMOUVOIR » : c'est l'humain qui décide, en connaissance de cause, à la toute fin.
       if (autoPromote && threadRef.current) {
         await showThreadComparison(threadRef.current.threadId)
-        setNotice('Scénario terminé : le prompt de production n\'a PAS été modifié. Comparez le prompt initial et le '
-          + 'prompt final ci-dessous, puis « PROMOUVOIR » la version retenue — ou non.')
+        setNotice('Scenario complete: the production prompt was NOT modified. Compare the initial and '
+          + 'final prompt below, then “PROMOTE” the retained version — or not.')
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Scénario interrompu.')
+      setError(err instanceof Error ? err.message : 'Scenario interrupted.')
     } finally {
       setClientRunning(false)
     }
@@ -721,7 +721,7 @@ export default function PromptLab() {
   /** STOP du scénario : le cycle en cours se termine proprement (campagne en pause), puis la boucle s'arrête. */
   function handleClientStop() {
     clientStopRef.current = true
-    setNotice("Arrêt demandé : l'itération en cours se termine, sa réponse est sauvegardée, puis le scénario s'arrête.")
+    setNotice("Stop requested: the current iteration finishes, its answer is saved, then the scenario stops.")
     if (campaign && (campaign.status === 'RUNNING' || campaign.status === 'CREATED')) handleStop()
   }
 
@@ -739,7 +739,7 @@ export default function PromptLab() {
         editorProvider,
       })
       setThread(started.thread)
-      setNotice(`Campagne ${started.campaign.campaignId} créée : snapshot de référence figé.`)
+      setNotice(`Campaign ${started.campaign.campaignId} created: reference snapshot frozen.`)
       await drive(started.campaign.campaignId)
     })
   }
@@ -768,7 +768,7 @@ export default function PromptLab() {
       setEditingTurn(null)
       setThreadComparison(null)
       setThreadTarget(null)
-      setNotice(`Nouveau cycle ${started.campaign.campaignId} démarré avec ${threadExchanges} échange(s) d'historique.`)
+      setNotice(`New cycle ${started.campaign.campaignId} started with ${threadExchanges} exchange(s) of history.`)
       await drive(started.campaign.campaignId)
     })
   }
@@ -795,7 +795,7 @@ export default function PromptLab() {
         })
         closureMessage = closureNotice(result.response.status, closeMail, closeArchive, result.response.warnings ?? [])
       } catch (e) {
-        closureError = e instanceof Error ? e.message : 'Clôture impossible'
+        closureError = e instanceof Error ? e.message : 'Closing failed'
       } finally {
         setClosing(false)
       }
@@ -810,7 +810,7 @@ export default function PromptLab() {
     // (il est repris depuis le serveur au chargement). Un fil créé après cet instant sera, lui, repris.
     markMemoryCleared(agentId)
     setError(closureError)
-    setNotice(closureMessage ?? "Nouvelle conversation : le prochain cycle démarrera sans historique (aucune mémoire). La conversation abandonnée ne sera plus rechargée, même après un rafraîchissement de la page.")
+    setNotice(closureMessage ?? "New conversation: the next cycle will start without history (no memory). The abandoned conversation will no longer be reloaded, even after refreshing the page.")
   }
 
   /**
@@ -822,7 +822,7 @@ export default function PromptLab() {
       <>
         <label
           className="plab-switch"
-          title="Envoie le mail au conseiller à la fin du test (même dossier, même score commercial que depuis la page coach)."
+          title="Sends the advisor email at the end of the test (same case file, same sales score as from the coach page)."
         >
           <input
             type="checkbox"
@@ -834,7 +834,7 @@ export default function PromptLab() {
         </label>
         <label
           className="plab-switch"
-          title="Archive le dossier du test : la conversation devient consultable dans la page Centre d'appels."
+          title="Archives the test case file: the conversation becomes available in the Call center page."
         >
           <input
             type="checkbox"
@@ -842,10 +842,10 @@ export default function PromptLab() {
             disabled={busy || closing}
             onChange={(event) => setCloseArchive(event.target.checked)}
           />
-          centre d'appel
+          call center
         </label>
         <button type="button" onClick={() => void handleNewConversation()} disabled={disabled || closing}>
-          <Plus size={15} /> {closing ? 'Clôture…' : 'Nouvelle conversation'}
+          <Plus size={15} /> {closing ? 'Closing…' : 'New conversation'}
         </button>
       </>
     )
@@ -871,11 +871,11 @@ export default function PromptLab() {
       setClientBrief(proposal.brief)
       setClientBriefs((previous) => [...previous, proposal.brief])
       const montant = typeof proposal.montantProjet === 'number'
-        ? `${proposal.montantProjet.toLocaleString('fr-FR')} € à financer — `
+        ? `${proposal.montantProjet.toLocaleString('en-GB')} € to finance — `
         : ''
-      setNotice(`Projet proposé par l’agent C (${providerLabel(clientProvider)}) : ${montant}${proposal.reason || 'relisez-le et modifiez-le si besoin, puis lancez le scénario.'}`)
+      setNotice(`Project proposed by Agent C (${providerLabel(clientProvider)}): ${montant}${proposal.reason || 'review and edit it if needed, then start the scenario.'}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Projet impossible à générer.')
+      setError(err instanceof Error ? err.message : 'Unable to generate a project.')
     } finally {
       setBriefGenerating(false)
     }
@@ -891,7 +891,7 @@ export default function PromptLab() {
     await guard(async () => {
       setThread(await updatePromptTurn(thread.threadId, index, content.trim()))
       setEditingTurn(null)
-      setNotice("Réponse corrigée : c'est ce texte qui sera rejoué dans les prochains cycles.")
+      setNotice("Answer corrected: this text will be replayed in the following cycles.")
     })
   }
 
@@ -904,12 +904,12 @@ export default function PromptLab() {
     stopRef.current = true
     setStopping(true)
     setError(null)
-    setNotice("Arrêt demandé : l'itération en cours se termine, sa réponse est sauvegardée, puis la campagne passe en pause.")
+    setNotice("Stop requested: the current iteration finishes, its answer is saved, then the campaign is paused.")
     stopPromptCampaign(campaign.campaignId)
       .then(() => setStopping(false))
       .catch((err) => {
         setStopping(false)
-        setError(err instanceof Error ? err.message : 'Arrêt impossible.')
+        setError(err instanceof Error ? err.message : 'Stop failed.')
       })
   }
 
@@ -929,9 +929,9 @@ export default function PromptLab() {
       }
       await resumePromptCampaign(campaign.campaignId, extra)
       setNotice([
-        feedback ? "Avis enregistré et appliqué par l'éditeur" : '',
-        extra > 0 ? `${extra} itération(s) ajoutée(s) au cycle cumulé.` : '',
-      ].filter(Boolean).join(' · ') || 'Campagne reprise.')
+        feedback ? "Feedback saved and applied by the editor" : '',
+        extra > 0 ? `${extra} iteration(s) added to the cumulative cycle.` : '',
+      ].filter(Boolean).join(' · ') || 'Campaign resumed.')
       await refresh(campaign.campaignId)
       await drive(campaign.campaignId)
     })
@@ -943,7 +943,7 @@ export default function PromptLab() {
       await sendPromptHumanFeedback(campaign.campaignId, feedbackText.trim())
       setFeedbackText('')
       setShowFeedback(false)
-      setNotice("Avis enregistré : il sera appliqué par l'éditeur avant le prochain appel au Coach.")
+      setNotice("Feedback saved: it will be applied by the editor before the next call to the Coach.")
       await refresh(campaign.campaignId)
     })
   }
@@ -961,8 +961,8 @@ export default function PromptLab() {
       setShowFeedback(false)
       await resumePromptCampaign(campaign.campaignId, extra)
       setNotice(extra > 0
-        ? `Avis enregistré et appliqué par l'éditeur · ${extra} itération(s) ajoutée(s) au cycle cumulé.`
-        : "Avis enregistré et appliqué par l'éditeur.")
+        ? `Feedback saved and applied by the editor · ${extra} iteration(s) added to the cumulative cycle.`
+        : "Feedback saved and applied by the editor.")
       await refresh(campaign.campaignId)
       await drive(campaign.campaignId)
     })
@@ -979,7 +979,7 @@ export default function PromptLab() {
   }
 
   /**
-   * ACCEPTER SANS CHANGEMENT : l'Agent A n'a proposé aucune modification, donc accepter la campagne ne réécrit
+   * ACCEPT WITHOUT CHANGE : l'Agent A n'a proposé aucune modification, donc accepter la campagne ne réécrit
    * RIEN (le backend le vérifie : ni sauvegarde, ni prompt). AUCUNE confirmation n'est demandée — il n'y a rien
    * à écraser. C'est ce qui débloque l'enchaînement : la réponse de l'IA entre dans la conversation.
    */
@@ -996,7 +996,7 @@ export default function PromptLab() {
     if (!campaign) return
     await guard(async () => {
       await rejectPromptCampaign(campaign.campaignId)
-      setNotice('Campagne refusée : aucune version promue, tout reste consultable.')
+      setNotice('Campaign rejected: no version promoted, everything remains viewable.')
       await refresh(campaign.campaignId)
     })
   }
@@ -1080,7 +1080,7 @@ export default function PromptLab() {
     if (!cible) return
     await guard(async () => {
       const result = await promotePromptVersion(cible.campaignId, cible.version)
-      setNotice(`Promotion : ${result.message}`)
+      setNotice(`Promotion: ${result.message}`)
       setThreadTarget(null)
       setThreadComparisonApplied(true)
       await refresh(cible.campaignId)
@@ -1101,10 +1101,10 @@ export default function PromptLab() {
         onClick={handleThreadCompare}
         disabled={busy || !thread || threadExchanges === 0}
         title={threadExchanges === 0
-          ? 'Aucun échange validé : il n\'y a rien à comparer pour le moment.'
-          : 'Compare le prompt du début de la conversation avec celui en vigueur à la fin.'}
+          ? 'No validated exchange: there is nothing to compare yet.'
+          : 'Compares the prompt at the start of the conversation with the one in force at the end.'}
       >
-        <Braces size={15} /> COMPARER LE PROMPT INITIAL ET LE PROMPT FINAL
+        <Braces size={15} /> COMPARE THE INITIAL PROMPT WITH THE FINAL PROMPT
       </button>
     )
   }
@@ -1132,28 +1132,28 @@ export default function PromptLab() {
       || bilan.currentCampaignId !== cible.campaignId
     return (
       <section className="mkt-card">
-        <h2><Braces size={16} /> Comparaison de la conversation — début ↔ fin</h2>
+        <h2><Braces size={16} /> Conversation comparison — start ↔ end</h2>
         <p className="plab-hint">
-          Prompt <b>initial {bilan.baseVersion}</b> (au premier échange) → version <b>{cible.version}</b> retenue par
-          le cycle <span className="plab-mono">{cible.campaignId}</span>.{' '}
+          <b>Initial prompt {bilan.baseVersion}</b> (at the first exchange) → version <b>{cible.version}</b> retained by
+          cycle <span className="plab-mono">{cible.campaignId}</span>.{' '}
           {estVersionFinale
             ? bilan.summary
-            : "Les derniers cycles n'ont proposé aucune modification : la zone retenue à la fin est donc déjà "
-              + "celle du prompt de production, et la version à promouvoir est celle du cycle ci-dessus."}
+            : "The last cycles proposed no change: the zone retained at the end is therefore already "
+              + "the one of the production prompt, and the version to promote is the one from the cycle above."}
         </p>
         <p className="plab-hint">
           Agent <b>{bilan.agentLibelle}</b> ·{' '}
           {bilan.zoneKey === 'principal'
-            ? <>zone transverse <code>agent/principal.txt</code></>
-            : <>zone de l'agent <code>agent/{bilan.zoneFile}</code></>}
-          {' · '}{bilan.cycleCount} cycle(s) · {bilan.iterationCount} itération(s) ·
-          {' '}{bilan.promotionCount} version(s) retenue(s)
+            ? <>cross-cutting zone <code>agent/principal.txt</code></>
+            : <>agent zone <code>agent/{bilan.zoneFile}</code></>}
+          {' · '}{bilan.cycleCount} cycle(s) · {bilan.iterationCount} iteration(s) ·
+          {' '}{bilan.promotionCount} version(s) retained
         </p>
         {/* DÉCISION HUMAINE, À LA FIN DU SCÉNARIO : comparer puis promouvoir (ou pas). */}
         <div className="plab-actions">
           {rienAPromouvoir && threadComparisonApplied ? (
             <span className="plab-tag ok">
-              ✓ Rien à promouvoir : le prompt de production contient déjà la version retenue par la conversation
+              ✓ Nothing to promote: the production prompt already contains the version retained by the conversation
             </span>
           ) : (
             <button
@@ -1161,38 +1161,38 @@ export default function PromptLab() {
               className="plab-primary"
               disabled={busy}
               onClick={() => handlePromoteThreadVersion()}
-              title="Écrit cette version dans le prompt de production (le prompt précédent est sauvegardé)."
+              title="Writes this version into the production prompt (the previous prompt is backed up)."
             >
-              <ThumbsUp size={15} /> PROMOUVOIR {cible.version} EN PRODUCTION
+              <ThumbsUp size={15} /> PROMOTE {cible.version} TO PRODUCTION
             </button>
           )}
           <small className="plab-snippet">
-            Rien n'est écrit avant ce clic : les cycles enchaînés ont seulement été acceptés pour la conversation,
-            le prompt de production est resté celui qu'on compare ci-dessous.
+            Nothing is written before this click: the chained cycles were only accepted for the conversation,
+            the production prompt remained the one compared below.
           </small>
         </div>
         <div className="plab-two">
           <div className="plab-box">
-            <strong>VERSION INITIALE {bilan.baseVersion} — début de la conversation</strong>
+            <strong>INITIAL VERSION {bilan.baseVersion} — start of the conversation</strong>
             <p className="plab-hint">Cycle <span className="plab-mono">{bilan.baseCampaignId}</span></p>
-            <pre className="plab-pre">{debut || '(zone vide)'}</pre>
+            <pre className="plab-pre">{debut || '(empty zone)'}</pre>
           </div>
           <div className="plab-box">
             <strong>
-              VERSION RETENUE {cible.version} — {rienAPromouvoir ? 'déjà en production' : 'à promouvoir'}
-              {estVersionFinale ? '' : ' (choisie par un cycle antérieur)'}
+              RETAINED VERSION {cible.version} — {rienAPromouvoir ? 'already in production' : 'to promote'}
+              {estVersionFinale ? '' : ' (chosen by an earlier cycle)'}
             </strong>
             <p className="plab-hint">Cycle <span className="plab-mono">{cible.campaignId}</span></p>
-            <pre className="plab-pre">{fin || '(zone vide)'}</pre>
+            <pre className="plab-pre">{fin || '(empty zone)'}</pre>
           </div>
         </div>
         {debut === fin ? (
           <p className="plab-hint">
-            Aucune ligne de la zone n'a changé pendant cette conversation : le bilan est donc un prompt identique.
+            No line of the zone changed during this conversation: the summary is therefore an identical prompt.
           </p>
         ) : (
           <>
-            <h3>Changements de la zone {bilan.baseVersion} → {cible.version}</h3>
+            <h3>Changes to the zone {bilan.baseVersion} → {cible.version}</h3>
             <div className="plab-diff">
               {compactDiff(diffLines(debut, fin)).map((line, index) => (
                 <div key={index} className={`plab-diff-line ${line.type}`}>
@@ -1206,14 +1206,14 @@ export default function PromptLab() {
           </>
         )}
         <details className="plab-help">
-          <summary>Voir les prompts complets (parties protégées incluses)</summary>
-          <strong>PROMPT INITIAL {bilan.baseVersion}</strong>
+          <summary>Show the full prompts (protected parts included)</summary>
+          <strong>INITIAL PROMPT {bilan.baseVersion}</strong>
           <pre className="plab-pre">{bilan.basePrompt}</pre>
-          <strong>PROMPT RETENU {cible.version} (cycle {cible.campaignId})</strong>
+          <strong>RETAINED PROMPT {cible.version} (cycle {cible.campaignId})</strong>
           <pre className="plab-pre">{cible.prompt}</pre>
           {finalDiffere && (
             <>
-              <strong>DERNIÈRE VERSION {bilan.currentVersion} (cycle {bilan.currentCampaignId})</strong>
+              <strong>LAST VERSION {bilan.currentVersion} (cycle {bilan.currentCampaignId})</strong>
               <pre className="plab-pre">{bilan.currentPrompt}</pre>
             </>
           )}
@@ -1275,17 +1275,17 @@ export default function PromptLab() {
     const parts = version.prompt.split(version.editableSection)
     return (
       <div className="plab-panel">
-        <h3>Zone modifiable {version.version} — la seule partie que l'Agent A peut réécrire</h3>
+        <h3>Editable zone {version.version} — the only part Agent A can rewrite</h3>
         <pre className="plab-pre">{version.editableSection}</pre>
         <div className="plab-actions">
           <button type="button" onClick={() => setFullPromptVersion(fullPromptShown ? null : version.version)}>
             {fullPromptShown ? <X size={14} /> : <Eye size={14} />}
-            {fullPromptShown ? 'Masquer' : 'Afficher'} le prompt complet ({version.version})
+            {fullPromptShown ? 'Hide' : 'Show'} the full prompt ({version.version})
           </button>
         </div>
         {fullPromptShown && (
           <>
-            <h3>Prompt complet {version.version} — partie protégée / ZONE MODIFIABLE / partie protégée</h3>
+            <h3>Full prompt {version.version} — protected part / EDITABLE ZONE / protected part</h3>
             <pre className="plab-pre">{parts.length > 1
               ? parts.map((part, index) => (
                 <span key={index}>
@@ -1307,7 +1307,7 @@ export default function PromptLab() {
     if (!version) return null
     return (
       <div className="plab-panel">
-        <h3>Changements de la zone éditable vers {version.version}</h3>
+        <h3>Changes to the editable zone towards {version.version}</h3>
         <div className="plab-diff">
           {compactDiff(diffLines(previousSectionFor(version.version), version.editableSection)).map((line, index) => (
             <div key={index} className={`plab-diff-line ${line.type}`}>
@@ -1326,28 +1326,28 @@ export default function PromptLab() {
     const answered = answeringIteration(panel.version)
     return (
       <>
-        <h2><ThumbsUp size={16} /> Confirmer la promotion</h2>
+        <h2><ThumbsUp size={16} /> Confirm promotion</h2>
         <p>
-          Vous êtes sur le point de remplacer la zone du prompt de l'agent <b>{campaign.agentLibelle}</b> par
-          la version <b>{panel.version}</b> issue de cette campagne.
+          You are about to replace the prompt zone of agent <b>{campaign.agentLibelle}</b> with
+          version <b>{panel.version}</b> from this campaign.
         </p>
-        <p>Le prompt actuel sera conservé dans l'historique (retour arrière possible).</p>
+        <p>The current prompt will be kept in history (rollback possible).</p>
         {answered ? (
           <p className="plab-ok">
-            La <b>réponse de l'itération {answered.iterationNumber}</b> — celle qui a été produite par cette
-            version — rejoindra la conversation de l'atelier : la mémoire contiendra donc exactement la réponse
-            du prompt promu.
+            The <b>answer of iteration {answered.iterationNumber}</b> — the one produced by this
+            version — will join the workshop conversation: the memory will therefore contain exactly the answer
+            of the promoted prompt.
           </p>
         ) : (
           <p className="plab-hint">
-            Cette version <b>n'a pas encore répondu</b> : sa réponse sera <b>générée avec ce prompt</b> (un appel IA
-            supplémentaire) puis rejoindra la conversation de l'atelier.
+            This version <b>has not answered yet</b>: its answer will be <b>generated with this prompt</b> (an extra AI
+            call) and then join the workshop conversation.
           </p>
         )}
         <div className="plab-actions">
-          <button type="button" onClick={() => setPromotionVersion(null)} disabled={busy}>ANNULER</button>
+          <button type="button" onClick={() => setPromotionVersion(null)} disabled={busy}>CANCEL</button>
           <button type="button" className="plab-primary" onClick={() => handlePromote(panel.version)} disabled={busy}>
-            <Check size={15} /> CONFIRMER
+            <Check size={15} /> CONFIRM
           </button>
         </div>
       </>
@@ -1357,13 +1357,13 @@ export default function PromptLab() {
   return (
     <div className="logs-shell plab-page">
       <header className="logs-header">
-        <a href="#/" className="logs-back"><ArrowLeft size={18} /> Retour au chat</a>
-        <h1><Wand2 size={22} /> Atelier d'amélioration des prompts</h1>
+        <a href="#/" className="logs-back"><ArrowLeft size={18} /> Back to chat</a>
+        <h1><Wand2 size={22} /> Prompt improvement workshop</h1>
         <span className={`logs-status ${agents?.enabled ? 'ok' : 'ko'}`}>
           <span className="status-dot" />
           {agents?.enabled
-            ? `Plafond cumulé : ${agents.maxIterations} itérations (limite technique ${agents.hardMaxIterations})`
-            : 'Module désactivé'}
+            ? `Cumulative cap: ${agents.maxIterations} iterations (technical limit ${agents.hardMaxIterations})`
+            : 'Module disabled'}
         </span>
       </header>
 
@@ -1372,7 +1372,7 @@ export default function PromptLab() {
 
       {/* 1) Configuration : agent, zone, question, itérations */}
       <section className="mkt-card">
-        <h2><Bot size={16} /> Campagne d'optimisation</h2>
+        <h2><Bot size={16} /> Optimization campaign</h2>
         <label className="plab-switch">
           <input
             type="checkbox"
@@ -1384,13 +1384,13 @@ export default function PromptLab() {
             }}
           />
           <span>
-            <b>Agent C — client simulé</b> <Users size={13} /> : l'IA joue le client, pose ses questions et
-            conduit la conversation (vous gardez la main sur chaque cycle)
+            <b>Agent C — simulated customer</b> <Users size={13} /> : the AI plays the customer, asks its questions
+            and drives the conversation (you keep control of each cycle)
           </span>
         </label>
         <div className="plab-config">
           <label className="plab-field">
-            <span>Agent à optimiser</span>
+            <span>Agent to optimize</span>
             <select
               value={agentId}
               disabled={busy || Boolean(campaign)}
@@ -1398,48 +1398,48 @@ export default function PromptLab() {
             >
               {zonesShown.map((zone) => (
                 <option key={zone.agentId} value={zone.agentId}>
-                  {zone.agentLibelle}{zone.optimizable ? '' : ' — non optimisable'}
+                  {zone.agentLibelle}{zone.optimizable ? '' : ' — not optimizable'}
                 </option>
               ))}
             </select>
           </label>
           <label className="plab-field">
-            <span>Zone optimisée</span>
+            <span>Optimized zone</span>
             <div className="plab-static">
-              Prompt de l'agent spécialisé
+              Specialized agent prompt
               {selectedZone && selectedZone.zoneFile && <> — <code>agent/{selectedZone.zoneFile}</code></>}
             </div>
-            <small>Zone FIGÉE : la zone transverse « agent principal » n'est plus proposée par l'atelier.</small>
+            <small>FIXED zone: the cross-cutting “main agent” zone is no longer offered by the workshop.</small>
           </label>
           <label className="plab-field">
-            <span>Fournisseur — IA coach</span>
+            <span>Provider — Coach AI</span>
             <select value={provider} disabled={busy || Boolean(campaign)} onChange={(event) => setProvider(event.target.value as AIProvider)}>
               <option value="DEEPSEEK">DeepSeek</option>
               <option value="GPT">OpenAI</option>
               <option value="LOCAL">Local (LM Studio)</option>
             </select>
-            <small>Modèle qui répond au client (la question de test)</small>
+            <small>Model that answers the customer (the test question)</small>
           </label>
           <label className="plab-field">
-            <span>Fournisseur — Agent B (contrôleur)</span>
+            <span>Provider — Agent B (controller)</span>
             <select value={controllerProvider} disabled={busy || Boolean(campaign)} onChange={(event) => setControllerProvider(event.target.value as AIProvider)}>
               <option value="DEEPSEEK">DeepSeek</option>
               <option value="GPT">OpenAI</option>
               <option value="LOCAL">Local (LM Studio)</option>
             </select>
-            <small>Modèle qui diagnostique la réponse</small>
+            <small>Model that diagnoses the answer</small>
           </label>
           <label className="plab-field">
-            <span>Fournisseur — Agent A (éditeur)</span>
+            <span>Provider — Agent A (editor)</span>
             <select value={editorProvider} disabled={busy || Boolean(campaign)} onChange={(event) => setEditorProvider(event.target.value as AIProvider)}>
               <option value="DEEPSEEK">DeepSeek</option>
               <option value="GPT">OpenAI</option>
               <option value="LOCAL">Local (LM Studio)</option>
             </select>
-            <small>Modèle qui réécrit la zone du prompt</small>
+            <small>Model that rewrites the prompt zone</small>
           </label>
           <label className="plab-field">
-            <span>Nombre d'itérations</span>
+            <span>Number of iterations</span>
             <input
               type="number"
               min={1}
@@ -1448,12 +1448,12 @@ export default function PromptLab() {
               disabled={busy || Boolean(campaign)}
               onChange={(event) => setIterations(Number(event.target.value))}
             />
-            <small>Plafond : {agents?.maxIterations ?? 10} itération(s) cumulée(s) (limite technique {agents?.hardMaxIterations ?? 50})</small>
+            <small>Cap: {agents?.maxIterations ?? 10} iteration(s) cumulative (technical limit {agents?.hardMaxIterations ?? 50})</small>
           </label>
           {clientMode && (
             <>
               <label className="plab-field">
-                <span>Fournisseur — Agent C (client simulé)</span>
+                <span>Provider — Agent C (simulated customer)</span>
                 <select
                   value={clientProvider}
                   disabled={busy || clientRunning}
@@ -1463,10 +1463,10 @@ export default function PromptLab() {
                   <option value="GPT">OpenAI</option>
                   <option value="LOCAL">Local (LM Studio)</option>
                 </select>
-                <small>Modèle qui joue le client (il ne conseille jamais)</small>
+                <small>Model that plays the customer (it never gives advice)</small>
               </label>
               <label className="plab-field">
-                <span>Profondeur du scénario</span>
+                <span>Scenario depth</span>
                 <input
                   type="number"
                   min={1}
@@ -1475,7 +1475,7 @@ export default function PromptLab() {
                   disabled={busy || clientRunning}
                   onChange={(event) => setClientDepth(Math.max(1, Math.min(20, Number(event.target.value) || 1)))}
                 />
-                <small>Nombre maximum de questions posées par le client (ex. 10)</small>
+                <small>Maximum number of questions asked by the customer (e.g. 10)</small>
               </label>
             </>
           )}
@@ -1489,11 +1489,11 @@ export default function PromptLab() {
               onChange={(event) => setAutoPromote(event.target.checked)}
             />
             <span>
-              <b>Enchaînement automatique</b> — décoché : <b>vous</b> validez chaque cycle. Coché : la dernière
-              version du cycle est <b>acceptée pour la conversation</b> (sa réponse entre dans la mémoire du
-              client) et le client enchaîne sa question suivante — <b>sans écrire le prompt de production</b>.
-              À la fin, le bilan « Comparaison de la conversation — début ↔ fin » s'affiche avec le bouton
-              <b> PROMOUVOIR</b> : c'est vous qui décidez ce qui part en production.
+              <b>Automatic chaining</b> — unchecked: <b>you</b> validate each cycle. Checked: the last
+              version of the cycle is <b>accepted for the conversation</b> (its answer enters the customer's
+              memory) and the customer asks the next question — <b>without writing the production prompt</b>.
+              At the end, the “Conversation comparison — start ↔ end” summary appears with the <b> PROMOTE</b>
+              button: you decide what goes to production.
             </span>
           </label>
         )}
@@ -1503,86 +1503,86 @@ export default function PromptLab() {
               type="button"
               disabled={briefGenerating || clientRunning || busy || !agentId || !agents?.enabled}
               onClick={handleGenerateProject}
-              title="L'agent C cherche lui-même un client et un projet correspondant à l'agent sélectionné. Un nouvel appui en propose un différent."
+              title="Agent C finds a customer and a project matching the selected agent by itself. Clicking again proposes a different one."
             >
               <Sparkles size={15} />
               {briefGenerating
-                ? 'RECHERCHE D’UN PROJET…'
+                ? 'SEARCHING FOR A PROJECT…'
                 : clientBriefs.length > 0
-                  ? 'GÉNÉRER UN AUTRE PROJET'
-                  : 'GÉNÉRER PROJET'}
+                  ? 'GENERATE ANOTHER PROJECT'
+                  : 'GENERATE PROJECT'}
             </button>
             <small className="plab-snippet">
-              L’agent C invente le client et la raison de sa visite dans le périmètre de l’agent choisi
-              {clientBriefs.length > 0 ? ` — ${clientBriefs.length} projet(s) déjà proposé(s), il en cherchera un autre` : ''}.
+              Agent C invents the customer and the reason for their visit within the selected agent's scope
+              {clientBriefs.length > 0 ? ` — ${clientBriefs.length} project(s) already proposed, it will look for another one` : ''}.
             </small>
           </div>
         )}
         <label className="plab-field">
           <span>
             {clientMode
-              ? 'Brief du client (qui il est, son projet — figé pour tout le scénario)'
-              : 'Question de test (figée pour toute la campagne)'}
+              ? 'Customer brief (who they are, their project — fixed for the whole scenario)'
+              : 'Test question (fixed for the whole campaign)'}
           </span>
           <textarea
             rows={3}
             value={clientMode ? clientBrief : question}
             disabled={busy || clientRunning || (!clientMode && Boolean(campaign))}
             placeholder={clientMode
-              ? "Tu as un projet de rénovation de la cuisine : les travaux coûtent environ 15 000 €. Tu veux savoir si ta situation financière le permet et quelle solution est la plus adaptée."
-              : "Je souhaite financer une voiture d'occasion à 15 000 €. Quelles solutions pourraient être adaptées à ma situation ?"}
+              ? "You are planning a kitchen renovation: the work costs around 15 000 €. You want to know whether your financial situation allows it and which solution is the most suitable."
+              : "I would like to finance a used car at 15 000 €. Which solutions could suit my situation?"}
             onChange={(event) => (clientMode ? setClientBrief(event.target.value) : setQuestion(event.target.value))}
           />
         </label>
         {clientMode && (
           <p className="plab-hint">
-            Le client ne reçoit que <b>trois chiffres</b> (solde du compte courant, solde de l'épargne, crédit en
-            cours à rembourser), ce <b>brief</b> et la <b>conversation</b> : il pose une question à la fois, ne
-            donne jamais de conseil et n'invente aucun chiffre. Il s'arrête de lui-même quand il a tout compris.
+            The customer only receives <b>three figures</b> (current account balance, savings balance, loan still
+            to repay), this <b>brief</b> and the <b>conversation</b>: they ask one question at a time, never
+            give advice and never invent figures. They stop on their own once everything is clear.
           </p>
         )}
         {selectedZone && (
           <>
             <p className="plab-hint">
               {selectedZone.optimizable
-                ? <>Prompt actuellement en production : <code>agent/{selectedZone.zoneFile}</code> · zone modifiable détectée <Braces size={13} /> (mêmes parties protégées pour toutes les versions)</>
-                : <>Agent non optimisable : {selectedZone.error}</>}
+                ? <>Prompt currently in production: <code>agent/{selectedZone.zoneFile}</code> · editable zone detected <Braces size={13} /> (same protected parts for all versions)</>
+                : <>Agent not optimizable: {selectedZone.error}</>}
             </p>
             {/* CHAÎNAGE : la zone testée peut venir de la version RETENUE d'un cycle précédent (mode automatique) —
                 le prompt de production, lui, n'a pas été écrit. Sans ce repère, la version V0 du cycle semble
                 étrangement différente de la production. */}
             {detail?.snapshot?.baseZoneSource && (
               <p className="plab-hint">
-                <span className="plab-tag warn">zone héritée</span> Zone de départ de ce cycle : <b>Celle de la version
-                retenue</b> <span className="plab-mono">{detail.snapshot.baseZoneSource.split(':')[1]}</span> du cycle{' '}
-                <span className="plab-mono">{detail.snapshot.baseZoneSource.split(':')[0]}</span> — le prompt de
-                production <b>n'a pas été modifié</b> (il diffère donc de la version de référence V0 de ce cycle).
+                <span className="plab-tag warn">inherited zone</span> Starting zone of this cycle: <b>That of the retained
+                version</b> <span className="plab-mono">{detail.snapshot.baseZoneSource.split(':')[1]}</span> of cycle{' '}
+                <span className="plab-mono">{detail.snapshot.baseZoneSource.split(':')[0]}</span> — the production
+                prompt <b>was not modified</b> (it therefore differs from this cycle's reference version V0).
               </p>
             )}
             <details className="plab-help">
-              <summary>Qu'est-ce que la « zone optimisée » ?</summary>
+              <summary>What is the “optimized zone”?</summary>
               <p className="plab-hint">
-                Le prompt d'un agent est un texte long : les règles communes, la personnalité, les garde-fous…
-                L'atelier n'en autorise la réécriture que dans <b>une seule zone</b> délimitée par des marqueurs
-                (ceux-ci ne sont <b>jamais</b> envoyés au modèle).
+                An agent's prompt is a long text: shared rules, personality, guardrails…
+                The workshop only allows rewriting it in <b>a single zone</b> delimited by markers
+                (these are <b>never</b> sent to the model).
               </p>
               <ul className="plab-locks">
-                <li><b>Prompt de l'agent spécialisé</b> — LA zone optimisée : le fichier de l'agent choisi (ex. <code>credit-conso.txt</code>)</li>
-                <li>La zone de <code>principal.txt</code> (transverse à tous les agents) n'est <b>plus proposée</b> par l'atelier : il n'y a donc aucun risque de réécrire les règles communes</li>
+                <li><b>Specialized agent prompt</b> — THE optimized zone: the file of the selected agent (e.g. <code>credit-conso.txt</code>)</li>
+                <li>The <code>principal.txt</code> zone (cross-cutting across all agents) is <b>no longer offered</b> by the workshop: there is therefore no risk of rewriting the shared rules</li>
               </ul>
               <p className="plab-hint">
-                Tout ce qui est <b>hors</b> de la zone est figé : le backend recompose lui-même le prompt
-                (<code>parties protégées + zone</code>) et refuse toute proposition qui tenterait d'en sortir.
-                C'est ce qui rend la comparaison entre versions honnête.
+                Everything <b>outside</b> the zone is fixed: the backend recomposes the prompt itself
+                (<code>protected parts + zone</code>) and rejects any proposal that would try to leave it.
+                That is what makes the comparison between versions honest.
               </p>
             </details>
           </>
         )}
         {threadActive && !clientMode && (
           <p className="plab-hint">
-            Une <b>conversation</b> est ouverte avec cet agent : enchaînez la question suivante depuis le bloc
-            <b> « Conversation de l'atelier »</b> ci-dessous (tout l'historique sera transmis au Coach), ou
-            cliquez <b>« Nouvelle conversation »</b> pour repartir sans mémoire.
+            A <b>conversation</b> is open with this agent: continue with the next question from the
+            <b> “Workshop conversation”</b> block below (the whole history will be sent to the Coach), or
+            click <b>“New conversation”</b> to start again without memory.
           </p>
         )}
         <div className="plab-actions">
@@ -1593,13 +1593,13 @@ export default function PromptLab() {
               ? busy || clientRunning || !clientBrief.trim() || !agents?.enabled
               : !canStart || busy || threadActive}
             onClick={clientMode ? () => startClientScenario() : handleStart}
-            title={!clientMode && threadActive ? "Une conversation est en cours : utilisez « Conversation de l'atelier »." : undefined}
+            title={!clientMode && threadActive ? "A conversation is in progress: use “Workshop conversation”." : undefined}
           >
-            <Wand2 size={16} /> GO — {clientMode ? 'le client démarre le scénario' : "démarrer l'optimisation"}
+            <Wand2 size={16} /> GO — {clientMode ? 'the customer starts the scenario' : 'start the optimization'}
           </button>
           {campaign && (
             <button type="button" onClick={newCampaign} disabled={busy}>
-              <Plus size={15} /> Nouvelle campagne
+              <Plus size={15} /> New campaign
             </button>
           )}
         </div>
@@ -1610,20 +1610,20 @@ export default function PromptLab() {
       {(thread || campaign || clientQuestion !== null) && (
         <section className="mkt-card plab-thread">
           <h2>
-            <MessageSquare size={16} /> Conversation de l'atelier
-            {threadExchanges > 0 && ` (${threadExchanges} échange(s))`}
+            <MessageSquare size={16} /> Workshop conversation
+            {threadExchanges > 0 && ` (${threadExchanges} exchange(s))`}
           </h2>
           <p className="plab-hint">
-            Comme dans la page coach : chaque cycle d'itérations porte sur <b>une question</b>. Dès qu'une version
-            est promue, la <b>réponse de l'IA pour cette version</b> entre dans la conversation, et la question
-            suivante repart avec <b>tout l'historique</b> — comme un client qui poursuit l'échange.
-            {clientMode && <> Ici, c'est le <b>client simulé (Agent C)</b> qui lit cette réponse et pose lui-même la question suivante.</>}
+            As on the coach page: each iteration cycle covers <b>one question</b>. As soon as a version
+            is promoted, the <b>AI answer for that version</b> enters the conversation, and the next
+            question starts again with <b>the whole history</b> — like a customer continuing the exchange.
+            {clientMode && <> Here, it is the <b>simulated customer (Agent C)</b> who reads this answer and asks the next question itself.</>}
           </p>
 
           {!thread && (
             <p className="plab-hint">
-              Aucune conversation en mémoire : le prochain cycle démarre <b>sans historique</b> (les fils
-              précédents restent sur disque, mais ne sont pas rejoués).
+              No conversation in memory: the next cycle starts <b>without history</b> (previous threads
+              remain on disk, but are not replayed).
             </p>
           )}
 
@@ -1635,7 +1635,7 @@ export default function PromptLab() {
                     <div key={`${turn.campaignId}-${index}`} className="message-row user">
                       <div className="message-bubble user">
                         <div className="message-meta">
-                          <span>{clientMode ? 'Question du client (Agent C)' : 'Question de test'}</span>
+                          <span>{clientMode ? 'Customer question (Agent C)' : 'Test question'}</span>
                         </div>
                         <div className="message-text">
                           {renderMessageContent(`plab-q-${turn.campaignId}-${index}`, turn.content)}
@@ -1648,7 +1648,7 @@ export default function PromptLab() {
                       <div className="avatar assistant-avatar"><Sparkles size={17} /></div>
                       <div className="message-bubble assistant">
                         <div className="message-meta">
-                          <span>Réponse de l'IA — version {turn.version || '—'} acceptée</span>
+                          <span>AI answer — version {turn.version || '—'} accepted</span>
                         </div>
                         {editingTurn?.index === index ? (
                           <>
@@ -1659,14 +1659,14 @@ export default function PromptLab() {
                               onChange={(event) => setEditingTurn({ index, content: event.target.value })}
                             />
                             <div className="plab-actions">
-                              <button type="button" onClick={() => setEditingTurn(null)} disabled={busy}>ANNULER</button>
+                              <button type="button" onClick={() => setEditingTurn(null)} disabled={busy}>CANCEL</button>
                               <button
                                 type="button"
                                 className="plab-primary"
                                 onClick={handleSaveTurn}
                                 disabled={busy || !editingTurn.content.trim()}
                               >
-                                <Check size={14} /> ENREGISTRER
+                                <Check size={14} /> SAVE
                               </button>
                             </div>
                           </>
@@ -1675,10 +1675,10 @@ export default function PromptLab() {
                             <div className="message-text">
                               {turn.content
                                 ? renderMessageContent(`plab-a-${turn.campaignId}-${index}`, turn.content)
-                                : '(réponse vide)'}
+                                : '(empty answer)'}
                             </div>
                             <div className="plab-thread-meta">
-                              <span className="plab-tag ok">★ {turn.version || 'version'} — version acceptée</span>
+                              <span className="plab-tag ok">★ {turn.version || 'version'} — accepted version</span>
                               <span className="plab-mono">cycle {turn.campaignId}</span>
                               <button
                                 type="button"
@@ -1686,7 +1686,7 @@ export default function PromptLab() {
                                 onClick={() => setEditingTurn({ index, content: turn.content })}
                                 disabled={busy}
                               >
-                                <Pencil size={13} /> Corriger la réponse
+                                <Pencil size={13} /> Edit the answer
                               </button>
                             </div>
                           </>
@@ -1701,8 +1701,8 @@ export default function PromptLab() {
                     <div className="message-bubble user pending">
                       <div className="message-meta">
                         <span>
-                          Question du client (Agent C) — n°{clientTurnNumber} / profondeur {clientDepth}
-                          {clientRunning ? ' · cycle en cours…' : ' · en attente de votre validation'}
+                          Customer question (Agent C) — no. {clientTurnNumber} / depth {clientDepth}
+                          {clientRunning ? ' · cycle in progress…' : ' · awaiting your validation'}
                         </span>
                       </div>
                       <textarea
@@ -1719,7 +1719,7 @@ export default function PromptLab() {
                           disabled={clientRunning || busy || !clientQuestion.trim()}
                           onClick={() => startClientScenario(clientQuestion)}
                         >
-                          <Play size={14} /> GO — poser cette question
+                          <Play size={14} /> GO — ask this question
                         </button>
                       </div>
                     </div>
@@ -1731,7 +1731,7 @@ export default function PromptLab() {
                   <div className="message-row user">
                     <div className="message-bubble user pending">
                       <div className="message-meta">
-                        <span>{clientMode ? 'Question du client (Agent C) — en cours' : 'Question de test — en cours'}</span>
+                        <span>{clientMode ? 'Customer question (Agent C) — in progress' : 'Test question — in progress'}</span>
                       </div>
                       <div className="message-text">
                         {renderMessageContent(`plab-pending-${campaign.campaignId}`, campaign.question)}
@@ -1744,38 +1744,38 @@ export default function PromptLab() {
 
               {campaign && !campaignInThread && (
                 <p className="plab-hint">
-                  ⏳ La réponse de l'IA n'est pas encore figée : <b>promouvoir une version</b> ajoute à la
-                  conversation la réponse produite par l'itération qui l'a créée (c'est elle qui deviendra la
-                  mémoire des cycles suivants). Si l'Agent A n'a proposé aucune modification, utilisez
-                  <b> ACCEPTER SANS CHANGEMENT</b> : le prompt reste identique et la réponse entre quand même
-                  dans la conversation.
+                  ⏳ The AI answer is not frozen yet: <b>promoting a version</b> adds to the conversation the
+                  answer produced by the iteration that created it (that answer becomes the
+                  memory of the following cycles). If Agent A proposed no change, use
+                  <b> ACCEPT WITHOUT CHANGE</b>: the prompt stays identical and the answer still enters
+                  the conversation.
                 </p>
               )}
 
               {!clientMode && (
                 <div className="plab-thread-composer">
                   <label className="plab-field">
-                    <span>Question suivante — le cycle repart avec l'historique complet</span>
+                    <span>Next question — the cycle restarts with the full history</span>
                     <textarea
                       rows={3}
                       value={nextQuestion}
                       disabled={busy}
                       onChange={(event) => setNextQuestion(event.target.value)}
-                      placeholder="Et si j'allongeais la durée à 60 mois ? Qu'est-ce que cela change pour ma mensualité ?"
+                      placeholder="What if I extended the term to 60 months? How does that change my monthly payment?"
                     />
                   </label>
                   <div className="plab-actions">
                     <button type="button" className="plab-primary" disabled={!canContinue} onClick={handleContinue}>
-                      <Send size={16} /> GO — enchaîner ({threadExchanges} échange(s) de mémoire)
+                      <Send size={16} /> GO — continue ({threadExchanges} exchange(s) of memory)
                     </button>
                     {threadCompareButton()}
                     {newConversationGroup(busy)}
                   </div>
                   {!campaignDecided && (
                     <p className="plab-hint">
-                      Pour enchaîner : <b>promouvoir une version</b>, <b>accepter la campagne sans changement</b> (si
-                      l'éditeur n'a rien proposé) ou refuser la campagne — la réponse de l'IA doit d'abord être figée
-                      dans la conversation.
+                      To continue: <b>promote a version</b>, <b>accept the campaign without change</b> (if
+                      the editor proposed nothing) or reject the campaign — the AI answer must first be frozen
+                      in the conversation.
                     </p>
                   )}
                 </div>
@@ -1784,11 +1784,11 @@ export default function PromptLab() {
               {clientMode && (
                 <div className="plab-thread-composer plab-client-bar">
                   <div className="plab-client-head">
-                    <span className="plab-tag ok"><Users size={13} /> Agent C — client simulé</span>
+                    <span className="plab-tag ok"><Users size={13} /> Agent C — simulated customer</span>
                     <span className="plab-hint">
-                      Question {Math.min(clientAsked + 1, clientDepth)} / profondeur {clientDepth} ·
-                      {' '}{autoPromote ? 'enchaînement automatique, acceptation sans écriture' : 'validation par vous'} ·
-                      {' '}fournisseur {providerLabel(clientProvider)}
+                      Question {Math.min(clientAsked + 1, clientDepth)} / depth {clientDepth} ·
+                      {' '}{autoPromote ? 'automatic chaining, acceptance without writing' : 'validation by you'} ·
+                      {' '}provider {providerLabel(clientProvider)}
                     </span>
                   </div>
                   <div className="plab-actions">
@@ -1796,7 +1796,7 @@ export default function PromptLab() {
                       type="button"
                       onClick={handleClientStop}
                       disabled={!clientRunning}
-                      title="Le cycle en cours se termine proprement, puis le scénario s'arrête."
+                      title="The current cycle finishes cleanly, then the scenario stops."
                     >
                       <Square size={14} /> STOP
                     </button>
@@ -1805,21 +1805,21 @@ export default function PromptLab() {
                       className="plab-primary"
                       disabled={clientRunning || busy || !campaignDecided || clientDepthReached || clientQuestion !== null}
                       onClick={() => startClientScenario()}
-                      title={clientDepthReached ? 'Profondeur atteinte : relancez le scénario avec une profondeur plus grande.' : undefined}
+                      title={clientDepthReached ? 'Depth reached: restart the scenario with a greater depth.' : undefined}
                     >
-                      <Play size={14} /> CONTINUER — question suivante du client
+                      <Play size={14} /> CONTINUE — next customer question
                     </button>
                     {threadCompareButton()}
                     {newConversationGroup(busy || clientRunning)}
                   </div>
                   <p className="plab-hint">
                     {clientRunning
-                      ? 'Scénario en cours : le client pose une question, le cycle l\'optimise, la version est promue et la réponse entre dans la conversation.'
+                      ? 'Scenario in progress: the customer asks a question, the cycle optimizes it, the version is promoted and the answer enters the conversation.'
                       : clientDepthReached
-                        ? `Profondeur atteinte (${clientDepth} question(s)) : augmentez la profondeur pour continuer.`
+                        ? `Depth reached (${clientDepth} question(s)): increase the depth to continue.`
                         : !campaignDecided
-                          ? "Le cycle en cours doit d'abord être validé (promouvoir une version, ou « accepter sans changement »)."
-                          : 'CONTINUER : le client lit la dernière réponse et pose sa question suivante (tout l\'historique est rejoué).'}
+                          ? "The current cycle must first be validated (promote a version, or “accept without change”)."
+                          : 'CONTINUE: the customer reads the last answer and asks their next question (the whole history is replayed).'}
                   </p>
                 </div>
               )}
@@ -1836,50 +1836,50 @@ export default function PromptLab() {
         <>
           {/* 2) Snapshot de référence */}
           <section className="mkt-card">
-            <h2><Braces size={16} /> Snapshot de référence créé</h2>
+            <h2><Braces size={16} /> Reference snapshot created</h2>
             <ul className="plab-locks">
-              <li>🔒 Question — figée</li>
-              <li>🔒 Données financières — figées ({detail.snapshot.frozenData.length} fichier(s), catalogue {detail.snapshot.catalogSize} entrée(s))</li>
-              <li>🔒 Classification d'intention et projet — figés</li>
-              <li>🔒 Prompt hors zone — figé (gabarit + agent principal)</li>
-              <li>Seule la zone <code>[[[ … ]]]</code> évolue.</li>
+              <li>🔒 Question — fixed</li>
+              <li>🔒 Financial data — fixed ({detail.snapshot.frozenData.length} file(s), catalog {detail.snapshot.catalogSize} entry(ies))</li>
+              <li>🔒 Intent and project classification — fixed</li>
+              <li>🔒 Prompt outside the zone — fixed (template + main agent)</li>
+              <li>Only the zone <code>[[[ … ]]]</code> evolves.</li>
             </ul>
             <div className="plab-actions">
               <button type="button" onClick={() => setOpenSnapshot((open) => !open)}>
-                <Eye size={15} /> {openSnapshot ? 'Masquer le snapshot' : 'Voir le snapshot'}
+                <Eye size={15} /> {openSnapshot ? 'Hide the snapshot' : 'Show the snapshot'}
               </button>
               <span className="plab-mono">hash {detail.snapshot.snapshotHash.slice(0, 12)}…</span>
             </div>
             {openSnapshot && (
-              <pre className="plab-pre">{detail.snapshot.debug || 'Aucun détail de contexte.'}</pre>
+              <pre className="plab-pre">{detail.snapshot.debug || 'No context details.'}</pre>
             )}
           </section>
 
           {/* 3) Production vs candidat (§49) */}
           <section className="mkt-card">
-            <h2>Prompt de production et candidat de campagne</h2>
+            <h2>Production prompt and campaign candidate</h2>
             <div className="plab-two">
               <div className="plab-box">
-                <strong>PROMPT ACTUEL / PRODUCTION</strong>
-                <p>Fichier <code>agent/{campaign.zoneFile}</code></p>
+                <strong>CURRENT PROMPT / PRODUCTION</strong>
+                <p>File <code>agent/{campaign.zoneFile}</code></p>
                 <p className="plab-mono">{campaign.zoneKey === 'principal'
-                  ? 'agent principal (transverse à tous les agents)'
+                  ? 'main agent (cross-cutting across all agents)'
                   : campaign.agentLibelle}</p>
-                <p className="plab-hint">Aucune version candidate n'est utilisée par les conversations tant qu'un humain ne l'a pas promue.</p>
+                <p className="plab-hint">No candidate version is used by conversations until a human has promoted it.</p>
               </div>
               <div className="plab-box">
-                <strong>CAMPAGNE {campaign.campaignId}</strong>
-                <p>Base : <b>{campaign.basePromptVersion}</b> · Candidat courant : <b>{campaign.currentCandidateVersion}</b></p>
+                <strong>CAMPAIGN {campaign.campaignId}</strong>
+                <p>Base: <b>{campaign.basePromptVersion}</b> · Current candidate: <b>{campaign.currentCandidateVersion}</b></p>
                 <p className="plab-hint">
-                  Fournisseurs : IA coach <b>{providerLabel(campaign.provider)}</b> · Agent B <b>{providerLabel(campaign.controllerProvider)}</b>
+                  Providers: Coach AI <b>{providerLabel(campaign.provider)}</b> · Agent B <b>{providerLabel(campaign.controllerProvider)}</b>
                   {' '}· Agent A <b>{providerLabel(campaign.editorProvider)}</b>
                 </p>
                 {campaign.promotedVersion && (
                   <p className="plab-ok">
-                    ★ Version acceptée pour la conversation : {campaign.promotedVersion}
+                    ★ Version accepted for the conversation: {campaign.promotedVersion}
                     {detail.versions.find((item) => item.version === campaign.promotedVersion)?.applied
-                      ? ' — présente dans le prompt de production.'
-                      : ' — le prompt de production n\'a PAS été modifié (utilisez « Promouvoir », ou le bilan de la conversation).'}
+                      ? ' — present in the production prompt.'
+                      : ' — the production prompt was NOT modified (use “Promote”, or the conversation summary).'}
                   </p>
                 )}
               </div>
@@ -1888,10 +1888,10 @@ export default function PromptLab() {
 
           {/* 4) Progression + coûts */}
           <section className="mkt-card">
-            <h2>Progression</h2>
+            <h2>Progress</h2>
             <p>
-              État : <b>{label('campaignStatusLabels', campaign.status, STATUS_LABELS[campaign.status])}</b> · Itération {campaign.completedIterations} / {campaign.requestedIterations}
-              {' '}(réalisées {campaign.completedIterations}, restantes {remaining})
+              Status: <b>{label('campaignStatusLabels', campaign.status, STATUS_LABELS[campaign.status])}</b> · Iteration {campaign.completedIterations} / {campaign.requestedIterations}
+              {' '}(completed {campaign.completedIterations}, remaining {remaining})
             </p>
             <div className="plab-progress">
               <div
@@ -1900,10 +1900,10 @@ export default function PromptLab() {
               />
             </div>
             <p className="plab-hint">
-              <Type size={13} /> Appels IA : {campaign.aiCalls} · Caractères envoyés : {campaign.totalPromptChars.toLocaleString('fr-FR')} · Durée IA : {(campaign.totalDurationMs / 1000).toFixed(1)} s
+              <Type size={13} /> AI calls: {campaign.aiCalls} · Characters sent: {campaign.totalPromptChars.toLocaleString('en-GB')} · AI duration: {(campaign.totalDurationMs / 1000).toFixed(1)} s
             </p>
             {campaign.error && (campaign.errorStep
-              ? <p className="plab-error">Étape {campaign.errorStep} : {campaign.error}</p>
+              ? <p className="plab-error">Step {campaign.errorStep}: {campaign.error}</p>
               : <p className="plab-hint">⏸ {campaign.error}</p>)}
 
             {/* Nombre d'itérations ajoutées à la reprise : visible DÈS que la campagne ne tourne plus
@@ -1912,7 +1912,7 @@ export default function PromptLab() {
             {(campaign.status === 'PAUSED' || campaign.status === 'COMPLETED' || campaign.status === 'ERROR')
               && maxExtraIterations > 0 && (
               <label className="plab-field">
-                <span>Itérations supplémentaires à ajouter au cycle</span>
+                <span>Additional iterations to add to the cycle</span>
                 <input
                   type="number"
                   min={0}
@@ -1923,7 +1923,7 @@ export default function PromptLab() {
                     Math.min(maxExtraIterations, Number(event.target.value) || 0)))}
                 />
                 <small>
-                  {`Plafond cumulé : ${campaign.maxIterations} itérations (déjà demandées : ${campaign.requestedIterations}, encore possible : ${maxExtraIterations}).`}
+                  {`Cumulative cap: ${campaign.maxIterations} iterations (already requested: ${campaign.requestedIterations}, still possible: ${maxExtraIterations}).`}
                 </small>
               </label>
             )}
@@ -1931,10 +1931,10 @@ export default function PromptLab() {
             <div className="plab-actions">
               {campaign.status === 'RUNNING' && (
                 <button type="button" className={stopping ? 'plab-danger' : undefined} onClick={handleStop} disabled={stopping}>
-                  <X size={15} /> {stopping ? 'ARRÊT DEMANDÉ…' : 'STOP'}
+                  <X size={15} /> {stopping ? 'STOP REQUESTED…' : 'STOP'}
                 </button>
               )}
-              {campaign.status === 'STOP_REQUESTED' && <span className="plab-hint">Arrêt demandé : la réponse en cours se termine…</span>}
+              {campaign.status === 'STOP_REQUESTED' && <span className="plab-hint">Stop requested: the current answer is finishing…</span>}
               {/* Aucune modification proposée : promouvoir serait identique ⇒ action DIRECTE, sans confirmation. */}
               {canAcceptUnchanged && (
                 <button
@@ -1942,36 +1942,36 @@ export default function PromptLab() {
                   className="plab-primary"
                   onClick={handleAcceptUnchanged}
                   disabled={busy}
-                  title="L'Agent A n'a proposé aucune modification : accepter enregistre la réponse de l'IA dans la conversation de l'atelier. Le prompt n'est pas réécrit — il n'y a donc rien à confirmer."
+                  title="Agent A proposed no change: accepting saves the AI answer in the workshop conversation. The prompt is not rewritten — so there is nothing to confirm."
                 >
-                  <ThumbsUp size={15} /> ACCEPTER SANS CHANGEMENT
+                  <ThumbsUp size={15} /> ACCEPT WITHOUT CHANGE
                 </button>
               )}
               {(campaign.status === 'PAUSED' || campaign.status === 'STOP_REQUESTED') && (
                 <>
                   <button type="button" onClick={() => setShowFeedback((open) => !open)} disabled={busy}>
-                    <MessageSquare size={15} /> AJOUTER MON AVIS
+                    <MessageSquare size={15} /> ADD MY FEEDBACK
                   </button>
                   <button type="button" className="plab-primary" onClick={() => handleResume(false)} disabled={busy}>
-                    <RefreshCw size={15} /> REPRENDRE
+                    <RefreshCw size={15} /> RESUME
                   </button>
                   <button type="button" onClick={() => handleResume(true)} disabled={busy || maxExtraIterations === 0}>
-                    <RefreshCw size={15} /> Ajouter mon avis et continuer (+{extraToAdd})
+                    <RefreshCw size={15} /> Add my feedback and continue (+{extraToAdd})
                   </button>
                 </>
               )}
               {campaign.status === 'COMPLETED' && (
                 <>
-                  <button type="button" onClick={handleCompare} disabled={busy}><Braces size={15} /> COMPARER</button>
+                  <button type="button" onClick={handleCompare} disabled={busy}><Braces size={15} /> COMPARE</button>
                   <button type="button" className="plab-primary" onClick={() => handleResume(true)}
                           disabled={busy || maxExtraIterations === 0 || extraToAdd === 0}>
-                    <RefreshCw size={15} /> CONTINUER SANS AVIS (+{extraToAdd})
+                    <RefreshCw size={15} /> CONTINUE WITHOUT FEEDBACK (+{extraToAdd})
                   </button>
                   <button type="button" onClick={() => setShowFeedback((open) => !open)} disabled={busy}>
-                    <MessageSquare size={15} /> AJOUTER MON AVIS ET CONTINUER
+                    <MessageSquare size={15} /> ADD MY FEEDBACK AND CONTINUE
                   </button>
                   <button type="button" className="plab-danger" onClick={handleReject} disabled={busy}>
-                    <ThumbsDown size={15} /> REFUSER LA CAMPAGNE
+                    <ThumbsDown size={15} /> REJECT THE CAMPAIGN
                   </button>
                 </>
               )}
@@ -1980,21 +1980,21 @@ export default function PromptLab() {
             {showFeedback && (
               <div className="plab-feedback">
                 <label className="plab-field">
-                  <span>Votre avis (prioritaire sur le contrôleur automatique)</span>
+                  <span>Your feedback (takes priority over the automatic controller)</span>
                   <textarea
                     rows={3}
                     value={feedbackText}
                     onChange={(event) => setFeedbackText(event.target.value)}
-                    placeholder="Le résultat est meilleur mais le Coach insiste trop sur les risques. Je souhaite conserver l'avertissement mais en une seule phrase."
+                    placeholder="The result is better but the Coach insists too much on the risks. I would like to keep the warning but in a single sentence."
                   />
                 </label>
                 <div className="plab-actions">
                   <button type="button" className="plab-primary" onClick={handleFeedback} disabled={busy || !feedbackText.trim()}>
-                    <Check size={15} /> Enregistrer mon avis
+                    <Check size={15} /> Save my feedback
                   </button>
                   {campaign.status === 'COMPLETED' && (
                     <button type="button" onClick={handleFeedbackAndResume} disabled={busy || !feedbackText.trim() || maxExtraIterations === 0}>
-                      <RefreshCw size={15} /> Enregistrer et reprendre (+{extraToAdd})
+                      <RefreshCw size={15} /> Save and resume (+{extraToAdd})
                     </button>
                   )}
                 </div>
@@ -2004,19 +2004,19 @@ export default function PromptLab() {
 
           {/* 5) Versions */}
           <section className="mkt-card">
-            <h2><Braces size={16} /> Versions du prompt ({detail.versions.length})</h2>            <p className="plab-hint">
-              <b>Promouvoir</b> installe une version en production (action confirmée, avec sauvegarde du prompt
-              actuel). Deux points d'entrée : la <b>version qui a répondu</b> — bouton sur l'itération concernée, à
-              côté de la réponse que vous venez de juger — et <b>cette table</b>, pour n'importe quelle version,
-              dont la <b>dernière proposée par l'Agent A</b> qui n'a pas encore répondu (sa réponse sera alors
-              <b>générée avec ce prompt</b>). Quand l'Agent A n'a proposé <b>aucune</b> modification, la campagne
-              s'accepte <b>sans changement</b> (barre d'actions de « Progression ») : le prompt n'est pas réécrit et
-              <b>aucune confirmation</b> n'est demandée.
+            <h2><Braces size={16} /> Prompt versions ({detail.versions.length})</h2>            <p className="plab-hint">
+              <b>Promote</b> installs a version in production (confirmed action, with a backup of the current
+              prompt). Two entry points: the <b>version that answered</b> — button on the relevant iteration, next
+              to the answer you have just judged — and <b>this table</b>, for any version, including
+              the <b>last one proposed by Agent A</b> that has not answered yet (its answer will then be
+              <b>generated with this prompt</b>). When Agent A proposed <b>no</b> change, the campaign is accepted
+              <b>without change</b> (“Progress” action bar): the prompt is not rewritten and
+              <b>no confirmation</b> is requested.
             </p>            <div className="mkt-table-scroll">
               <table className="mkt-table">
                 <thead>
                   <tr>
-                    <th>Version</th><th>Empreinte</th><th>Zone (début)</th><th>Statut</th><th></th>
+                    <th>Version</th><th>Fingerprint</th><th>Zone (start)</th><th>Status</th><th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -2026,24 +2026,24 @@ export default function PromptLab() {
                       <td className="plab-mono">{version.promptHash.slice(0, 10)}…</td>
                       <td className="plab-snippet">{version.editableSection.slice(0, 90)}…</td>
                       <td>
-                        {version.applied && <span className="plab-tag ok">★ en production</span>}
-                        {version.production && !version.applied && <span className="plab-tag">référence</span>}
+                        {version.applied && <span className="plab-tag ok">★ in production</span>}
+                        {version.production && !version.applied && <span className="plab-tag">reference</span>}
                         {version.promoted && !version.applied && (
-                          <span className="plab-tag warn">★ acceptée (à promouvoir)</span>
+                          <span className="plab-tag warn">★ accepted (to promote)</span>
                         )}
                       </td>
                       <td>
                         <button type="button" onClick={() => togglePanel(openPrompt, setOpenPrompt, version.version, null)}>
-                          <Eye size={14} /> Voir le prompt
+                          <Eye size={14} /> Show the prompt
                         </button>
                         {version.version !== campaign.basePromptVersion && (
                           <button type="button" onClick={() => togglePanel(openDiff, setOpenDiff, version.version, null)}>
-                            <Braces size={14} /> Changements
+                            <Braces size={14} /> Changes
                           </button>
                         )}
                         {!version.production && !version.applied && canDecide && (
                           <button type="button" onClick={() => setPromotionVersion({ version: version.version, iteration: null })} disabled={busy}>
-                            <ThumbsUp size={14} /> Promouvoir
+                            <ThumbsUp size={14} /> Promote
                           </button>
                         )}
                       </td>
@@ -2058,12 +2058,12 @@ export default function PromptLab() {
 
             {detail.versions.length === 1 && (
               <p className="plab-hint">
-                Aucune nouvelle version pour l'instant : <b>{campaign.basePromptVersion}</b> est le prompt de
-                production et l'Agent A n'a proposé aucun changement. Le numéro de version n'avance QUE quand la
-                zone est réellement réécrite — les itérations « sans modification » réutilisent donc la même
-                version (d'où « Voir le prompt utilisé (V0) » sur plusieurs itérations). Pour enchaîner la
-                conversation malgré tout, utilisez <b>ACCEPTER SANS CHANGEMENT</b> : le prompt reste identique et
-                aucune confirmation n'est demandée.
+                No new version yet: <b>{campaign.basePromptVersion}</b> is the production
+                prompt and Agent A proposed no change. The version number only advances WHEN the
+                zone is actually rewritten — “no change” iterations therefore reuse the same
+                version (hence “Show the prompt used (V0)” on several iterations). To continue the
+                conversation anyway, use <b>ACCEPT WITHOUT CHANGE</b>: the prompt stays identical and
+                no confirmation is requested.
               </p>
             )}
           </section>
@@ -2071,23 +2071,23 @@ export default function PromptLab() {
           {/* 6) Comparaison initial / final */}
           {comparison && (
             <section className="mkt-card">
-              <h2><Braces size={16} /> Comparaison {comparison.baseVersion} → {comparison.currentVersion}</h2>
+              <h2><Braces size={16} /> Comparison {comparison.baseVersion} → {comparison.currentVersion}</h2>
               <div className="plab-two">
                 <div className="plab-box">
-                  <strong>VERSION INITIALE {comparison.baseVersion}</strong>
+                  <strong>INITIAL VERSION {comparison.baseVersion}</strong>
                   <pre className="plab-pre">{comparison.baseEditableSection}</pre>
-                  <h3>Réponse</h3>
+                  <h3>Answer</h3>
                   <pre className="plab-pre">{comparison.baseResponse}</pre>
                 </div>
                 <div className="plab-box">
-                  <strong>VERSION COURANTE {comparison.currentVersion}</strong>
+                  <strong>CURRENT VERSION {comparison.currentVersion}</strong>
                   <pre className="plab-pre">{comparison.currentEditableSection}</pre>
-                  <h3>Réponse</h3>
+                  <h3>Answer</h3>
                   <pre className="plab-pre">{comparison.currentResponse}</pre>
                 </div>
               </div>
               <p className="plab-hint">
-                {comparison.iterationCount} itération(s) menée(s) sur cette campagne.
+                {comparison.iterationCount} iteration(s) carried out on this campaign.
               </p>
             </section>
           )}
@@ -2101,63 +2101,63 @@ export default function PromptLab() {
 
           {/* 8) Itérations */}
           <section className="mkt-card">
-            <h2><HistoryIcon size={16} /> Itérations ({detail.iterations.length})</h2>
-            {detail.iterations.length === 0 && <p className="plab-hint">Aucune itération pour l'instant.</p>}
+            <h2><HistoryIcon size={16} /> Iterations ({detail.iterations.length})</h2>
+            {detail.iterations.length === 0 && <p className="plab-hint">No iteration yet.</p>}
             {[...detail.iterations].reverse().map((iteration: PromptIteration) => (
               <article key={iteration.iterationId} className="plab-iteration">
                 <header>
-                  <b>ITÉRATION {iteration.iterationNumber}</b>
+                  <b>ITERATION {iteration.iterationNumber}</b>
                   <span>Prompt {iteration.promptVersion} → {iteration.resultingVersion}</span>
-                  <span>{new Date(iteration.completedAt || iteration.startedAt).toLocaleTimeString('fr-FR')}</span>
+                  <span>{new Date(iteration.completedAt || iteration.startedAt).toLocaleTimeString('en-GB')}</span>
                   {iteration.noChange && (
                     <span className="plab-tag"
-                          title="L'Agent A n'a proposé aucun changement : cette itération ne produit donc aucune nouvelle version (le prompt utilisé reste la version courante).">
-                      sans modification → aucune nouvelle version
+                          title="Agent A proposed no change: this iteration therefore produces no new version (the prompt used remains the current version).">
+                      no change → no new version
                     </span>
                   )}
-                  {iteration.humanFeedbackApplied && <span className="plab-tag ok">avis humain appliqué</span>}
+                  {iteration.humanFeedbackApplied && <span className="plab-tag ok">human feedback applied</span>}
                   {(iteration.contextAddedData?.length ?? 0) > 0 && (
                     <span
                       className="plab-tag"
-                      title={`Le Coach a demandé ces données : ${(iteration.contextAddedData ?? []).join(', ')}`}
+                      title={`The Coach requested these data: ${(iteration.contextAddedData ?? []).join(', ')}`}
                     >
-                      contexte complété (+{iteration.contextAddedData?.length})
+                      context completed (+{iteration.contextAddedData?.length})
                     </span>
                   )}
-                  {iteration.status === 'ERROR' && <span className="plab-tag ko">erreur</span>}
+                  {iteration.status === 'ERROR' && <span className="plab-tag ko">error</span>}
                   {iteration.error.includes('NEED_DATA') && (
                     <span
                       className="plab-tag ko"
-                      title="Le prompt a demandé des données que le contexte ne contient pas : l'itération est dégradée exactement comme en production (la réponse de repli est enregistrée, la campagne continue)."
+                      title="The prompt requested data that the context does not contain: the iteration is degraded exactly as in production (the fallback answer is recorded, the campaign continues)."
                     >
-                      données indisponibles → réponse dégradée
+                      data unavailable → degraded answer
                     </span>
                   )}
                 </header>
-                <h3>Réponse du Coach</h3>
-                <pre className="plab-pre response">{iteration.coachResponse || '(aucune réponse enregistrée)'}</pre>
+                <h3>Coach answer</h3>
+                <pre className="plab-pre response">{iteration.coachResponse || '(no answer recorded)'}</pre>
                 {iteration.error && <p className="plab-error">{iteration.error}</p>}
                 <p className="plab-hint">
-                  Agent B : {iteration.controllerFeedback
-                    ? `${iteration.controllerFeedback.issues.length} point(s) d'amélioration — ${label('controllerStatusLabels', iteration.controllerFeedback.status)}`
+                  Agent B: {iteration.controllerFeedback
+                    ? `${iteration.controllerFeedback.issues.length} point(s) for improvement — ${label('controllerStatusLabels', iteration.controllerFeedback.status)}`
                     : '—'}
-                  {' · '}Agent A : {iteration.editorResult ? label('editorStatusLabels', iteration.editorResult.status) : '—'}
+                  {' · '}Agent A: {iteration.editorResult ? label('editorStatusLabels', iteration.editorResult.status) : '—'}
                   {iteration.changeSummary.length > 0 && ` — ${iteration.changeSummary.join(' ; ')}`}
                 </p>
                 <div className="plab-actions">
                   <button type="button" onClick={() => setOpenAnalysis(openAnalysis === iteration.iterationNumber ? null : iteration.iterationNumber)}>
-                    <Bot size={14} /> Voir l'analyse Agent B
+                    <Bot size={14} /> Show Agent B analysis
                   </button>
                   <button type="button" onClick={() => togglePanel(openPrompt, setOpenPrompt, iteration.promptVersion, iteration.iterationNumber)}>
-                    <Eye size={14} /> Voir le prompt utilisé ({iteration.promptVersion})
+                    <Eye size={14} /> Show the prompt used ({iteration.promptVersion})
                   </button>
                   {producedNewVersion(iteration) && (
                     <>
                       <button type="button" onClick={() => togglePanel(openPrompt, setOpenPrompt, iteration.resultingVersion, iteration.iterationNumber)}>
-                        <Eye size={14} /> Voir le prompt produit ({iteration.resultingVersion})
+                        <Eye size={14} /> Show the produced prompt ({iteration.resultingVersion})
                       </button>
                       <button type="button" onClick={() => togglePanel(openDiff, setOpenDiff, iteration.resultingVersion, iteration.iterationNumber)}>
-                        <Braces size={14} /> Changements {iteration.promptVersion} → {iteration.resultingVersion}
+                        <Braces size={14} /> Changes {iteration.promptVersion} → {iteration.resultingVersion}
                       </button>
                     </>
                   )}
@@ -2166,15 +2166,15 @@ export default function PromptLab() {
                       type="button"
                       onClick={() => setPromotionVersion({ version: iteration.promptVersion, iteration: iteration.iterationNumber })}
                       disabled={busy}
-                      title={`Promouvoir ${iteration.promptVersion} : c'est le prompt qui a produit la réponse ci-dessus — vous validez donc le prompt dont vous venez de juger la réponse.`}
+                      title={`Promote ${iteration.promptVersion}: this is the prompt that produced the answer above — you are therefore validating the prompt whose answer you have just judged.`}
                     >
-                      <ThumbsUp size={14} /> Promouvoir
+                      <ThumbsUp size={14} /> Promote
                     </button>
                   )}
                   {!producedNewVersion(iteration) && (
                     <span className="plab-hint">
-                      Aucune version produite : le prompt n'a pas été modifié, il n'y a donc ni
-                      « prompt produit » ni diff à afficher pour cette itération.
+                      No version produced: the prompt was not modified, so there is neither a
+                      “produced prompt” nor a diff to display for this iteration.
                     </span>
                   )}
                 </div>
@@ -2189,20 +2189,20 @@ export default function PromptLab() {
                     <p>{iteration.controllerFeedback.summary}</p>
                     {iteration.controllerFeedback.positivePoints.length > 0 && (
                       <>
-                        <h3>Points satisfaisants</h3>
+                        <h3>Satisfactory points</h3>
                         <ul>{iteration.controllerFeedback.positivePoints.map((point, index) => <li key={index}>✓ {point}</li>)}</ul>
                       </>
                     )}
                     {iteration.controllerFeedback.issues.length > 0 && (
                       <>
-                        <h3>Points à améliorer</h3>
+                        <h3>Points to improve</h3>
                         <ul>
                           {iteration.controllerFeedback.issues.map((issue, index) => (
                             <li key={index}>
                               ⚠ <b>{label('issueTypeLabels', issue.type)}</b> — {label('severityLabels', issue.severity, SEVERITY_LABELS[issue.severity])}
-                              {' · '}origine : {label('sourceLabels', issue.source, SOURCE_LABELS[issue.source])}
+                              {' · '}source: {label('sourceLabels', issue.source, SOURCE_LABELS[issue.source])}
                               <div>{issue.observation}</div>
-                              <div className="plab-hint">Attendu : {issue.expectedBehavior}</div>
+                              <div className="plab-hint">Expected: {issue.expectedBehavior}</div>
                             </li>
                           ))}
                         </ul>
@@ -2210,18 +2210,18 @@ export default function PromptLab() {
                     )}
                     {iteration.controllerFeedback.mustPreserve.length > 0 && (
                       <>
-                        <h3>À préserver</h3>
+                        <h3>To preserve</h3>
                         <ul>{iteration.controllerFeedback.mustPreserve.map((item, index) => <li key={index}>✓ {item}</li>)}</ul>
                       </>
                     )}
-                    <h3>Recommandation transmise à l'éditeur</h3>
+                    <h3>Recommendation sent to the editor</h3>
                     <p>{iteration.controllerFeedback.recommendationForPromptEditor}</p>
                     {iteration.controllerFeedback.requiresHumanOrBusinessReview && (
-                      <p className="plab-error">Le contrôleur signale une décision humaine ou métier nécessaire.</p>
+                      <p className="plab-error">The controller reports that a human or business decision is required.</p>
                     )}
                     {iteration.editorResult && iteration.editorResult.unresolvedPoints.length > 0 && (
                       <>
-                        <h3>Points non résolus (revue humaine)</h3>
+                        <h3>Unresolved points (human review)</h3>
                         <ul>{iteration.editorResult.unresolvedPoints.map((item, index) => <li key={index}>{item}</li>)}</ul>
                       </>
                     )}
@@ -2234,13 +2234,13 @@ export default function PromptLab() {
           {/* 9) Avis humains */}
           {detail.feedbacks.length > 0 && (
             <section className="mkt-card">
-              <h2><MessageSquare size={16} /> Avis humains ({detail.feedbacks.length})</h2>
+              <h2><MessageSquare size={16} /> Human feedback ({detail.feedbacks.length})</h2>
               <ul className="plab-feedbacks">
                 {detail.feedbacks.map((feedback) => (
                   <li key={feedback.feedbackId} className={feedback.applied ? '' : 'pending'}>
-                    <span className="plab-tag">AVIS HUMAIN</span> après l'itération {feedback.iterationNumber}
-                    {' · '}{new Date(feedback.createdAt).toLocaleString('fr-FR')}
-                    {' · '}{feedback.applied ? 'appliqué' : 'en attente'}
+                    <span className="plab-tag">HUMAN FEEDBACK</span> after iteration {feedback.iterationNumber}
+                    {' · '}{new Date(feedback.createdAt).toLocaleString('en-GB')}
+                    {' · '}{feedback.applied ? 'applied' : 'pending'}
                     <div>{feedback.content}</div>
                   </li>
                 ))}

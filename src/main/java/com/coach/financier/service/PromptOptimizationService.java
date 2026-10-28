@@ -65,10 +65,10 @@ public class PromptOptimizationService {
      * l'atelier ne charge que les fichiers autorisés (aucune donnée inventée) et ne boucle pas
      * indéfiniment (même limite qu'en production).
      */
-    public static final String NEED_DATA_MESSAGE = "Le Coach demande des données supplémentaires (NEED_DATA) que "
-            + "le catalogue ne permet pas de fournir (fichiers autorisés uniquement, aucun inventé). "
-            + "L'itération est CONSERVÉE avec la réponse de repli du chat (comportement de production) : "
-            + "la campagne et la conversation continuent normalement.";
+    public static final String NEED_DATA_MESSAGE = "The Coach is requesting additional data (NEED_DATA) that "
+            + "the catalogue cannot provide (authorised files only, none invented). "
+            + "The iteration is KEPT with the chat fallback response (production behaviour): "
+            + "the campaign and the conversation continue normally.";
 
     /** Nombre maximal de complétions du contexte pour UNE itération (même limite que la production). */
     public static final int MAX_CONTEXT_COMPLETIONS = 3;
@@ -79,10 +79,10 @@ public class PromptOptimizationService {
      * donc jamais, et la réponse enregistrée est celle que le client recevrait réellement.
      */
     public static final String UNAVAILABLE_DATA_ANSWER =
-            "Je n'ai pas pu finaliser l'analyse demandée à partir des données disponibles.";
+            "I was unable to complete the requested analysis from the available data.";
 
     /** Trace de l'atelier dans la page Logs. */
-    public static final String LOG_AGENT_PREFIX = "Atelier prompts — ";
+    public static final String LOG_AGENT_PREFIX = "Prompt Lab — ";
 
     private final PromptOptimizationProperties properties;
     private final PromptOptimizationStore store;
@@ -124,13 +124,13 @@ public class PromptOptimizationService {
     public PromptOptimizationModels.ClientTurn clientTurn(String threadId, String brief, int turnNumber, int depth,
                                                           AIModels.AIProvider provider) {
         if (!properties.isEnabled()) {
-            throw new IllegalStateException("L'atelier d'optimisation des prompts est désactivé.");
+            throw new IllegalStateException("The prompt optimization workshop is disabled.");
         }
         String context = brief == null ? "" : brief.trim();
         if (context.isEmpty()) {
-            throw new IllegalArgumentException("Le contexte du client (brief) est obligatoire pour l'agent C.");
+            throw new IllegalArgumentException("The client context (brief) is required for Agent C.");
         }
-        AIModels.AIProvider agentProvider = requireRealProvider(provider, "Agent C (client simulé)");
+        AIModels.AIProvider agentProvider = requireRealProvider(provider, "Agent C (simulated client)");
         PromptOptimizationModels.ConversationThread thread = threadId == null || threadId.isBlank()
                 ? null : thread(threadId.trim());
         FinancialSummary summary = financialAnalysis.analyze();
@@ -166,10 +166,10 @@ public class PromptOptimizationService {
     public PromptOptimizationModels.ClientBrief clientBrief(String agentId, List<String> previousBriefs,
                                                             AIModels.AIProvider provider) {
         if (!properties.isEnabled()) {
-            throw new IllegalStateException("L'atelier d'optimisation des prompts est désactivé.");
+            throw new IllegalStateException("The prompt optimization workshop is disabled.");
         }
         AgentDefinition agent = resolveAgent(agentId);
-        AIModels.AIProvider agentProvider = requireRealProvider(provider, "Agent C (projet du client)");
+        AIModels.AIProvider agentProvider = requireRealProvider(provider, "Agent C (client project)");
         FinancialSummary summary = financialAnalysis.analyze();
         BigDecimal ceiling = projectCeiling(agent, summary);
 
@@ -187,15 +187,15 @@ public class PromptOptimizationService {
         payload.put("budgetCoherent", Map.of(
                 "plafondProjet", ceiling,
                 "devise", "EUR",
-                "regle", "Le montant à financer doit rester SOUS ce plafond, cohérent avec l'épargne disponible, "
-                        + "le solde du compte courant et la mensualité de crédit déjà remboursée."));
+                "regle", "The amount to finance must remain BELOW this ceiling, consistent with the available savings, "
+                        + "the current account balance and the loan monthly payment already being repaid."));
         payload.put("previousBriefs", cleanBriefs(previousBriefs));
 
         PromptOptimizationModels.ClientBrief brief = aiServiceFactory.get(agentProvider)
                 .clientBrief(payload, agentProvider);
         if (!brief.usable()) {
-            throw new IllegalStateException("L'agent C n'a proposé aucun projet exploitable pour l'agent « "
-                    + agent.getLibelle() + " » : réessayez, ou écrivez le brief vous-même.");
+            throw new IllegalStateException("Agent C did not propose any usable project for the agent \""
+                    + agent.getLibelle() + "\": try again, or write the brief yourself.");
         }
         requireCredibleAmount(brief, agent, summary, ceiling);
         log.info("Agent C : projet proposé pour l'agent « {} » : {} (montant {} €, plafond {} €) — {}",
@@ -239,10 +239,10 @@ public class PromptOptimizationService {
             return;
         }
         BigDecimal savings = summary == null ? BigDecimal.ZERO : BigDecimal.valueOf(summary.savingsBalance());
-        throw new IllegalStateException("Projet refusé pour l'agent « " + agent.getLibelle() + " » : "
-                + amount(found) + " € à financer alors que l'épargne du client est de " + amount(savings)
-                + " € et que le plafond admis pour ce dossier est de " + amount(ceiling)
-                + " €. Relancez « Générer projet » : l'agent C doit rester dans l'ordre de grandeur du dossier.");
+        throw new IllegalStateException("Project refused for the agent \"" + agent.getLibelle() + "\": "
+                + amount(found) + " € to finance while the customer's savings are " + amount(savings)
+                + " € and the ceiling allowed for this case file is " + amount(ceiling)
+                + " €. Run \"Generate project\" again: Agent C must stay within the order of magnitude of the case file.");
     }
 
     /** Plus grand montant cité dans un texte (null si aucun) — borne le projet annoncé dans le brief. */
@@ -361,7 +361,7 @@ public class PromptOptimizationService {
     /** Les trois fournisseurs doivent être RÉELS : le mode démo ne peut ni contrôler ni réécrire un prompt. */
     private static AIModels.AIProvider requireRealProvider(AIModels.AIProvider provider, String role) {
         if (provider == null || provider == AIModels.AIProvider.MOCK) {
-            throw new IllegalArgumentException("Fournisseur IA du " + role + " : "
+            throw new IllegalArgumentException("AI provider for the " + role + ": "
                     + MockAIService.NO_REAL_PROVIDER_MESSAGE);
         }
         return provider;
@@ -390,22 +390,22 @@ public class PromptOptimizationService {
      */
     public PromptOptimizationModels.Campaign start(StartRequest request) {
         if (!properties.isEnabled()) {
-            throw new IllegalStateException("L'atelier d'optimisation des prompts est désactivé.");
+            throw new IllegalStateException("The prompt optimization workshop is disabled.");
         }
         String question = request.question() == null ? "" : request.question().trim();
         if (question.isEmpty()) {
-            throw new IllegalArgumentException("La question de test est obligatoire.");
+            throw new IllegalArgumentException("The test question is required.");
         }
         if (request.iterations() < 1 || request.iterations() > properties.maxIterations()) {
-            throw new IllegalArgumentException("Nombre d'itérations invalide : " + request.iterations()
-                    + " (attendu entre 1 et " + properties.maxIterations() + ").");
+            throw new IllegalArgumentException("Invalid number of iterations: " + request.iterations()
+                    + " (expected between 1 and " + properties.maxIterations() + ").");
         }
         // Un seul fournisseur peut être choisi pour les trois étapes, ou un fournisseur PAR étape.
         AIModels.AIProvider provider = requireRealProvider(request.provider(), "coach");
         AIModels.AIProvider controllerProvider = requireRealProvider(
-                orCoach(request.controllerProvider(), request.provider()), "Agent B (contrôleur)");
+                orCoach(request.controllerProvider(), request.provider()), "Agent B (controller)");
         AIModels.AIProvider editorProvider = requireRealProvider(
-                orCoach(request.editorProvider(), request.provider()), "Agent A (éditeur)");
+                orCoach(request.editorProvider(), request.provider()), "Agent A (editor)");
         AgentDefinition agent = resolveAgent(request.agentId());
         ZoneInfo zoneInfo = describeZone(agent, request.zoneKey());
         if (!zoneInfo.optimizable()) {
@@ -442,7 +442,7 @@ public class PromptOptimizationService {
         // La classification est calculée UNE fois puis GELÉE dans le snapshot : c'est un appel IA comptabilisé.
         IntentClassification classification = ai.classifyIntent(question, currentProjectDescription, provider);
         if (classification.isOutOfScope()) {
-            throw new IllegalArgumentException("La question de test est hors périmètre du coach financier.");
+            throw new IllegalArgumentException("The test question is out of scope for the financial coach.");
         }
         CurrentProject project = new CurrentProject();
         if (previousClassification != null && continuesProject(classification)) {
@@ -513,26 +513,26 @@ public class PromptOptimizationService {
         }
         String sourceId = request.fromCampaignId() == null ? "" : request.fromCampaignId().trim();
         if (sourceId.isEmpty()) {
-            throw new IllegalArgumentException("Chaînage incomplet : le cycle source est obligatoire avec une version.");
+            throw new IllegalArgumentException("Incomplete chaining: the source cycle is required together with a version.");
         }
         PromptOptimizationModels.Campaign source = store.require(sourceId);
         if (!source.zoneFile().equals(zoneInfo.zoneFile())) {
-            throw new IllegalArgumentException("Le cycle " + sourceId + " optimise « " + source.zoneFile()
-                    + " » et non « " + zoneInfo.zoneFile() + " » : impossible d'enchaîner sur sa version retenue.");
+            throw new IllegalArgumentException("Cycle " + sourceId + " optimises \"" + source.zoneFile()
+                    + "\" and not \"" + zoneInfo.zoneFile() + "\": cannot chain on its selected version.");
         }
         if (source.isActive()) {
-            throw new IllegalStateException("Le cycle " + sourceId + " tourne encore : terminez-le avant "
-                    + "d'enchaîner un nouveau cycle sur sa version retenue.");
+            throw new IllegalStateException("Cycle " + sourceId + " is still running: finish it before "
+                    + "chaining a new cycle on its selected version.");
         }
         String section = store.editableSectionOf(sourceId, version).orElseThrow(() -> new IllegalArgumentException(
-                "Version inconnue dans le cycle " + sourceId + " : " + version));
+                "Unknown version in cycle " + sourceId + ": " + version));
         PromptOptimizationModels.Snapshot sourceSnapshot = store.snapshot(sourceId).orElseThrow(
-                () -> new IllegalStateException("Snapshot introuvable pour le cycle " + sourceId));
+                () -> new IllegalStateException("Snapshot not found for cycle " + sourceId));
         if (!fromProduction.prefix().equals(sourceSnapshot.fixedPrefix())
                 || !fromProduction.suffix().equals(sourceSnapshot.fixedSuffix())) {
-            throw new IllegalStateException("Le prompt de « " + zoneInfo.zoneFile() + " » a été modifié depuis le "
-                    + "cycle " + sourceId + " : impossible d'enchaîner sur sa version retenue (rien n'a été écrit). "
-                    + "Promouvez d'abord cette version, ou relancez un cycle normal.");
+            throw new IllegalStateException("The prompt of \"" + zoneInfo.zoneFile() + "\" has been modified since "
+                    + "cycle " + sourceId + ": cannot chain on its selected version (nothing was written). "
+                    + "Promote that version first, or start a normal cycle again.");
         }
         return new PromptZoneService.Zone(true, sourceSnapshot.fixedPrefix(), section, sourceSnapshot.fixedSuffix(),
                 null);
@@ -555,20 +555,20 @@ public class PromptOptimizationService {
     private PromptOptimizationModels.Iteration runIteration(String campaignId) {
         PromptOptimizationModels.Campaign campaign = store.require(campaignId);
         if (PromptOptimizationModels.campaignDecided(campaign.status())) {
-            throw new IllegalStateException("Campagne clôturée ("
-                    + PromptOptimizationModels.campaignStatusLabel(campaign.status()) + ") : créez une nouvelle campagne.");
+            throw new IllegalStateException("Campaign closed ("
+                    + PromptOptimizationModels.campaignStatusLabel(campaign.status()) + "): create a new campaign.");
         }
         if (PromptOptimizationModels.campaignPaused(campaign.status())) {
-            throw new IllegalStateException("Campagne en pause : reprenez-la avant de lancer une itération.");
+            throw new IllegalStateException("Campaign paused: resume it before starting an iteration.");
         }
         if (!campaign.canIterate()) {
-            throw new IllegalStateException("Aucune itération possible : " + (campaign.maxIterationsReached()
-                    ? "le plafond de " + campaign.maxIterations() + " itérations cumulées est atteint"
-                    : "le cycle demandé est terminé")
-                    + " (ajoutez un avis et continuez, ou créez une nouvelle campagne).");
+            throw new IllegalStateException("No iteration possible: " + (campaign.maxIterationsReached()
+                    ? "the ceiling of " + campaign.maxIterations() + " cumulative iterations has been reached"
+                    : "the requested cycle is complete")
+                    + " (add feedback and continue, or create a new campaign).");
         }
         PromptOptimizationModels.Snapshot snapshot = store.snapshot(campaignId).orElseThrow(
-                () -> new IllegalStateException("Snapshot introuvable pour la campagne " + campaignId));
+                () -> new IllegalStateException("Snapshot not found for campaign " + campaignId));
         AIModels.AIProvider provider = coachProviderOf(campaign);
         AIModels.AIProvider controllerProvider = providerOf(campaign.controllerProvider(), provider);
         AIModels.AIProvider editorProvider = providerOf(campaign.editorProvider(), provider);
@@ -580,7 +580,7 @@ public class PromptOptimizationService {
         int number = campaign.completedIterations() + 1;
         String version = campaign.currentCandidateVersion();
         String section = store.editableSectionOf(campaignId, version).orElseThrow(
-                () -> new IllegalStateException("Zone éditable de la version " + version + " introuvable"));
+                () -> new IllegalStateException("Editable zone of version " + version + " not found"));
         String composedPrompt = composePrompt(snapshot, section);
         AIModels.Classification legacy = legacyOf(snapshot.classification());
         long promptChars = coachPromptChars(snapshot, composedPrompt, legacy);
@@ -678,7 +678,7 @@ public class PromptOptimizationService {
                     noChange = false;
                 }
             } else if (edition.reviewRequired()) {
-                error = "Aucune modification appliquée : revue humaine ou métier requise. "
+                error = "No change applied: human or business review required. "
                         + String.join(" ", edition.unresolvedPoints());
             }
             if (humanApplied) {
@@ -776,7 +776,7 @@ public class PromptOptimizationService {
         boolean stoppable = PromptOptimizationModels.campaignBusy(campaign.status())
                 || PromptOptimizationModels.CAMPAIGN_CREATED.equals(campaign.status());
         if (!stoppable) {
-            throw new IllegalStateException("Aucun arrêt possible : la campagne est "
+            throw new IllegalStateException("No stop possible: the campaign is "
                     + PromptOptimizationModels.campaignStatusLabel(campaign.status()) + ".");
         }
         boolean inFlight = store.isBusy(campaignId);
@@ -803,18 +803,18 @@ public class PromptOptimizationService {
             boolean completed = PromptOptimizationModels.CAMPAIGN_COMPLETED.equals(campaign.status());
             boolean failed = PromptOptimizationModels.CAMPAIGN_ERROR.equals(campaign.status());
             if (!paused && !stopRequested && !completed && !failed) {
-                throw new IllegalStateException("La reprise n'est possible qu'en pause, après une erreur ou après "
-                        + "la fin du cycle demandé (statut actuel : "
+                throw new IllegalStateException("Resume is only possible from a pause, after an error or after "
+                        + "the end of the requested cycle (current status: "
                         + PromptOptimizationModels.campaignStatusLabel(campaign.status()) + ").");
             }
             int additional = Math.max(0, additionalIterations);
             int total = campaign.requestedIterations() + additional;
             if (total > campaign.maxIterations()) {
-                throw new IllegalArgumentException("Le plafond de " + campaign.maxIterations()
-                        + " itérations CUMULÉES est atteint : créez une nouvelle campagne pour continuer (§33).");
+                throw new IllegalArgumentException("The ceiling of " + campaign.maxIterations()
+                        + " CUMULATIVE iterations has been reached: create a new campaign to continue (§33).");
             }
             PromptOptimizationModels.Snapshot snapshot = store.snapshot(campaignId).orElseThrow(
-                    () -> new IllegalStateException("Snapshot introuvable pour la campagne " + campaignId));
+                    () -> new IllegalStateException("Snapshot not found for campaign " + campaignId));
             String version = campaign.currentCandidateVersion();
             Optional<PromptOptimizationModels.HumanFeedback> pending = store.pendingHumanFeedback(campaignId);
             if (pending.isPresent()) {
@@ -839,7 +839,7 @@ public class PromptOptimizationService {
                                       PromptOptimizationModels.HumanFeedback pending, String version) {
         String campaignId = campaign.campaignId();
         String section = store.editableSectionOf(campaignId, version).orElseThrow(
-                () -> new IllegalStateException("Zone éditable de la version " + version + " introuvable"));
+                () -> new IllegalStateException("Editable zone of version " + version + " not found"));
         PromptOptimizationModels.Iteration previous = store.latestIteration(campaignId).orElse(null);
         AIModels.AIProvider coach = coachProviderOf(campaign);
         AIModels.AIProvider editor = providerOf(campaign.editorProvider(), coach);
@@ -850,7 +850,7 @@ public class PromptOptimizationService {
                     previous == null ? null : previous.controllerFeedback(), Optional.of(pending),
                     previousChanges(previous)), editor);
         } catch (Exception e) {
-            throw new IllegalStateException("Application de l'avis humain impossible : " + errorMessage(e), e);
+            throw new IllegalStateException("Unable to apply the human feedback: " + errorMessage(e), e);
         }
         String newVersion = version;
         if (result.updated()) {
@@ -874,11 +874,11 @@ public class PromptOptimizationService {
     public PromptOptimizationModels.HumanFeedback addHumanFeedback(String campaignId, String content) {
         PromptOptimizationModels.Campaign campaign = store.require(campaignId);
         if (PromptOptimizationModels.campaignDecided(campaign.status())) {
-            throw new IllegalStateException("Campagne clôturée : l'avis n'est plus pris en compte.");
+            throw new IllegalStateException("Campaign closed: the feedback is no longer taken into account.");
         }
         String text = content == null ? "" : content.trim();
         if (text.isEmpty()) {
-            throw new IllegalArgumentException("L'avis est vide.");
+            throw new IllegalArgumentException("The feedback is empty.");
         }
         PromptOptimizationModels.HumanFeedback feedback = new PromptOptimizationModels.HumanFeedback(null,
                 campaignId, campaign.completedIterations(), PromptOptimizationModels.FEEDBACK_SOURCE_HUMAN,
@@ -937,12 +937,12 @@ public class PromptOptimizationService {
         return store.withCampaignLock(campaignId, () -> {
             PromptOptimizationModels.Campaign campaign = store.require(campaignId);
             if (campaign.isActive()) {
-                throw new IllegalStateException("Impossible de promouvoir pendant que la campagne tourne : arrêtez-la d'abord.");
+                throw new IllegalStateException("Cannot promote while the campaign is running: stop it first.");
             }
             PromptOptimizationModels.Snapshot snapshot = store.snapshot(campaignId).orElseThrow(
-                    () -> new IllegalStateException("Snapshot introuvable pour la campagne " + campaignId));
+                    () -> new IllegalStateException("Snapshot not found for campaign " + campaignId));
             String section = store.editableSectionOf(campaignId, version).orElseThrow(
-                    () -> new IllegalArgumentException("Version inconnue : " + version));
+                    () -> new IllegalArgumentException("Unknown version: " + version));
             String key = promotionKey(campaign, snapshot);
             String currentContent = AgentFiles.readPromptOrDefault(snapshot.zoneFile(), "");
             PromptZoneService.Zone zone = zoneService.parse(currentContent);
@@ -956,26 +956,26 @@ public class PromptOptimizationService {
                             continue;
                         }
                         if (other.isActive() || PromptOptimizationModels.campaignPaused(other.status())) {
-                            throw new IllegalStateException("L'agent principal est transverse : terminez la campagne "
-                                    + other.campaignId() + " avant de le promouvoir.");
+                            throw new IllegalStateException("The main agent is shared: finish campaign "
+                                    + other.campaignId() + " before promoting it.");
                         }
                     }
                 } else {
                     ensureNoOtherActiveCampaign(campaignId, campaign.agentId());
                 }
                 if (!zone.valid()) {
-                    throw new IllegalStateException("Le prompt cible n'a plus de zone éditable valide : "
+                    throw new IllegalStateException("The target prompt no longer has a valid editable zone: "
                             + zone.error());
                 }
                 if (!zone.prefix().equals(snapshot.fixedPrefix())
                         || !zone.suffix().equals(snapshot.fixedSuffix())) {
-                    throw new IllegalStateException("Le prompt de l'agent a été modifié depuis le snapshot de la "
-                            + "campagne : la promotion est refusée pour éviter d'écraser une modification externe.");
+                    throw new IllegalStateException("The agent prompt has been modified since the campaign "
+                            + "snapshot: promotion is refused to avoid overwriting an external modification.");
                 }
             }
             String rejection = validateSection(section);
             if (rejection != null) {
-                throw new IllegalStateException("Version non promouvable : " + rejection);
+                throw new IllegalStateException("Version cannot be promoted: " + rejection);
             }
             // ACCEPTATION SANS CHANGEMENT : quand l'Agent A n'a rien proposé, aucune version nouvelle n'existe
             // (toutes les itérations sont « sans modification »). Pouvoir accepter la campagne TELLE QUELLE est
@@ -992,7 +992,7 @@ public class PromptOptimizationService {
                             campaignId, key, version);
                 } else {
                     AgentPromptHistoryStore.PromptBackup backup = historyStore.backup(key, snapshot.zoneFile(),
-                            currentContent, "promotion de " + version + " (campagne " + campaignId + ")");
+                            currentContent, "promotion of " + version + " (campaign " + campaignId + ")");
                     agentPromptStore.write(key, updatedContent);
                     backupId = backup.backupId();
                     backupFile = backup.backupFile();
@@ -1037,18 +1037,18 @@ public class PromptOptimizationService {
             }
             String conversation = threadExists
                     ? (answerRegenerated
-                            ? " La réponse de cette version vient d'être générée avec ce prompt et rejoint la "
-                                    + "conversation de l'atelier."
-                            : " La réponse produite par cette version rejoint la conversation de l'atelier.")
+                            ? " The answer of this version has just been generated with this prompt and joins the "
+                                    + "workshop conversation."
+                            : " The answer produced by this version joins the workshop conversation.")
                     : "";
             return new PromotionResult(promoted, backupId, backupFile, (!writeProduction
-                    ? "Version " + version + " ACCEPTÉE pour la conversation : le prompt de production de « "
-                            + key + " » n'a PAS été modifié. Utilisez « Promouvoir » pour l'appliquer."
+                    ? "Version " + version + " ACCEPTED for the conversation: the production prompt of \""
+                            + key + "\" has NOT been modified. Use \"Promote\" to apply it."
                     : unchanged
-                            ? "Aucune modification n'a été proposée : le prompt de « " + key + " » reste identique "
-                                    + "(version " + version + " acceptée, aucune écriture)."
-                            : "La version " + version + " remplace la zone du prompt de « " + key
-                                    + " ». Le prompt précédent est conservé dans l'historique (" + backupFile + ")")
+                            ? "No change was proposed: the prompt of \"" + key + "\" remains identical "
+                                    + "(version " + version + " accepted, nothing written)."
+                            : "Version " + version + " replaces the zone of the prompt of \"" + key
+                                    + "\". The previous prompt is kept in the history (" + backupFile + ")")
                     + conversation);
         });
     }
@@ -1057,7 +1057,7 @@ public class PromptOptimizationService {
     public PromptOptimizationModels.Campaign reject(String campaignId) {
         PromptOptimizationModels.Campaign campaign = store.require(campaignId);
         if (campaign.isActive()) {
-            throw new IllegalStateException("Arrêtez la campagne avant de la refuser.");
+            throw new IllegalStateException("Stop the campaign before rejecting it.");
         }
         return store.saveCampaignAndReturn(update(campaign, PromptOptimizationModels.CAMPAIGN_REJECTED,
                 campaign.completedIterations(), campaign.currentCandidateVersion(),
@@ -1076,7 +1076,7 @@ public class PromptOptimizationService {
 
     public PromptOptimizationModels.Snapshot snapshot(String campaignId) {
         return store.snapshot(campaignId).orElseThrow(
-                () -> new IllegalArgumentException("Campagne inconnue : " + campaignId));
+                () -> new IllegalArgumentException("Unknown campaign: " + campaignId));
     }
 
     public List<PromptOptimizationModels.Iteration> iterations(String campaignId) {
@@ -1101,10 +1101,10 @@ public class PromptOptimizationService {
     /** Fil demandé : un identifiant inconnu est une erreur LISIBLE (jamais un fil vide silencieux). */
     public PromptOptimizationModels.ConversationThread thread(String threadId) {
         if (threadId == null || threadId.isBlank()) {
-            throw new IllegalArgumentException("Fil de conversation non précisé.");
+            throw new IllegalArgumentException("Conversation thread not specified.");
         }
         return store.thread(threadId.trim()).orElseThrow(
-                () -> new IllegalArgumentException("Fil de conversation inconnu : " + threadId));
+                () -> new IllegalArgumentException("Unknown conversation thread: " + threadId));
     }
 
     /** Fil auquel appartient une campagne ({@code null} si elle n'en a pas : campagne antérieure). */
@@ -1121,7 +1121,7 @@ public class PromptOptimizationService {
         PromptOptimizationModels.ConversationThread thread = thread(threadId);
         String text = content == null ? "" : content.strip();
         if (text.isEmpty()) {
-            throw new IllegalArgumentException("Le contenu du tour est vide.");
+            throw new IllegalArgumentException("The turn content is empty.");
         }
         PromptOptimizationModels.ConversationThread updated = thread.withTurnContent(index, text);
         store.saveThread(updated);
@@ -1140,8 +1140,8 @@ public class PromptOptimizationService {
     public PromptOptimizationModels.ConversationComparison comparisonOfThread(String threadId) {
         PromptOptimizationModels.ConversationThread thread = thread(threadId);
         if (thread.campaignIds().isEmpty()) {
-            throw new IllegalStateException("Aucun cycle n'a encore été mené dans cette conversation : "
-                    + "il n'y a rien à comparer.");
+            throw new IllegalStateException("No cycle has been run in this conversation yet: "
+                    + "there is nothing to compare.");
         }
         List<PromptOptimizationModels.Campaign> cycles = new ArrayList<>();
         for (String campaignId : thread.campaignIds()) {
@@ -1239,7 +1239,7 @@ public class PromptOptimizationService {
     public ZoneInfo describeZone(AgentDefinition agent, String requestedZoneKey) {
         if (agent == null || agent.getTheme() == null) {
             return new ZoneInfo("", "", PromptOptimizationModels.ZONE_AGENT, "", false, "",
-                    "Agent inconnu.");
+                    "Unknown agent.");
         }
         boolean generic = AgentFiles.GENERIC_THEME.equalsIgnoreCase(agent.getTheme());
         boolean principalRequested = PromptOptimizationModels.ZONE_PRINCIPAL.equalsIgnoreCase(requestedZoneKey);
@@ -1247,7 +1247,7 @@ public class PromptOptimizationService {
         if (agentRequested && generic) {
             return new ZoneInfo(agent.getTheme(), AgentFiles.libelleFor(agent.getTheme()),
                     PromptOptimizationModels.ZONE_AGENT, "", false, "",
-                    "L'agent générique n'a pas de prompt spécialisé : choisissez l'agent principal.");
+                    "The generic agent has no specialised prompt: choose the main agent.");
         }
         boolean usePrincipal = principalRequested || (!agentRequested && generic);
         String zoneKey = usePrincipal ? PromptOptimizationModels.ZONE_PRINCIPAL
@@ -1255,7 +1255,7 @@ public class PromptOptimizationService {
         String zoneFile = usePrincipal ? AgentFiles.PRINCIPAL_PROMPT_FILE : agent.getPrompt();
         if (zoneFile == null || zoneFile.isBlank()) {
             return new ZoneInfo(agent.getTheme(), AgentFiles.libelleFor(agent.getTheme()), zoneKey, "",
-                    false, "", "Le prompt de cet agent n'est pas déclaré dans agents.json.");
+                    false, "", "The prompt of this agent is not declared in agents.json.");
         }
         PromptZoneService.Zone zone = zoneService.parse(AgentFiles.readPromptOrDefault(zoneFile, ""));
         return new ZoneInfo(agent.getTheme(), AgentFiles.libelleFor(agent.getTheme()), zoneKey, zoneFile,
@@ -1274,11 +1274,11 @@ public class PromptOptimizationService {
             return null;
         }
         PromptOptimizationModels.ConversationThread thread = store.thread(threadId.trim()).orElseThrow(
-                () -> new IllegalArgumentException("Fil de conversation inconnu : " + threadId));
+                () -> new IllegalArgumentException("Unknown conversation thread: " + threadId));
         if (!thread.agentId().equalsIgnoreCase(agent.getTheme())) {
-            throw new IllegalArgumentException("Le fil de conversation " + thread.threadId() + " appartient à "
-                    + "l'agent « " + thread.agentLibelle() + " » : sélectionnez cet agent ou démarrez une "
-                    + "nouvelle conversation.");
+            throw new IllegalArgumentException("Conversation thread " + thread.threadId() + " belongs to "
+                    + "the agent \"" + thread.agentLibelle() + "\": select that agent or start a "
+                    + "new conversation.");
         }
         return thread;
     }
@@ -1424,14 +1424,14 @@ public class PromptOptimizationService {
     /** Agent demandé, ou refus explicite (jamais de repli silencieux sur le générique). */
     private static AgentDefinition resolveAgent(String agentId) {
         if (agentId == null || agentId.isBlank()) {
-            throw new IllegalArgumentException("L'agent à optimiser est obligatoire.");
+            throw new IllegalArgumentException("The agent to optimise is required.");
         }
         for (AgentDefinition agent : AgentFiles.agents()) {
             if (agentId.equalsIgnoreCase(agent.getTheme()) || agentId.equalsIgnoreCase(agent.getId())) {
                 return agent;
             }
         }
-        throw new IllegalArgumentException("Agent inconnu : " + agentId);
+        throw new IllegalArgumentException("Unknown agent: " + agentId);
     }
 
     /** Refuse une campagne supplémentaire sur le MÊME agent tant qu'une autre est en cours (§36). */
@@ -1441,8 +1441,8 @@ public class PromptOptimizationService {
                 continue;
             }
             if (other.isActive() || PromptOptimizationModels.campaignPaused(other.status())) {
-                throw new IllegalStateException("Une campagne est déjà en cours pour l'agent " + agentTheme
-                        + " (" + other.campaignId() + ") : terminez-la d'abord.");
+                throw new IllegalStateException("A campaign is already running for agent " + agentTheme
+                        + " (" + other.campaignId() + "): finish it first.");
             }
         }
     }
@@ -1473,7 +1473,7 @@ public class PromptOptimizationService {
             return error;
         }
         if (section.strip().length() > properties.maxEditableSectionLength()) {
-            return "Zone éditable rejetée : " + section.strip().length() + " caractères (maximum "
+            return "Editable zone rejected: " + section.strip().length() + " characters (maximum "
                     + properties.maxEditableSectionLength() + ")";
         }
         return null;
@@ -1604,7 +1604,7 @@ public class PromptOptimizationService {
     private static String requestedPaths(AIModels.AIAnswer answer) {
         List<String> paths = answer.dataRequest() == null || answer.dataRequest().paths() == null
                 ? List.of() : answer.dataRequest().paths();
-        return paths.isEmpty() ? "" : " Fichiers demandés : " + String.join(", ", paths) + ".";
+        return paths.isEmpty() ? "" : " Requested files: " + String.join(", ", paths) + ".";
     }
 
     /**
@@ -1662,8 +1662,8 @@ public class PromptOptimizationService {
         try {
             return AIModels.AIProvider.valueOf(campaign.provider());
         } catch (RuntimeException e) {
-            throw new IllegalStateException("Fournisseur IA inconnu pour la campagne " + campaign.campaignId()
-                    + " : « " + campaign.provider() + " ».");
+            throw new IllegalStateException("Unknown AI provider for campaign " + campaign.campaignId()
+                    + ": \"" + campaign.provider() + "\".");
         }
     }
 
@@ -1733,11 +1733,11 @@ public class PromptOptimizationService {
                 + (iteration.error().isBlank() ? "" : "error=" + iteration.error() + '\n')
                 + "iterationStatus=" + iteration.status() + '\n'
                 + "campaignStatus=" + campaign.status() + '\n';
-        String promptLog = "=== PROMPT SYSTÈME FIGÉ (" + iteration.promptVersion() + ") ===\n" + composedPrompt
-                + "\n\n=== ZONE OPTIMISÉE ===\n" + iteration.editableSection()
-                + "\n\n=== DIAGNOSTIC DU CONTRÔLEUR ===\n" + json(iteration.controllerFeedback())
-                + "\n\n=== PROPOSITION DE L'ÉDITEUR ===\n" + json(iteration.editorResult());
-        aiLogService.log(campaign.campaignId(), LOG_AGENT_PREFIX + "itération " + iteration.iterationNumber(),
+        String promptLog = "=== FROZEN SYSTEM PROMPT (" + iteration.promptVersion() + ") ===\n" + composedPrompt
+                + "\n\n=== OPTIMISED ZONE ===\n" + iteration.editableSection()
+                + "\n\n=== CONTROLLER DIAGNOSIS ===\n" + json(iteration.controllerFeedback())
+                + "\n\n=== EDITOR PROPOSAL ===\n" + json(iteration.editorResult());
+        aiLogService.log(campaign.campaignId(), LOG_AGENT_PREFIX + "iteration " + iteration.iterationNumber(),
                 dataSent, snapshot.history() == null ? 0 : snapshot.history().size(), iteration.promptChars(),
                 iteration.failed() ? AIModels.AIStatus.ERROR : AIModels.AIStatus.ANSWER, List.of(),
                 LOG_AGENT_PREFIX + campaign.agentLibelle(), promptLog, debug, iteration.coachResponse());

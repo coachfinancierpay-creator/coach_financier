@@ -1,16 +1,16 @@
 [ {
   "theme" : "HARD_TO_UNDERSTAND",
-  "label" : "Les explications étaient difficiles à comprendre",
+  "label" : "The explanations were hard to understand",
   "count" : 1,
   "share" : 0.3333
 }, {
   "theme" : "TOO_REPETITIVE",
-  "label" : "Les réponses étaient trop répétitives",
+  "label" : "The answers were too repetitive",
   "count" : 1,
   "share" : 0.3333
 }, {
   "theme" : "ACTION_NOT_POSSIBLE",
-  "label" : "Je n'ai pas pu réaliser l'action souhaitée",
+  "label" : "I could not complete the desired action",
   "count" : 1,
   "share" : 0.3333
 } ]

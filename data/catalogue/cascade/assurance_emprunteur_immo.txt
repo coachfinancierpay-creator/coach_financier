@@ -1,49 +1,49 @@
-cascade - ARBRE DE DÉCISION — ASSURANCE EMPRUNTEUR IMMOBILIER
+cascade - DECISION TREE — MORTGAGE PROTECTION INSURANCE
 ===================================================
 
-Rôle : déterminer si une assurance emprunteur est nécessaire et quelle couverture / quotité recommander.
-Utilisation : suivre les étapes dans l'ordre ; appliquer la première condition qui correspond au client.
+Role: determine whether mortgage protection insurance is needed and which cover / insured share to recommend.
+Usage: follow the steps in order; apply the first condition that matches the customer.
 
 
-ÉTAPE 1 — Périmètre
-- SI le client n'a PAS de crédit immobilier en cours et PAS de projet de crédit immobilier : ALORS pas d'assurance emprunteur (sortir).
-- SINON : passer à l'étape 2.
+STEP 1 — Scope
+- IF the customer has NO mortgage in progress and NO mortgage project: THEN no mortgage protection insurance (exit).
+- OTHERWISE: go to step 2.
 
 
-ÉTAPE 2 — Usage du bien
-- Résidence principale ou secondaire :
-  ALORS proposer une couverture complète : décès + PTIA + incapacité + invalidité.
-- Investissement locatif :
-  ALORS proposer une couverture adaptée à un investisseur (décès / PTIA au minimum).
-- Profil senior :
-  ALORS proposer une formule senior adaptée.
+STEP 2 — Use of the property
+- Primary or secondary residence:
+  THEN propose comprehensive cover: death + PTIA + incapacity + disability.
+- Rental investment:
+  THEN propose cover suited to an investor (death / PTIA at minimum).
+- Senior profile:
+  THEN propose an adapted senior plan.
 
 
-ÉTAPE 3 — Client fonction publique / BFM ?
-- SI OUI : vérifier et comparer avec l'assurance emprunteur BFM.
-- SI NON : passer à l'étape 4.
+STEP 3 — Public sector / BFM customer?
+- IF YES: check and compare with BFM mortgage protection insurance.
+- IF NO: go to step 4.
 
 
-ÉTAPE 4 — Nombre d'emprunteurs
-- 1 seul emprunteur : quotité généralement 100 %.
-- 2 emprunteurs : faire choisir la quotité (ex. 50/50, 70/30, 100/100, etc.).
+STEP 4 — Number of borrowers
+- 1 borrower: insured share generally 100 %.
+- 2 borrowers: have the insured share chosen (e.g. 50/50, 70/30, 100/100, etc.).
 
 
-ÉTAPE 5 — Situation professionnelle et familiale
-Tenir compte de : salarié ; indépendant ; métiers à risque ; revenus du conjoint ; enfants à charge.
+STEP 5 — Professional and family situation
+Take into account: employee; self-employed; high-risk occupations; spouse's income; dependent children.
 
 
-ÉTAPE 6 — Option perte d'emploi
-- Évaluer si le client a besoin de l'option « perte d'emploi ».
+STEP 6 — Loss of employment option
+- Assess whether the customer needs the « loss of employment » option.
 
 
-ÉTAPE 7 — Comparaison contrat
-- Comparer le contrat d'assurance emprunteur SG avec une délégation externe.
+STEP 7 — Contract comparison
+- Compare the SG mortgage protection insurance contract with external delegation.
 
 
-ÉTAPE 8 — Coût
-- Calculer le coût total de l'assurance.
+STEP 8 — Cost
+- Calculate the total cost of the insurance.
 
 
-ÉTAPE 9 — Réponse au client (LLM)
-Expliquer en français la couverture recommandée (garanties + quotité) et les éléments de comparaison.
+STEP 9 — Answer to the customer (LLM)
+Explain in English the recommended cover (guarantees + insured share) and the comparison elements.

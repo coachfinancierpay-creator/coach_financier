@@ -1,66 +1,66 @@
-# Guide IA — Assurance Habitation SG
+# AI guide — SG Home Insurance
 
 ## Structure
 
-Le JSON utilise `produits` pour contenir un **objet produit unique**, malgré le nom au pluriel. Cet objet contient `cibles`, `formules`, les garanties possibles, les protections complémentaires, un avantage lié au crédit SG et des règles de recommandation.
+The JSON uses `produits` to contain a **single product object**, despite the plural name. This object contains `cibles`, `formules`, the possible guarantees, the additional protections, an advantage linked to the SG loan and recommendation rules.
 
-## Cibles
+## Targets
 
-Au niveau produit, `cibles` liste les grands profils : locataire, propriétaire occupant, étudiant et propriétaire non occupant.
+At product level, `cibles` lists the main profiles: tenant, owner-occupier, student and non-occupant owner.
 
-Au niveau formule, le champ est `cible` au singulier et précise les profils associés.
+At plan level, the field is `cible` in the singular and specifies the associated profiles.
 
-Ne pas confondre `cibles` avec une condition d'éligibilité.
+Do not confuse `cibles` with an eligibility condition.
 
-## Formules
+## Plans
 
-- `Initiale` : `niveau_protection: 1`, positionnement essentiel.
-- `Confort` : niveau 2, intermédiaire.
-- `Optimale` : niveau 3, renforcé.
-- `Étudiante` : positionnement logement étudiant.
-- `Propriétaire non occupant` : cible bailleur/investisseur locatif et informations spécifiques.
+- `Initial`: `niveau_protection: 1`, essential positioning.
+- `Comfort`: level 2, intermediate.
+- `Optimal`: level 3, enhanced.
+- `Student`: student housing positioning.
+- `Non-occupant owner`: landlord/rental investor target and specific information.
 
-`positionnement` décrit le rôle commercial de la formule ; il ne fournit pas à lui seul la liste détaillée de ses garanties.
+`positionnement` describes the plan's commercial role; it does not on its own provide the detailed list of its guarantees.
 
-## Garanties possibles
+## Possible guarantees
 
-`garanties_possibles` est une liste au niveau du produit. Elle ne précise pas, dans ce JSON, quelles garanties appartiennent exactement à Initiale, Confort ou Optimale.
+`garanties_possibles` is a product-level list. In this JSON it does not specify exactly which guarantees belong to Initial, Comfort or Optimal.
 
-L'IA ne doit donc **pas inventer une matrice de garanties par formule**.
+The AI must therefore **not invent a guarantee matrix per plan**.
 
-Même règle pour `protections_complementaires` : elles sont décrites comme possibles au niveau produit, pas nécessairement incluses dans toutes les formules.
+Same rule for `protections_complementaires`: they are described as possible at product level, not necessarily included in every plan.
 
-## Formule PNO
+## Non-occupant owner plan
 
-La formule propriétaire non occupant contient :
-- tarif `a_partir_de_mensuel` ;
-- `eligibilite` ;
+The non-occupant owner plan contains:
+- a price `a_partir_de_mensuel`;
+- `eligibilite`;
 - `contrat`.
 
-Le tarif est indicatif.
+The price is indicative.
 
-`eligibilite` doit être vérifiée : personne physique, majorité, titulaire d'un compte SG et nombre maximal de pièces selon les données du catalogue.
+`eligibilite` must be checked: natural person, of legal age, holder of an SG account and maximum number of rooms according to the catalogue data.
 
-## Contrat
+## Contract
 
-`duree_initiale_mois` et `renouvellement_tacite` décrivent le fonctionnement contractuel indiqué pour la formule où ces champs apparaissent. Ne pas les généraliser automatiquement aux autres formules si le JSON ne le dit pas.
+`duree_initiale_mois` and `renouvellement_tacite` describe the contractual behaviour indicated for the plan where these fields appear. Do not automatically generalise them to the other plans if the JSON does not say so.
 
-## Plus Tranquillité Bancaire
+## Banking Peace of Mind Plus
 
-`avantage_credit_sg` décrit une prise en charge **possible**, sous conditions, de mensualités du prêt immobilier SG en cas de sinistre grave.
+`avantage_credit_sg` describes **possible** coverage, subject to conditions, of SG mortgage monthly payments in the event of a serious claim.
 
-`maximum_mensualites` est un maximum indiqué, pas une prise en charge automatique.
+`maximum_mensualites` is a maximum indicated, not automatic coverage.
 
-## Règles de recommandation
+## Recommendation rules
 
-Les champs `si_*` sont des règles conditionnelles :
-- locataire → tenir compte de l'obligation indiquée ;
-- propriétaire en copropriété → responsabilité civile indiquée comme obligatoire ;
-- propriétaire de maison individuelle → assurance indiquée comme non obligatoire légalement mais fortement recommandée ;
-- investissement locatif → proposer la formule PNO.
+The `si_*` fields are conditional rules:
+- tenant → take the indicated obligation into account;
+- co-ownership owner → third-party liability indicated as mandatory;
+- owner of a detached house → insurance indicated as not legally mandatory but strongly recommended;
+- rental investment → propose the non-occupant owner plan.
 
-Ces règles orientent le choix du type/formule. Elles ne permettent pas de déduire les garanties détaillées absentes du JSON.
+These rules guide the choice of type/plan. They do not allow deducing the detailed guarantees absent from the JSON.
 
-## Point important pour l'IA
+## Important point for the AI
 
-Ce fichier est moins détaillé par formule que le fichier assurance auto. L'IA doit reconnaître cette limite et dire qu'une caractéristique précise n'est pas renseignée plutôt que d'attribuer arbitrairement une garantie à Initiale, Confort ou Optimale.
+This file is less detailed per plan than the car insurance file. The AI must recognise this limit and say that a specific characteristic is not documented rather than arbitrarily attributing a guarantee to Initial, Comfort or Optimal.

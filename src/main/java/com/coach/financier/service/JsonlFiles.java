@@ -131,7 +131,7 @@ final class JsonlFiles {
             }
         } catch (IOException e) {
             log.warn("Écriture impossible dans {} : {}", file, e.getMessage());
-            throw new IllegalStateException("Écriture JSONL impossible : " + file, e);
+            throw new IllegalStateException("Unable to write JSONL: " + file, e);
         }
     }
 }

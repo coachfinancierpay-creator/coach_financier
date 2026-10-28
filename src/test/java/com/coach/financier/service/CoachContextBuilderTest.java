@@ -81,7 +81,7 @@ class CoachContextBuilderTest {
         CoachContext ctx = builder.build("Je veux financer une voiture à 15000 euros", c, p, List.of());
 
         assertEquals("credit_conso", ctx.agentTheme());
-        assertEquals("Crédit à la consommation", ctx.agentLibelle());
+        assertEquals("Consumer loan", ctx.agentLibelle());
         assertFalse(ctx.clarificationRequired());
         assertTrue(ctx.restrictedCatalog());
         // Tout fichier du catalogue est FOURNISSABLE sur demande (« s'il le demande, on l'autorise ») : la
@@ -202,10 +202,10 @@ class CoachContextBuilderTest {
     @Test
     void homeInsuranceBeatsAnIncidentalMortgageMention() {
         IntentClassification c = classification(FinancialIntent.PRODUCT_INFORMATION, ProjectType.INSURANCE, null);
-        c.setProjectObject("assurance habitation");
+        c.setProjectObject("home insurance");
 
         CoachContext ctx = builder.build(
-                "Je voudrais assurer mon appartement que je viens d'acheter avec un crédit immobilier.",
+                "I would like to insure my apartment that I just bought with a mortgage.",
                 c, null, List.of());
 
         assertEquals("assurance_habitation", ctx.agentTheme(),
@@ -219,7 +219,7 @@ class CoachContextBuilderTest {
         IntentClassification c = classification(FinancialIntent.PRODUCT_INFORMATION, ProjectType.INSURANCE, null);
 
         CoachContext ctx = builder.build(
-                "Mon prélèvement automatique d'assurance a augmenté, que faire ?", c, null, List.of());
+                "My automatic insurance direct debit has increased, what should I do?", c, null, List.of());
 
         assertEquals("generic", ctx.agentTheme(),
                 "aucun sous-type identifiable : agent générique plutôt qu'une assurance auto inventée");
@@ -230,7 +230,7 @@ class CoachContextBuilderTest {
     void replacingAnInsuranceIsNotASavingsRequest() {
         IntentClassification c = classification(FinancialIntent.PRODUCT_INFORMATION, ProjectType.INSURANCE, null);
 
-        CoachContext ctx = builder.build("Je veux remplacer mon assurance habitation", c, null, List.of());
+        CoachContext ctx = builder.build("I want to replace my home insurance", c, null, List.of());
 
         assertEquals("assurance_habitation", ctx.agentTheme());
     }
@@ -238,11 +238,11 @@ class CoachContextBuilderTest {
     /** Les sous-types explicites restent correctement routés (non-régression). */
     @Test
     void insuranceSubTypesAreRoutedToTheirAgent() {
-        assertEquals("assurance_emprunteur", themeFor("Quelle assurance pour mon prêt immobilier ?"));
-        assertEquals("assurance_auto", themeFor("Combien coûte l'assurance de ma voiture ?"));
-        assertEquals("assurance_habitation", themeFor("Je cherche une assurance pour ma maison."));
-        assertEquals("epargne", themeFor("Je veux placer mon épargne sur un PEA."));
-        assertEquals("epargne", themeFor("Je veux ouvrir une assurance-vie pour préparer ma retraite."));
+        assertEquals("assurance_emprunteur", themeFor("Which insurance should I take for my mortgage?"));
+        assertEquals("assurance_auto", themeFor("How much does the insurance for my car cost?"));
+        assertEquals("assurance_habitation", themeFor("I am looking for insurance for my house."));
+        assertEquals("epargne", themeFor("I want to invest my savings in a PEA."));
+        assertEquals("epargne", themeFor("I want to open a life insurance policy to prepare for my retirement."));
     }
 
     private String themeFor(String message) {
@@ -262,7 +262,7 @@ class CoachContextBuilderTest {
                         "agent", "agentLibelle"),
                 new ArrayList<>(ctx.additionalData().keySet()));
 
-        assertEquals("Synthèse financière", ctx.providedData().get(0).get("description"));
+        assertEquals("Financial summary", ctx.providedData().get(0).get("description"));
         assertTrue(ctx.providedData().size() > 1, "les données de l'agent actif sont injectées d'office");
         assertEquals(ctx.providedData(), ctx.additionalData().get("providedData"),
                 "additionalData.providedData référence la MÊME liste (alimentée par la boucle NEED_DATA)");
@@ -283,9 +283,9 @@ class CoachContextBuilderTest {
         assertEquals(chars, builder.payloadCharCount(ctx, "Je veux financer une voiture"),
                 "le compteur est déterministe pour un même contexte");
         String logged = builder.loggedPrompt(ctx, "Je veux financer une voiture");
-        assertTrue(logged.startsWith("=== PROMPT SYSTÈME ==="));
-        assertTrue(logged.contains("=== PAYLOAD UTILISATEUR"));
-        assertTrue(ctx.systemPrompt().contains("Crédit à la consommation"), "prompt de l'agent actif");
+        assertTrue(logged.startsWith("=== SYSTEM PROMPT ==="));
+        assertTrue(logged.contains("=== USER PAYLOAD"));
+        assertTrue(ctx.systemPrompt().contains("Consumer Loan"), "prompt de l'agent actif");
         assertFalse(ctx.systemPrompt().contains("[["), "aucun marqueur de zone éditable n'est envoyé au LLM");
         assertTrue(ctx.catalogAfter() <= ctx.catalogBefore(),
                 "le catalogue restreint expose moins d'entrées que le catalogue complet");

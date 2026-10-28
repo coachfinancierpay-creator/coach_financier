@@ -21,25 +21,25 @@ import { isoDaysAgo, isoToday } from './dates'
 type SortKey = 'interestedSessions' | 'recommendedSessions' | 'interestRate' | 'score' | 'evolutionPercent'
 
 const PERIODS: { key: MarketingPeriod; label: string }[] = [
-  { key: 'today', label: "Aujourd'hui" },
-  { key: 'yesterday', label: 'Hier' },
-  { key: '7d', label: '7 jours' },
-  { key: '30d', label: '30 jours' },
-  { key: 'custom', label: 'Personnalisé' },
+  { key: 'today', label: 'Today' },
+  { key: 'yesterday', label: 'Yesterday' },
+  { key: '7d', label: '7 days' },
+  { key: '30d', label: '30 days' },
+  { key: 'custom', label: 'Custom' },
 ]
 
 function formatNumber(value: number | null | undefined): string {
-  return value == null ? '—' : value.toLocaleString('fr-FR')
+  return value == null ? '—' : value.toLocaleString('en-GB')
 }
 
 function formatPercent(rate: number | null | undefined, digits = 1): string {
-  return rate == null ? '—' : `${(rate * 100).toLocaleString('fr-FR', { maximumFractionDigits: digits })} %`
+  return rate == null ? '—' : `${(rate * 100).toLocaleString('en-GB', { maximumFractionDigits: digits })}%`
 }
 
 function formatEvolution(value: number | null | undefined): string {
   if (value == null) return '—'
   const sign = value > 0 ? '+' : ''
-  return `${sign}${value.toLocaleString('fr-FR', { maximumFractionDigits: 1 })} %`
+  return `${sign}${value.toLocaleString('en-GB', { maximumFractionDigits: 1 })}%`
 }
 
 /**
@@ -49,33 +49,33 @@ function formatEvolution(value: number | null | undefined): string {
  * qu'avant le chargement du statut. Un code inconnu est « humanisé », jamais affiché tel quel.
  */
 const FALLBACK_LABELS: Record<string, string> = {
-  VEHICLE: "Achat d'un véhicule",
-  REAL_ESTATE: 'Projet immobilier',
-  HOME_WORK: 'Travaux / aménagement',
-  ELECTRONICS: 'Achat high-tech',
-  FURNITURE: 'Achat mobilier',
-  TRAVEL: 'Voyage',
-  EDUCATION: 'Études / formation',
-  CASH_NEED: 'Besoin de trésorerie',
-  SAVINGS: 'Épargne / placement',
-  BUDGET: 'Gestion du budget',
-  OTHER: 'Autre',
-  UNKNOWN: 'Non identifié',
-  MORTGAGE: 'Crédit immobilier',
-  PERSONAL_LOAN: 'Crédit personnel',
-  AUTO_LOAN: 'Crédit auto',
-  SAVINGS_PRODUCT: "Produit d'épargne",
-  INSURANCE_AUTO: 'Assurance auto',
-  INSURANCE_HOME: 'Assurance habitation',
-  INSURANCE_BORROWER: 'Assurance emprunteur',
-  NO_SUITABLE_PRODUCT: 'Aucune offre adaptée au besoin',
-  PRICE: 'Prix / coût trop élevé',
-  RATE: 'Taux jugé trop élevé',
-  PREFERS_CASH: 'Préfère payer comptant',
-  DOES_NOT_WANT_CREDIT: 'Ne souhaite pas de crédit',
-  MISSING_COVERAGE_INFORMATION: 'Garanties non documentées',
-  MISSING_PRICING_INFORMATION: 'Tarif non documenté',
-  MISSING_CONDITIONS_INFORMATION: 'Conditions non documentées',
+  VEHICLE: 'Vehicle purchase',
+  REAL_ESTATE: 'Real estate project',
+  HOME_WORK: 'Renovation / home improvement',
+  ELECTRONICS: 'Electronics purchase',
+  FURNITURE: 'Furniture purchase',
+  TRAVEL: 'Travel',
+  EDUCATION: 'Studies / training',
+  CASH_NEED: 'Cash flow need',
+  SAVINGS: 'Savings / investment',
+  BUDGET: 'Budget management',
+  OTHER: 'Other',
+  UNKNOWN: 'Not identified',
+  MORTGAGE: 'Mortgage',
+  PERSONAL_LOAN: 'Personal loan',
+  AUTO_LOAN: 'Car loan',
+  SAVINGS_PRODUCT: 'Savings product',
+  INSURANCE_AUTO: 'Car insurance',
+  INSURANCE_HOME: 'Home insurance',
+  INSURANCE_BORROWER: 'Mortgage protection insurance',
+  NO_SUITABLE_PRODUCT: 'No offer matching the need',
+  PRICE: 'Price / cost too high',
+  RATE: 'Rate considered too high',
+  PREFERS_CASH: 'Prefers to pay cash',
+  DOES_NOT_WANT_CREDIT: 'Does not want a loan',
+  MISSING_COVERAGE_INFORMATION: 'Coverage not documented',
+  MISSING_PRICING_INFORMATION: 'Pricing not documented',
+  MISSING_CONDITIONS_INFORMATION: 'Conditions not documented',
 }
 
 /* Le code technique UNKNOWN ne doit jamais s'afficher tel quel dans la page. */
@@ -149,7 +149,7 @@ export default function Marketing() {
       setStatus(await fetchMarketingStatus())
       setReport(await fetchMarketingReport(reportDate))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur de chargement.')
+      setError(err instanceof Error ? err.message : 'Loading error.')
     } finally {
       setLoading(false)
     }
@@ -168,7 +168,7 @@ export default function Marketing() {
       setNotice(successMessage)
       await load()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Action impossible.')
+      setError(err instanceof Error ? err.message : 'Action failed.')
     } finally {
       setWorking(false)
     }
@@ -178,7 +178,7 @@ export default function Marketing() {
     try {
       setDetail(await fetchMarketingProduct(productId, period, from, to))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Détail indisponible.')
+      setError(err instanceof Error ? err.message : 'Details unavailable.')
     }
   }
 
@@ -201,7 +201,7 @@ export default function Marketing() {
   return (
     <div className="logs-shell marketing-page">
       <header className="logs-header">
-        <a href="#/" className="logs-back"><ArrowLeft size={18} /> Retour au chat</a>
+        <a href="#/" className="logs-back"><ArrowLeft size={18} /> Back to chat</a>
         <h1><TrendingUp size={22} /> Marketing Intelligence</h1>
         <span className={`logs-status ${data ? 'ok' : 'ko'}`}>
           <span className="status-dot" /> {data ? `${data.dateFrom} → ${data.dateTo}` : '—'}
@@ -209,8 +209,8 @@ export default function Marketing() {
       </header>
 
       <p className="mkt-subtitle">
-        Analyse des besoins, intérêts et comportements issus des conversations avec le Coach Financier IA.
-        Les chiffres sont calculés par le moteur analytique&nbsp;; l'IA ne fait que les interpréter.
+        Analysis of needs, interests and behaviours from conversations with the AI Financial Coach.
+        The figures are calculated by the analytics engine&nbsp;; the AI only interprets them.
       </p>
 
       <div className="mkt-toolbar">
@@ -233,29 +233,29 @@ export default function Marketing() {
             <input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
           </div>
         )}
-        <select value={projectType} onChange={(e) => setProjectType(e.target.value)} title="Filtrer par projet">
-          <option value="">Tous les projets</option>
+        <select value={projectType} onChange={(e) => setProjectType(e.target.value)} title="Filter by project">
+          <option value="">All projects</option>
           {(data?.projects ?? []).map((project) => (
             <option key={project.projectType} value={project.projectType}>{projectLabel(project.projectType)}</option>
           ))}
         </select>
-        <select value={interestLevel} onChange={(e) => setInterestLevel(e.target.value)} title="Filtrer par niveau d'intérêt">
-          <option value="">Tous les niveaux</option>
-          <option value="HIGH">Intérêt élevé</option>
-          <option value="MEDIUM">Intérêt moyen</option>
-          <option value="LOW">Intérêt faible</option>
+        <select value={interestLevel} onChange={(e) => setInterestLevel(e.target.value)} title="Filter by interest level">
+          <option value="">All levels</option>
+          <option value="HIGH">High interest</option>
+          <option value="MEDIUM">Medium interest</option>
+          <option value="LOW">Low interest</option>
         </select>
         <button type="button" className="mkt-action" onClick={() => void load()} disabled={loading || working}>
-          <RefreshCw size={15} /> Actualiser
+          <RefreshCw size={15} /> Refresh
         </button>
         <a className="mkt-action" href={marketingProductsCsvUrl(period, from, to)}>
-          <Download size={15} /> Exporter CSV
+          <Download size={15} /> Export CSV
         </a>
-        <label className="mkt-report-date" title="Journée analysée par le rapport IA (les agrégats de ce jour sont recalculés)">
-          <span>Rapport du</span>
+        <label className="mkt-report-date" title="Day analysed by the AI report (that day's aggregates are recalculated)">
+          <span>Report for</span>
           <input
             type="date"
-            aria-label="Date du rapport IA"
+            aria-label="AI report date"
             value={reportDate}
             onChange={(e) => setReportDate(e.target.value)}
           />
@@ -266,20 +266,20 @@ export default function Marketing() {
           disabled={loading || working || !reportDate}
           onClick={() => void runAction(
             () => regenerateMarketingReport(reportDate),
-            `Agrégats et rapport IA régénérés pour le ${reportDate}.`,
+            `Aggregates and AI report regenerated for ${reportDate}.`,
           )}
-          title="Recalcule les agrégats et régénère le rapport IA de la date choisie"
+          title="Recalculates the aggregates and regenerates the AI report for the selected date"
         >
-          <Wand2 size={15} /> Régénérer le rapport IA
+          <Wand2 size={15} /> Regenerate AI report
         </button>
         <button
           type="button"
           className="mkt-action"
           disabled={working}
-          onClick={() => void runAction(() => generateMarketingDemoData(7, 12), 'Données de démonstration générées (demo=true).')}
-          title="Génère des événements de démonstration clairement identifiés"
+          onClick={() => void runAction(() => generateMarketingDemoData(7, 12), 'Demo data generated (demo=true).')}
+          title="Generates clearly identified demo events"
         >
-          <Bot size={15} /> Données de démo
+          <Bot size={15} /> Demo data
         </button>
       </div>
 
@@ -287,14 +287,14 @@ export default function Marketing() {
       {notice && <div className="mkt-notice">{notice}</div>}
       {hasDemoData && (
         <div className="mkt-demo-banner" role="status">
-          Données de démonstration détectées (événements <code>demo=true</code>) : elles ne représentent pas
-          des conversations réelles.
+          Demo data detected (events with <code>demo=true</code>): these do not represent
+          real conversations.
         </div>
       )}
       {loading && !data ? (
-        <div className="logs-empty">Chargement des données marketing…</div>
+        <div className="logs-empty">Loading marketing data…</div>
       ) : !data ? (
-        <div className="logs-empty">Aucune donnée pour la période. Générez des données de démo ou clôturez une conversation.</div>
+        <div className="logs-empty">No data for this period. Generate demo data or close a conversation.</div>
       ) : (
         <>
           {alerts.length > 0 && (
@@ -309,38 +309,38 @@ export default function Marketing() {
           )}
 
           <section className="mkt-kpis">
-            <Kpi label="Conversations analysées" value={formatNumber(data.overview.conversationCount)} />
-            <Kpi label="Sessions avec intérêt" value={formatNumber(data.overview.sessionsWithInterest)} />
-            <Kpi label="Intérêts élevés (HIGH)" value={formatNumber(data.overview.highInterestCount)} />
-            <Kpi label="Intentions de souscription" value={formatNumber(data.overview.subscriptionIntentCount)} />
-            <Kpi label="Demandes de rendez-vous" value={formatNumber(data.overview.appointmentRequestCount)} />
-            <Kpi label="Besoins non couverts" value={formatNumber(data.overview.unmetNeedCount)} />
-            <Kpi label="Informations manquantes" value={formatNumber(data.overview.missingInformationCount)} />
+            <Kpi label="Conversations analysed" value={formatNumber(data.overview.conversationCount)} />
+            <Kpi label="Sessions with interest" value={formatNumber(data.overview.sessionsWithInterest)} />
+            <Kpi label="High interest (HIGH)" value={formatNumber(data.overview.highInterestCount)} />
+            <Kpi label="Subscription intents" value={formatNumber(data.overview.subscriptionIntentCount)} />
+            <Kpi label="Appointment requests" value={formatNumber(data.overview.appointmentRequestCount)} />
+            <Kpi label="Unmet needs" value={formatNumber(data.overview.unmetNeedCount)} />
+            <Kpi label="Missing information" value={formatNumber(data.overview.missingInformationCount)} />
           </section>
 
           <section className="mkt-chart">
-            <h2>Tendances de la période</h2>
+            <h2>Trends over the period</h2>
             <div className="mkt-bars">
               {data.series.map((point) => (
-                <div key={point.date} className="mkt-bar-col" title={`${point.date} · ${point.conversationCount} conversation(s), ${point.interestCount} intérêt(s)`}>
+                <div key={point.date} className="mkt-bar-col" title={`${point.date} · ${point.conversationCount} conversation(s), ${point.interestCount} interest(s)`}>
                   <div className="mkt-bar" style={{ height: `${Math.max(4, (point.conversationCount / maxSeries) * 100)}%` }} />
                   <span>{point.date.slice(5)}</span>
                 </div>
               ))}
             </div>
-            <p className="mkt-hint">Barres = conversations par jour · survolez pour le détail (intérêts, intérêts élevés, RDV).</p>
+            <p className="mkt-hint">Bars = conversations per day · hover for details (interests, high interest, appointments).</p>
           </section>
 
           <section className="mkt-grid">
             <div className="mkt-card">
-              <h2>Produits les plus intéressants</h2>
-              {topProducts.length === 0 && <p className="mkt-empty">Aucun intérêt produit sur la période.</p>}
+              <h2>Most interesting products</h2>
+              {topProducts.length === 0 && <p className="mkt-empty">No product interest in this period.</p>}
               {topProducts.map((product) => (
                 <button key={product.productId} type="button" className="mkt-ranking-row" onClick={() => void openProduct(product.productId)}>
                   <span className="mkt-ranking-name">{product.productName}</span>
                   <span className="mkt-ranking-bar" style={{ width: `${(product.interestedSessions / maxInterested) * 100}%` }} />
                   <span className="mkt-ranking-value">
-                    {product.interestedSessions} <small>(dont {product.highCount} à intérêt élevé)</small>
+                    {product.interestedSessions} <small>(incl. {product.highCount} at high interest)</small>
                   </span>
                   <EvolutionBadge value={product.evolutionPercent} />
                 </button>
@@ -348,10 +348,10 @@ export default function Marketing() {
             </div>
 
             <div className="mkt-card">
-              <h2>Recommandation vs intérêt réel</h2>
+              <h2>Recommendation vs actual interest</h2>
               <table className="mkt-table compact">
                 <thead>
-                  <tr><th>Produit</th><th>Recommandé</th><th>Intérêt</th><th>Élevé</th><th>Taux</th></tr>
+                  <tr><th>Product</th><th>Recommended</th><th>Interest</th><th>High</th><th>Rate</th></tr>
                 </thead>
                 <tbody>
                   {data.products.filter((p) => p.recommendedSessions > 0).slice(0, 8).map((product) => (
@@ -368,7 +368,7 @@ export default function Marketing() {
             </div>
 
             <div className="mkt-card">
-              <h2>Projets clients</h2>
+              <h2>Customer projects</h2>
               {data.projects.map((project) => (
                 <button
                   key={project.projectType}
@@ -384,8 +384,8 @@ export default function Marketing() {
             </div>
 
             <div className="mkt-card">
-              <h2>Pourquoi les clients refusent-ils ?</h2>
-              {data.rejections.length === 0 && <p className="mkt-empty">Aucun refus enregistré.</p>}
+              <h2>Why do customers decline?</h2>
+              {data.rejections.length === 0 && <p className="mkt-empty">No decline recorded.</p>}
               {data.rejections.map((rejection) => (
                 <div key={rejection.reasonCategory} className="mkt-row">
                   <span title={rejection.reasonCategory}>{rejectionLabel(rejection.reasonCategory)}</span>
@@ -395,8 +395,8 @@ export default function Marketing() {
             </div>
 
             <div className="mkt-card">
-              <h2>Produits souvent associés</h2>
-              {data.crossSell.length === 0 && <p className="mkt-empty">Aucune association significative.</p>}
+              <h2>Frequently associated products</h2>
+              {data.crossSell.length === 0 && <p className="mkt-empty">No significant association.</p>}
               {data.crossSell.slice(0, 6).map((pair) => (
                 <div key={`${pair.sourceProductId}-${pair.targetProductId}`} className="mkt-row">
                   <span>{pair.sourceProductName} → {pair.targetProductName}</span>
@@ -406,19 +406,19 @@ export default function Marketing() {
             </div>
 
             <div className="mkt-card">
-              <h2>Besoins non couverts</h2>
-              {data.unmetNeeds.length === 0 && <p className="mkt-empty">Aucun besoin non couvert détecté.</p>}
+              <h2>Unmet needs</h2>
+              {data.unmetNeeds.length === 0 && <p className="mkt-empty">No unmet need detected.</p>}
               {data.unmetNeeds.slice(0, 6).map((need, index) => (
                 <div key={`${need.projectType}-${need.reasonCategory}-${index}`} className="mkt-row column">
                   <span className="mkt-strong" title={[need.projectType, need.reasonCategory].filter(Boolean).join(' · ')}>
-                    {isUnknown(need.projectType) ? 'Projet non identifié' : projectLabel(need.projectType)}
+                    {isUnknown(need.projectType) ? 'Unidentified project' : projectLabel(need.projectType)}
                     {' — '}
-                    {isUnknown(need.reasonCategory) ? 'Motif non précisé' : unmetLabel(need.reasonCategory)}
+                    {isUnknown(need.reasonCategory) ? 'Reason not specified' : unmetLabel(need.reasonCategory)}
                   </span>
                   <span className="mkt-muted">
-                    {need.reason?.trim() && `« ${need.reason.trim()} » · `}
-                    {formatNumber(need.count)} {need.count > 1 ? 'demandes' : 'demande'}
-                    {need.averageConfidence != null && ` · confiance IA ${formatPercent(need.averageConfidence, 0)}`}
+                    {need.reason?.trim() && `"${need.reason.trim()}" · `}
+                    {formatNumber(need.count)} {need.count > 1 ? 'requests' : 'request'}
+                    {need.averageConfidence != null && ` · AI confidence ${formatPercent(need.averageConfidence, 0)}`}
                   </span>
                 </div>
               ))}
@@ -427,30 +427,30 @@ export default function Marketing() {
           </section>
 
           <section className="mkt-card wide">
-            <h2>Tableau complet des produits</h2>
+            <h2>Full product table</h2>
             <div className="mkt-table-tools">
               <input
                 type="search"
-                placeholder="Rechercher un produit…"
+                placeholder="Search for a product…"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
               <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
-                <option value="interestedSessions">Tri : sessions intéressées</option>
-                <option value="recommendedSessions">Tri : recommandations</option>
-                <option value="interestRate">Tri : taux d'intérêt</option>
-                <option value="score">Tri : score</option>
-                <option value="evolutionPercent">Tri : évolution</option>
+                <option value="interestedSessions">Sort: interested sessions</option>
+                <option value="recommendedSessions">Sort: recommendations</option>
+                <option value="interestRate">Sort: interest rate</option>
+                <option value="score">Sort: score</option>
+                <option value="evolutionPercent">Sort: change</option>
               </select>
-              <span className="mkt-muted">{products.length} produit(s)</span>
+              <span className="mkt-muted">{products.length} product(s)</span>
             </div>
             <div className="mkt-table-scroll">
               <table className="mkt-table">
                 <thead>
                   <tr>
-                    <th>Produit</th><th>Famille</th><th>Recommandations</th><th>Intérêts</th>
-                    <th>Élevé</th><th>Moyen</th><th>Refus</th><th>Souscription</th><th>RDV</th>
-                    <th>Taux intérêt</th><th>Score</th><th>Évolution</th>
+                    <th>Product</th><th>Family</th><th>Recommendations</th><th>Interests</th>
+                    <th>High</th><th>Medium</th><th>Declines</th><th>Subscription</th><th>Appointments</th>
+                    <th>Interest rate</th><th>Score</th><th>Change</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -466,7 +466,7 @@ export default function Marketing() {
                       <td>{product.subscriptionIntentCount}</td>
                       <td>{product.appointmentRequestCount}</td>
                       <td>{formatPercent(product.interestRate)}</td>
-                      <td>{product.score.toLocaleString('fr-FR')}</td>
+                      <td>{product.score.toLocaleString('en-GB')}</td>
                       <td><EvolutionBadge value={product.evolutionPercent} /></td>
                     </tr>
                   ))}
@@ -478,28 +478,28 @@ export default function Marketing() {
       )}
 
       {detail && (
-        <div className="mkt-drawer" role="dialog" aria-label="Détail produit">
+        <div className="mkt-drawer" role="dialog" aria-label="Product details">
           <div className="mkt-drawer-head">
             <h2>{detail.metric?.productName ?? detail.productId}</h2>
-            <button type="button" onClick={() => setDetail(null)}>Fermer</button>
+            <button type="button" onClick={() => setDetail(null)}>Close</button>
           </div>
           {detail.metric ? (
             <div className="mkt-drawer-grid">
-              <Metric label="Recommandations" value={formatNumber(detail.metric.recommendedSessions)} />
-              <Metric label="Sessions intéressées" value={formatNumber(detail.metric.interestedSessions)} />
-              <Metric label="Clients uniques" value={formatNumber(detail.metric.uniqueInterestedCustomers)} />
-              <Metric label="Intérêt élevé / moyen" value={`${detail.metric.highCount} / ${detail.metric.mediumCount}`} />
-              <Metric label="Refus" value={formatNumber(detail.metric.rejectedCount)} />
-              <Metric label="Souscription / RDV" value={`${detail.metric.subscriptionIntentCount} / ${detail.metric.appointmentRequestCount}`} />
-              <Metric label="Taux intérêt" value={formatPercent(detail.metric.interestRate)} />
-              <Metric label="Score" value={detail.metric.score.toLocaleString('fr-FR')} />
+              <Metric label="Recommendations" value={formatNumber(detail.metric.recommendedSessions)} />
+              <Metric label="Interested sessions" value={formatNumber(detail.metric.interestedSessions)} />
+              <Metric label="Unique customers" value={formatNumber(detail.metric.uniqueInterestedCustomers)} />
+              <Metric label="High / medium interest" value={`${detail.metric.highCount} / ${detail.metric.mediumCount}`} />
+              <Metric label="Declines" value={formatNumber(detail.metric.rejectedCount)} />
+              <Metric label="Subscription / appointments" value={`${detail.metric.subscriptionIntentCount} / ${detail.metric.appointmentRequestCount}`} />
+              <Metric label="Interest rate" value={formatPercent(detail.metric.interestRate)} />
+              <Metric label="Score" value={detail.metric.score.toLocaleString('en-GB')} />
             </div>
           ) : (
-            <p className="mkt-empty">Aucune métrique sur la période.</p>
+            <p className="mkt-empty">No metric for this period.</p>
           )}
           {detail.rejections.length > 0 && (
             <>
-              <h3>Motifs de refus</h3>
+              <h3>Decline reasons</h3>
               <ul className="mkt-report-list">
                 {detail.rejections.map((rejection) => (
                   <li key={rejection.reasonCategory}><strong>{rejectionLabel(rejection.reasonCategory)}</strong> — {rejection.count} ({formatPercent(rejection.share)})</li>
@@ -509,10 +509,10 @@ export default function Marketing() {
           )}
           {detail.crossSell.length > 0 && (
             <>
-              <h3>Produits associés</h3>
+              <h3>Associated products</h3>
               <ul className="mkt-report-list">
                 {detail.crossSell.map((pair) => (
-                  <li key={pair.targetProductId}><strong>{pair.targetProductName}</strong> — {pair.commonSessions} session(s) commune(s) ({formatPercent(pair.rate, 0)})</li>
+                  <li key={pair.targetProductId}><strong>{pair.targetProductName}</strong> — {pair.commonSessions} common session(s) ({formatPercent(pair.rate, 0)})</li>
                 ))}
               </ul>
             </>

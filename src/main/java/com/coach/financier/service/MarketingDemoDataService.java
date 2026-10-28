@@ -22,16 +22,16 @@ import java.util.Random;
 public class MarketingDemoDataService {
 
     private static final String[][] PRODUCTS = {
-            {"sg_credit_auto_expresso", "Crédit Auto Expresso", "AUTO_LOAN"},
-            {"sg_auto_tous_risques", "Assurance Auto SG – Tous Risques", "INSURANCE_AUTO"},
-            {"sg_auto_tiers", "Assurance Auto SG – Tiers", "INSURANCE_AUTO"},
+            {"sg_credit_auto_expresso", "Expresso Auto Loan", "AUTO_LOAN"},
+            {"sg_auto_tous_risques", "SG Car Insurance – Comprehensive", "INSURANCE_AUTO"},
+            {"sg_auto_tiers", "SG Car Insurance – Third Party", "INSURANCE_AUTO"},
             {"sg_livret_a", "Livret A", "SAVINGS_PRODUCT"},
-            {"sg_pel", "Plan Épargne Logement (PEL)", "HOME_SAVINGS"},
-            {"sg_pret_immo_taux_fixe", "Prêt Immobilier à Taux Fixe", "MORTGAGE"},
-            {"sg_credit_expresso", "Crédit Expresso", "PERSONAL_LOAN"},
-            {"sg_habitation_confort", "Assurance Habitation SG – Confort", "INSURANCE_HOME"},
-            {"sg_pea", "Plan d'Épargne en Actions (PEA)", "EQUITY_INVESTMENT"},
-            {"sg_pret_etudiant_evolutif", "Prêt Étudiant Évolutif", "STUDENT_LOAN"}
+            {"sg_pel", "Home Savings Plan (PEL)", "HOME_SAVINGS"},
+            {"sg_pret_immo_taux_fixe", "Fixed-Rate Mortgage", "MORTGAGE"},
+            {"sg_credit_expresso", "Expresso Loan", "PERSONAL_LOAN"},
+            {"sg_habitation_confort", "SG Home Insurance – Comfort", "INSURANCE_HOME"},
+            {"sg_pea", "PEA (equity savings plan)", "EQUITY_INVESTMENT"},
+            {"sg_pret_etudiant_evolutif", "Progressive Student Loan", "STUDENT_LOAN"}
     };
     private static final String[] PROJECTS = {
             "VEHICLE", "REAL_ESTATE", "SAVINGS", "HOME_WORK", "EDUCATION", "ELECTRONICS", "TRAVEL"};
@@ -120,7 +120,7 @@ public class MarketingDemoDataService {
         result.put("sessionsPerDay", sessionsPerDay);
         result.put("eventsGenerated", events.size());
         result.put("eventsWritten", written.size());
-        result.put("note", "Données de démonstration (demo=true) — ne pas interpréter comme des données réelles.");
+        result.put("note", "Demo data (demo=true) — do not interpret as real data.");
         return result;
     }
 

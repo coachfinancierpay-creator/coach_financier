@@ -34,7 +34,7 @@ public class LogsController {
     public Map<String, Object> prompt(@PathVariable long id) {
         String prompt = aiLogService.promptOf(id);
         if (prompt == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trace inconnue : " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown trace: " + id);
         }
         return Map.of("id", id, "prompt", prompt);
     }
@@ -44,7 +44,7 @@ public class LogsController {
     public Map<String, Object> answer(@PathVariable long id) {
         String answer = aiLogService.answerOf(id);
         if (answer == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trace inconnue : " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown trace: " + id);
         }
         return Map.of("id", id, "answer", answer);
     }
@@ -54,7 +54,7 @@ public class LogsController {
     public Map<String, Object> dataSent(@PathVariable long id) {
         LogEntry entry = aiLogService.dataSentOf(id);
         if (entry == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trace inconnue : " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown trace: " + id);
         }
         return Map.of("id", id, "content", entry.attachedDataContent(),
                 "charCount", entry.attachedDataCharCount());

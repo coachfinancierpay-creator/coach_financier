@@ -67,24 +67,24 @@ public class PromptZoneService {
             }
         }
         if (startCount == 0 && endCount == 0) {
-            return new Zone(false, text, "", "", "Aucune zone éditable détectée : le prompt doit contenir "
-                    + "une ligne " + AgentFiles.ZONE_START + " et une ligne " + AgentFiles.ZONE_END + ".");
+            return new Zone(false, text, "", "", "No editable zone detected: the prompt must contain "
+                    + "a line " + AgentFiles.ZONE_START + " and a line " + AgentFiles.ZONE_END + ".");
         }
         if (startCount != 1 || endCount != 1) {
-            return new Zone(false, text, "", "", "Délimiteurs de zone invalides : " + startCount
-                    + " ligne(s) " + AgentFiles.ZONE_START + " et " + endCount + " ligne(s) "
-                    + AgentFiles.ZONE_END + " (une seule paire attendue).");
+            return new Zone(false, text, "", "", "Invalid zone delimiters: " + startCount
+                    + " line(s) " + AgentFiles.ZONE_START + " and " + endCount + " line(s) "
+                    + AgentFiles.ZONE_END + " (exactly one pair expected).");
         }
         if (end < start) {
-            return new Zone(false, text, "", "", "Délimiteurs de zone inversés : " + AgentFiles.ZONE_END
-                    + " apparaît avant " + AgentFiles.ZONE_START + ".");
+            return new Zone(false, text, "", "", "Inverted zone delimiters: " + AgentFiles.ZONE_END
+                    + " appears before " + AgentFiles.ZONE_START + ".");
         }
         String prefix = String.join("\n", lines.subList(0, start));
         String editable = String.join("\n", lines.subList(start + 1, end));
         String suffix = String.join("\n", lines.subList(end + 1, lines.size()));
         if (editable.isBlank()) {
-            return new Zone(false, prefix, "", suffix, "Zone éditable vide (rien à optimiser entre "
-                    + AgentFiles.ZONE_START + " et " + AgentFiles.ZONE_END + ").");
+            return new Zone(false, prefix, "", suffix, "Empty editable zone (nothing to optimise between "
+                    + AgentFiles.ZONE_START + " and " + AgentFiles.ZONE_END + ").");
         }
         return new Zone(true, prefix, editable, suffix, null);
     }
@@ -92,13 +92,13 @@ public class PromptZoneService {
     /** Première erreur rendant une zone éditable inacceptable, ou {@code null} si elle est valide. */
     public String validateEditableSection(String section) {
         if (section == null || section.isBlank()) {
-            return "Zone éditable vide.";
+            return "Empty editable zone.";
         }
         for (String line : section.split("\n", -1)) {
             String trimmed = line.strip();
             if (AgentFiles.ZONE_START.equals(trimmed) || AgentFiles.ZONE_END.equals(trimmed)) {
-                return "La zone éditable ne doit pas contenir de délimiteur " + AgentFiles.ZONE_START
-                        + " / " + AgentFiles.ZONE_END + " (tentative de sortie de zone refusée).";
+                return "The editable zone must not contain a delimiter " + AgentFiles.ZONE_START
+                        + " / " + AgentFiles.ZONE_END + " (attempt to leave the zone refused).";
             }
         }
         return null;
@@ -112,8 +112,8 @@ public class PromptZoneService {
      */
     public String compose(Zone zone, String editableSection) {
         if (zone == null || !zone.valid()) {
-            throw new IllegalArgumentException("Zone éditable invalide : "
-                    + (zone == null ? "zone absente" : zone.error()));
+            throw new IllegalArgumentException("Invalid editable zone: "
+                    + (zone == null ? "zone missing" : zone.error()));
         }
         String error = validateEditableSection(editableSection);
         if (error != null) {
@@ -164,12 +164,12 @@ public class PromptZoneService {
             return null;
         }
         if (starts != 1 || ends != 1) {
-            return "Enregistrement refusé : le prompt contient " + starts + " ligne(s) "
-                    + AgentFiles.ZONE_START + " et " + ends + " ligne(s) " + AgentFiles.ZONE_END
-                    + " (une seule paire complète attendue, ou aucune).";
+            return "Save refused: the prompt contains " + starts + " line(s) "
+                    + AgentFiles.ZONE_START + " and " + ends + " line(s) " + AgentFiles.ZONE_END
+                    + " (exactly one complete pair expected, or none).";
         }
         if (firstEnd < firstStart) {
-            return "Enregistrement refusé : " + AgentFiles.ZONE_END + " apparaît avant "
+            return "Save refused: " + AgentFiles.ZONE_END + " appears before "
                     + AgentFiles.ZONE_START + ".";
         }
         return null;
@@ -186,7 +186,7 @@ public class PromptZoneService {
             }
             return hex.toString();
         } catch (Exception e) {
-            throw new IllegalStateException("Empreinte SHA-256 indisponible", e);
+            throw new IllegalStateException("SHA-256 digest unavailable", e);
         }
     }
 }

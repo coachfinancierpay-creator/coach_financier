@@ -9,7 +9,7 @@
   "offres": [
     {
       "id": "sg_pret_immo_taux_fixe",
-      "nom": "Prêt Immobilier à Taux Fixe",
+      "nom": "Fixed-Rate Mortgage",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/pret-taux-fixe",
       "type_credit": "immobilier_amortissable",
       "cible": [
@@ -61,7 +61,7 @@
     },
     {
       "id": "sg_ptz",
-      "nom": "Prêt à Taux Zéro",
+      "nom": "Zero-Interest Loan",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/ptz-pret-taux-zero",
       "acronyme": "PTZ",
       "type_credit": "pret_reglemente_sans_interet",
@@ -108,7 +108,7 @@
     },
     {
       "id": "sg_credit_relais",
-      "nom": "Crédit Relais",
+      "nom": "Bridging Loan",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/credit-relais",
       "type_credit": "credit_immobilier_in_fine_temporaire",
       "cible": [
@@ -149,7 +149,7 @@
     },
     {
       "id": "sg_pret_in_fine",
-      "nom": "Prêt Immobilier In Fine",
+      "nom": "In Fine Mortgage",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/pret-in-fine-optis",
       "type_credit": "immobilier_in_fine",
       "cible": [
@@ -177,7 +177,7 @@
     },
     {
       "id": "sg_pas",
-      "nom": "Prêt à l’Accession Sociale",
+      "nom": "Social Homeownership Loan",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/pas-pret-accession-sociale",
       "acronyme": "PAS",
       "type_credit": "pret_reglemente",
@@ -214,7 +214,7 @@
     },
     {
       "id": "sg_pret_conventionne",
-      "nom": "Prêt Conventionné",
+      "nom": "Subsidised Loan",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/pret-conventionne",
       "type_credit": "pret_immobilier_reglemente",
       "cible": [
@@ -249,7 +249,7 @@
     },
     {
       "id": "sg_pret_epargne_logement",
-      "nom": "Prêt Épargne Logement",
+      "nom": "Home Savings Loan",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/pret-epargne-logement",
       "type_credit": "pret_reglemente_epargne_logement",
       "cible": [
@@ -290,7 +290,7 @@
     },
     {
       "id": "sg_eco_ptz",
-      "nom": "Éco-prêt à Taux Zéro",
+      "nom": "Zero-Interest Eco Loan",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/eco-ptz-eco-pret-taux-zero",
       "acronyme": "Eco-PTZ",
       "type_credit": "pret_travaux_reglemente_sans_interet",
@@ -317,7 +317,7 @@
     },
     {
       "id": "sg_bfm_avantages_immo",
-      "nom": "Avantages BFM Crédit Immobilier",
+      "nom": "BFM Mortgage Advantages",
       "url": "https://particuliers.sg.fr/emprunter/pret-credit-immobilier/pret-immobilier-bfm",
       "type_credit": "avantages_client_fonction_publique",
       "distributeur": "SG",

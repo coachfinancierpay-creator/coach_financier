@@ -55,7 +55,7 @@ public class QualityFeedbackStore {
     /** Enregistre un feedback, en dédupliquant par {@code feedbackId} et par {@code sessionId}. */
     public SaveResult save(QualityModels.CoachFeedback feedback) {
         if (feedback == null || feedback.feedbackId() == null || feedback.feedbackId().isBlank()) {
-            return new SaveResult(false, false, feedback, "feedback sans identifiant");
+            return new SaveResult(false, false, feedback, "feedback without identifier");
         }
         ensureIdsLoaded();
         if (knownFeedbackIds.contains(feedback.feedbackId())

@@ -75,7 +75,7 @@ class SimulatedClientServiceTest {
         String brief = String.valueOf(context.get("clientBrief"));
         assertTrue(brief.contains("financer une voiture d'occasion à 8 700 €"),
                 "le brief reprend la demande initiale du client, mot pour mot : " + brief);
-        assertTrue(brief.contains("N'invente"),
+        assertTrue(brief.contains("Do not invent"),
                 "le client ne doit inventer ni un autre projet ni un autre chiffre");
         Map<?, ?> figures = (Map<?, ?>) context.get("clientFigures");
         assertEquals(3, figures.size(), "exactement trois chiffres : compte courant, épargne, crédit en cours");
@@ -86,17 +86,17 @@ class SimulatedClientServiceTest {
     void aDemoProviderOrAnEmptyConversationIsRefusedWithoutCallingTheAi() {
         var demo = assertThrows(IllegalArgumentException.class,
                 () -> service.nextQuestion("s-coach", AIModels.AIProvider.MOCK));
-        assertTrue(demo.getMessage().contains("Client auto"), demo.getMessage());
+        assertTrue(demo.getMessage().contains("Auto client"), demo.getMessage());
         assertThrows(IllegalArgumentException.class, () -> service.nextQuestion("s-coach", null));
 
         conversations.getOrCreate("s-vide"); // session connue, mais aucun échange
         var empty = assertThrows(IllegalArgumentException.class,
                 () -> service.nextQuestion("s-vide", AIModels.AIProvider.DEEPSEEK));
-        assertTrue(empty.getMessage().contains("Aucun échange"), empty.getMessage());
+        assertTrue(empty.getMessage().contains("No exchange"), empty.getMessage());
 
         var unknown = assertThrows(IllegalArgumentException.class,
                 () -> service.nextQuestion("s-inconnue", AIModels.AIProvider.DEEPSEEK));
-        assertTrue(unknown.getMessage().contains("Aucun échange"),
+        assertTrue(unknown.getMessage().contains("No exchange"),
                 "session inconnue (backend redémarré) : on explique au lieu d'inventer un client");
 
         verify(ai, never()).clientTurn(anyMap(), any());

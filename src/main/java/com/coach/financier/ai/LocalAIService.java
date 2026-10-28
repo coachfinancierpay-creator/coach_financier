@@ -50,9 +50,9 @@ public class LocalAIService extends RemoteAIService {
      */
     @Override
     protected String readTimeoutHint() {
-        return "Un modèle local génère lentement : augmentez app.ai.local.read-timeout-seconds "
-                + "(variable d'environnement LOCAL_READ_TIMEOUT_SECONDS, en secondes) "
-                + "puis relancez le backend ; si le modèle ne répond toujours pas, vérifiez qu'il est "
-                + "toujours chargé et que le contexte demandé tient dans sa fenêtre (lms ps / lms load -c).";
+        return "A local model generates slowly: increase app.ai.local.read-timeout-seconds "
+                + "(environment variable LOCAL_READ_TIMEOUT_SECONDS, in seconds) "
+                + "then restart the backend; if the model still does not respond, check that it is "
+                + "still loaded and that the requested context fits in its window (lms ps / lms load -c).";
     }
 }

@@ -1,63 +1,63 @@
-cascade - ARBRE DE DÉCISION — ASSURANCE AUTO
+cascade - DECISION TREE — CAR INSURANCE
 ==================================
 
-Rôle : choisir et justifier une formule d'assurance auto adaptée au véhicule et au profil du client.
-Utilisation : suivre les étapes dans l'ordre ; appliquer la première condition qui correspond au client.
+Role: choose and justify a car insurance plan suited to the vehicle and to the customer's profile.
+Usage: follow the steps in order; apply the first condition that matches the customer.
 
 
-ÉTAPE 1 — Périmètre
-- SI le client ne cherche PAS à assurer un véhicule : ALORS aucune recommandation assurance auto (sortir du parcours).
-- SINON : passer à l'étape 2.
+STEP 1 — Scope
+- IF the customer is NOT looking to insure a vehicle: THEN no car insurance recommendation (leave the flow).
+- OTHERWISE: go to step 2.
 
 
-ÉTAPE 2 — Le véhicule est-il en LOA / LLD / leasing ?
-- SI OUI : recommander la formule « Leasing » (prioritaire).
-- SI NON : passer à l'étape 3.
+STEP 2 — Is the vehicle under LOA / LLD / leasing?
+- IF YES: recommend the « Leasing » plan (priority).
+- IF NO: go to step 3.
 
 
-ÉTAPE 3 — Formule de base selon la valeur et l'ancienneté du véhicule
-- Véhicule neuf / récent / valeur élevée        → « Tous Risques+ »
-- Véhicule récent / valeur moyenne à élevée     → « Tous Risques »
-- Véhicule ancien / valeur modérée              → « Tiers+ »
-- Véhicule très ancien / faible valeur          → « Tiers »
+STEP 3 — Base plan according to the vehicle's value and age
+- New / recent / high-value vehicle          → « Comprehensive+ »
+- Recent vehicle / medium to high value      → « Comprehensive »
+- Older vehicle / moderate value             → « Third Party+ »
+- Very old / low-value vehicle               → « Third Party »
 
 
-ÉTAPE 4 — Ajustement selon le risque client
-Tenir compte de ces facteurs (peuvent faire monter le niveau de formule ou ajuster les franchises) :
-- jeune conducteur ;
-- sinistres récents ;
-- bonus / malus ;
-- kilométrage annuel ;
-- stationnement ;
-- usage privé ou professionnel ;
-- zone géographique.
+STEP 4 — Adjustment according to customer risk
+Take these factors into account (they may raise the plan level or adjust the deductibles):
+- young driver;
+- recent claims;
+- bonus / malus;
+- annual mileage;
+- parking;
+- private or professional use;
+- geographical area.
 
 
-ÉTAPE 5 — Ajustement selon les besoins de protection
-Vérifier les garanties / options utiles au client :
-- vol ;
-- vandalisme ;
-- bris de glace ;
-- dommages tous accidents (dommages au propre véhicule) ;
-- véhicule de remplacement ;
-- assistance 0 km ;
-- protection du conducteur renforcée.
+STEP 5 — Adjustment according to protection needs
+Check the guarantees / options useful to the customer:
+- theft;
+- vandalism;
+- glass breakage;
+- all-accident damage (damage to the customer's own vehicle);
+- replacement vehicle;
+- 0 km assistance;
+- enhanced driver protection.
 
 
-ÉTAPE 6 — Réductions potentielles à vérifier
-- petit rouleur ;
-- véhicule électrique ;
-- jeune conducteur éligible ;
-- bon bonus ;
-- enfant d'un assuré SG.
+STEP 6 — Potential discounts to check
+- low-mileage driver;
+- electric vehicle;
+- eligible young driver;
+- good bonus;
+- child of an SG policyholder.
 
 
-ÉTAPE 7 — Estimation
-- Calculer le coût et le niveau de protection obtenu.
+STEP 7 — Estimate
+- Calculate the cost and the level of protection obtained.
 
 
-ÉTAPE 8 — Réponse au client (LLM)
-Expliquer en français, de façon claire et pédagogique :
-- la recommandation retenue et pourquoi ;
-- une alternative moins chère ;
-- une alternative plus protectrice.
+STEP 8 — Answer to the customer (LLM)
+Explain in English, clearly and pedagogically:
+- the recommendation retained and why;
+- a cheaper alternative;
+- a more protective alternative.

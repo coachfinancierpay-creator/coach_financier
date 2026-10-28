@@ -116,33 +116,33 @@ public final class PromptOptimizationModels {
 
     /** Libellé lisible d'un statut de contrôle, ou le code humanisé si inconnu. */
     public static String controllerStatusLabel(String status) {
-        if (STATUS_GOOD.equals(status)) return "Aucune amélioration nécessaire";
-        if (STATUS_NEEDS_IMPROVEMENT.equals(status)) return "Amélioration nécessaire";
-        if (STATUS_BAD.equals(status)) return "Réponse non conforme";
+        if (STATUS_GOOD.equals(status)) return "No improvement needed";
+        if (STATUS_NEEDS_IMPROVEMENT.equals(status)) return "Improvement needed";
+        if (STATUS_BAD.equals(status)) return "Non-compliant answer";
         return humanize(status);
     }
 
     /** Libellé lisible d'un statut d'édition, ou le code humanisé si inconnu. */
     public static String editorStatusLabel(String status) {
-        if (EDITOR_UPDATED.equals(status)) return "Zone modifiée";
-        if (EDITOR_NO_CHANGE.equals(status)) return "Aucune modification";
-        if (EDITOR_REVIEW_REQUIRED.equals(status)) return "Revue humaine requise";
+        if (EDITOR_UPDATED.equals(status)) return "Zone modified";
+        if (EDITOR_NO_CHANGE.equals(status)) return "No change";
+        if (EDITOR_REVIEW_REQUIRED.equals(status)) return "Human review required";
         return humanize(status);
     }
 
     public static String severityLabel(String severity) {
-        if (SEVERITY_LOW.equals(severity)) return "Mineure";
-        if (SEVERITY_MEDIUM.equals(severity)) return "Significative";
-        if (SEVERITY_HIGH.equals(severity)) return "Majeure";
+        if (SEVERITY_LOW.equals(severity)) return "Minor";
+        if (SEVERITY_MEDIUM.equals(severity)) return "Significant";
+        if (SEVERITY_HIGH.equals(severity)) return "Major";
         return humanize(severity);
     }
 
     public static String sourceLabel(String source) {
-        if (SOURCE_PROMPT.equals(source)) return "Prompt (zone éditable)";
-        if (SOURCE_DATA.equals(source)) return "Données";
-        if (SOURCE_BACKEND_RULE.equals(source)) return "Règle backend";
-        if (SOURCE_MODEL_VARIABILITY.equals(source)) return "Variabilité du modèle";
-        if (SOURCE_UNKNOWN.equals(source)) return "Indéterminée";
+        if (SOURCE_PROMPT.equals(source)) return "Prompt (editable zone)";
+        if (SOURCE_DATA.equals(source)) return "Data";
+        if (SOURCE_BACKEND_RULE.equals(source)) return "Backend rule";
+        if (SOURCE_MODEL_VARIABILITY.equals(source)) return "Model variability";
+        if (SOURCE_UNKNOWN.equals(source)) return "Undetermined";
         return humanize(source);
     }
 
@@ -202,25 +202,25 @@ public final class PromptOptimizationModels {
     }
 
     private static final String[][] ISSUE_TYPE_LABELS = {
-            {"UNANSWERED_REQUEST", "Question non traitée"},
-            {"PARTIAL_ANSWER", "Réponse partielle"},
-            {"CONTEXT_NOT_USED", "Contexte non exploité"},
-            {"INSUFFICIENT_PERSONALIZATION", "Personnalisation insuffisante"},
-            {"EXCESSIVE_REPETITION", "Répétitions inutiles"},
-            {"EXCESSIVE_LENGTH", "Réponse trop longue"},
-            {"INSUFFICIENT_EXPLANATION", "Explications insuffisantes"},
-            {"UNNECESSARY_DETAIL", "Détails inutiles"},
-            {"MISUNDERSTOOD_PROJECT", "Projet mal compris"},
-            {"UNSUPPORTED_CLAIM", "Affirmation non étayée"},
-            {"INVENTED_DATA", "Donnée inventée"},
-            {"INVENTED_PRODUCT", "Produit inventé"},
-            {"INVENTED_URL", "URL inventée"},
-            {"PRODUCT_MISMATCH", "Produit hors périmètre du projet"},
-            {"RULE_VIOLATION", "Règle non respectée"},
-            {"POOR_PEDAGOGY", "Pédagogie insuffisante"},
-            {"UNPROFESSIONAL_TONE", "Ton inadapté"},
-            {"CONTEXT_LOST", "Contexte perdu"},
-            {"OTHER", "Autre"}
+            {"UNANSWERED_REQUEST", "Unanswered question"},
+            {"PARTIAL_ANSWER", "Partial answer"},
+            {"CONTEXT_NOT_USED", "Context not used"},
+            {"INSUFFICIENT_PERSONALIZATION", "Insufficient personalisation"},
+            {"EXCESSIVE_REPETITION", "Unnecessary repetition"},
+            {"EXCESSIVE_LENGTH", "Answer too long"},
+            {"INSUFFICIENT_EXPLANATION", "Insufficient explanation"},
+            {"UNNECESSARY_DETAIL", "Unnecessary detail"},
+            {"MISUNDERSTOOD_PROJECT", "Misunderstood project"},
+            {"UNSUPPORTED_CLAIM", "Unsupported claim"},
+            {"INVENTED_DATA", "Invented data"},
+            {"INVENTED_PRODUCT", "Invented product"},
+            {"INVENTED_URL", "Invented URL"},
+            {"PRODUCT_MISMATCH", "Product outside the project scope"},
+            {"RULE_VIOLATION", "Rule not followed"},
+            {"POOR_PEDAGOGY", "Insufficient teaching"},
+            {"UNPROFESSIONAL_TONE", "Inappropriate tone"},
+            {"CONTEXT_LOST", "Lost context"},
+            {"OTHER", "Other"}
     };
 
     // --- Sorties structurées des agents internes -------------------------------------------------
@@ -338,10 +338,10 @@ public final class PromptOptimizationModels {
 
     /** Message d'arrêt automatique sur plateau (aucun échec : la campagne est simplement mise en pause). */
     public static String plateauMessage(int consecutiveIterations, int remainingIterations) {
-        return "Plateau : " + consecutiveIterations + " itérations consécutives sans aucune modification "
-                + "proposée par l'agent éditeur (Agent A) — la campagne est mise en pause pour ne pas "
-                + "consommer les " + Math.max(0, remainingIterations) + " itération(s) restante(s) du cycle. "
-                + "Ajoutez un avis pour orienter l'éditeur, ou reprenez pour continuer.";
+        return "Plateau: " + consecutiveIterations + " consecutive iterations with no change "
+                + "proposed by the editor agent (Agent A) — the campaign is paused so as not to "
+                + "consume the " + Math.max(0, remainingIterations) + " remaining iteration(s) of the cycle. "
+                + "Add a comment to guide the editor, or resume to continue.";
     }
 
     /** Statut de campagne ; une valeur illisible devient {@code ERROR} (jamais RUNNING par défaut). */
@@ -371,15 +371,15 @@ public final class PromptOptimizationModels {
     }
 
     public static String campaignStatusLabel(String status) {
-        if (CAMPAIGN_CREATED.equals(status)) return "Créée";
-        if (CAMPAIGN_RUNNING.equals(status)) return "En cours";
-        if (CAMPAIGN_STOP_REQUESTED.equals(status)) return "Arrêt demandé";
-        if (CAMPAIGN_PAUSED.equals(status)) return "En pause";
-        if (CAMPAIGN_COMPLETED.equals(status)) return "Terminée";
-        if (CAMPAIGN_ACCEPTED.equals(status)) return "Version acceptée";
-        if (CAMPAIGN_REJECTED.equals(status)) return "Campagne refusée";
-        if (CAMPAIGN_ERROR.equals(status)) return "Erreur";
-        if (CAMPAIGN_CANCELLED.equals(status)) return "Annulée";
+        if (CAMPAIGN_CREATED.equals(status)) return "Created";
+        if (CAMPAIGN_RUNNING.equals(status)) return "Running";
+        if (CAMPAIGN_STOP_REQUESTED.equals(status)) return "Stop requested";
+        if (CAMPAIGN_PAUSED.equals(status)) return "Paused";
+        if (CAMPAIGN_COMPLETED.equals(status)) return "Completed";
+        if (CAMPAIGN_ACCEPTED.equals(status)) return "Version accepted";
+        if (CAMPAIGN_REJECTED.equals(status)) return "Campaign rejected";
+        if (CAMPAIGN_ERROR.equals(status)) return "Error";
+        if (CAMPAIGN_CANCELLED.equals(status)) return "Cancelled";
         return humanize(status);
     }
 
@@ -394,9 +394,9 @@ public final class PromptOptimizationModels {
     }
 
     public static String iterationStatusLabel(String status) {
-        if (ITERATION_RUNNING.equals(status)) return "En cours";
-        if (ITERATION_COMPLETED.equals(status)) return "Terminée";
-        if (ITERATION_ERROR.equals(status)) return "Erreur";
+        if (ITERATION_RUNNING.equals(status)) return "Running";
+        if (ITERATION_COMPLETED.equals(status)) return "Completed";
+        if (ITERATION_ERROR.equals(status)) return "Error";
         return humanize(status);
     }
 
@@ -777,7 +777,7 @@ public final class PromptOptimizationModels {
         /** Corrige le contenu d'un tour : l'humain garde la main sur ce qui est rejoué ensuite. */
         public ConversationThread withTurnContent(int index, String content) {
             if (index < 0 || index >= turns.size()) {
-                throw new IllegalArgumentException("Tour inexistant dans le fil de conversation : " + index);
+                throw new IllegalArgumentException("Turn not found in the conversation thread: " + index);
             }
             List<Turn> next = new ArrayList<>(turns);
             next.set(index, next.get(index).withContent(content));
@@ -833,15 +833,15 @@ public final class PromptOptimizationModels {
             // LOCAUX à chaque cycle : le bilan parle donc de la ZONE (tailles), jamais de « V0 → V0 » qui
             // laisserait croire que rien n'a changé.
             summary = identical
-                    ? "Le prompt est identique au début et à la fin de la conversation"
+                    ? "The prompt is identical at the start and at the end of the conversation"
                       + (promotionCount == 0
-                            ? " : aucune version n'a été retenue pendant ce scénario."
-                            : " : les versions retenues n'ont pas modifié la zone éditable.")
-                    : "Conversation en " + cycleCount + " cycle(s) et " + iterationCount + " itération(s) — "
-                      + promotionCount + " version(s) retenue(s) pour la conversation : la zone éditable a été "
-                      + "modifiée pendant la conversation ("
+                            ? ": no version was kept during this scenario."
+                            : ": the versions kept did not change the editable zone.")
+                    : "Conversation over " + cycleCount + " cycle(s) and " + iterationCount + " iteration(s) — "
+                      + promotionCount + " version(s) kept for the conversation: the editable zone was "
+                      + "changed during the conversation ("
                       + baseEditableSection.length() + " → " + currentEditableSection.length()
-                      + " caractères).";
+                      + " characters).";
         }
     }
 

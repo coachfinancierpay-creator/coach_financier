@@ -1,83 +1,83 @@
-# Guide IA — Crédit immobilier
+# AI guide — Mortgage
 
 ## Structure
 
-Le fichier contient une liste `offres` couvrant prêt immobilier à taux fixe, prêts réglementés, crédit relais, in fine, épargne logement et avantages BFM.
+The file contains an `offres` list covering fixed-rate mortgages, regulated loans, bridging loans, in fine, home savings and BFM advantages.
 
-## Classification et projet
+## Classification and project
 
-- `type_credit` : nature du financement.
-- `cible` : profil principalement visé.
-- `projets_adaptes` : opérations compatibles d'après le catalogue.
-- les suffixes `_sous_conditions` signifient qu'une vérification supplémentaire est nécessaire.
+- `type_credit`: nature of the financing.
+- `cible`: mainly targeted profile.
+- `projets_adaptes`: operations compatible according to the catalogue.
+- the `_sous_conditions` suffixes mean an additional check is required.
 
-## Éligibilité et conditions
+## Eligibility and conditions
 
-Le fichier utilise à la fois `eligibilite` et `conditions`.
+The file uses both `eligibilite` and `conditions`.
 
-`eligibilite` regroupe notamment primo-accession, ressources, PEL/CEL et conditions réglementaires.
+`eligibilite` groups in particular first-time purchase, income, PEL/CEL and regulatory conditions.
 
-`conditions` apparaît notamment sur le prêt à taux fixe et le crédit relais. Interpréter les clés concrètes (`majeur`, `compte_sg`, `bien_actuel_en_vente`, `acceptation_dossier`) comme des prérequis indiqués, sans extrapoler au-delà.
+`conditions` appears in particular on the fixed-rate loan and the bridging loan. Interpret the concrete keys (`majeur`, `compte_sg`, `bien_actuel_en_vente`, `acceptation_dossier`) as indicated prerequisites, without extrapolating beyond them.
 
-## Taux
+## Rate
 
-- `type: fixe` : taux fixe.
-- `taux_personnalise: true` : aucun taux universel ne doit être inventé.
-- `taux_interet_pct: 0` : taux d'intérêt indiqué à zéro pour le prêt concerné.
-- `type: plafonne` : le catalogue indique un taux plafonné, sans fournir nécessairement le taux client.
-- `determination` : explique comment le taux est déterminé.
+- `type: fixe`: fixed rate.
+- `taux_personnalise: true`: no universal rate may be invented.
+- `taux_interet_pct: 0`: interest rate indicated as zero for the loan concerned.
+- `type: plafonne`: the catalogue indicates a capped rate, without necessarily providing the customer's rate.
+- `determination`: explains how the rate is determined.
 
-Ne pas confondre taux d'intérêt et TAEG lorsqu'un TAEG n'est pas fourni.
+Do not confuse interest rate and APR when an APR is not provided.
 
-## Financement
+## Financing
 
-- `jusqua_pct_operation` : part maximale de l'opération indiquée.
-- `finance_totalite_operation: false` : financement complémentaire requis.
-- `quotite_indicative` : proportions indicatives ; ne pas les transformer en droit automatique.
-- `montant.maximum_pct_valeur_bien_a_vendre` : plafond relatif au bien à vendre pour le crédit relais.
+- `jusqua_pct_operation`: maximum share of the operation indicated.
+- `finance_totalite_operation: false`: additional financing required.
+- `quotite_indicative`: indicative proportions; do not turn them into an automatic entitlement.
+- `montant.maximum_pct_valeur_bien_a_vendre`: ceiling relative to the property to be sold for the bridging loan.
 
-## Durée
+## Term
 
-Les prêts peuvent utiliser `minimum_annees`/`maximum_annees` ou `maximum_mois`.
+Loans may use `minimum_annees`/`maximum_annees` or `maximum_mois`.
 
-`maximum_mois_vefa_ou_construction` est une durée maximale spécifique au cas indiqué.
+`maximum_mois_vefa_ou_construction` is a maximum term specific to the case indicated.
 
-`duree_indicative` signifie que la durée est présentée comme indicative.
+`duree_indicative` means the term is presented as indicative.
 
-## Remboursement et flexibilité
+## Repayment and flexibility
 
-- `mensualites_modulables`, `report_echeances_possible`, `paliers_remboursement` : souplesses indiquées.
-- pour un crédit in fine, `capital: fin_du_pret` signifie que le capital est remboursé à l'échéance selon le catalogue.
-- pour le crédit relais, différé partiel/total et remboursement du capital en fin de prêt sont décrits séparément.
+- `mensualites_modulables`, `report_echeances_possible`, `paliers_remboursement`: flexibilities indicated.
+- for an in fine loan, `capital: fin_du_pret` means the capital is repaid at maturity according to the catalogue.
+- for the bridging loan, partial/total deferral and repayment of the capital at the end of the loan are described separately.
 
-## Garanties
+## Guarantees
 
-`garanties_possibles` liste des formes de garantie envisageables. « Possible » ne signifie pas qu'elles sont toutes disponibles ou retenues pour chaque dossier.
+`garanties_possibles` lists possible forms of guarantee. "Possible" does not mean they are all available or selected for each case file.
 
-## Prêts réglementés
+## Regulated loans
 
-PTZ, PAS, Prêt Conventionné, Prêt Épargne Logement et Éco-PTZ comportent des règles d'éligibilité réglementaires. L'IA doit :
-1. vérifier l'adéquation du projet ;
-2. vérifier les conditions connues ;
-3. signaler les conditions réglementaires non déterminables ;
-4. ne jamais déclarer l'éligibilité certaine à partir d'informations client insuffisantes.
+PTZ, PAS, Subsidised Loan, Home Savings Loan and Eco-PTZ include regulatory eligibility rules. The AI must:
+1. check the project's suitability;
+2. check the known conditions;
+3. report the regulatory conditions that cannot be determined;
+4. never declare eligibility as certain from insufficient customer information.
 
-`doit_etre_associe_a` est une contrainte d'association explicite du catalogue.
+`doit_etre_associe_a` is an explicit association constraint from the catalogue.
 
 ## BFM
 
-`sg_bfm_avantages_immo` est décrit comme un ensemble d'avantages pour certains clients de la fonction publique, et non comme un prêt immobilier autonome classique.
+`sg_bfm_avantages_immo` is described as a set of advantages for certain public sector customers, and not as a classic standalone mortgage.
 
-`produits_concernes` référence des identifiants de produits. Si une référence n'est pas définie dans le fichier, ne pas inventer ses caractéristiques.
+`produits_concernes` references product identifiers. If a reference is not defined in the file, do not invent its characteristics.
 
-## Recommandation
+## Recommendation
 
-Priorité de raisonnement :
-1. projet immobilier ;
-2. éligibilité aux dispositifs réglementés ;
-3. situation particulière (bien à vendre, investissement locatif, PEL/CEL, fonction publique) ;
-4. financement principal ;
-5. comparaison des solutions explicitement demandée par `comparaison_obligatoire_avec` ;
-6. vigilances, notamment pour l'in fine.
+Reasoning priority:
+1. property project;
+2. eligibility for regulated schemes;
+3. particular situation (property to sell, rental investment, PEL/CEL, public sector);
+4. main financing;
+5. comparison of solutions explicitly requested by `comparaison_obligatoire_avec`;
+6. points of vigilance, in particular for in fine.
 
-Pour l'in fine, les éléments `cout_total`, `risque_capital_a_rembourser_a_echeance` et `necessite_epargne_ou_garantie_associee` doivent être considérés comme des points de vigilance importants.
+For in fine, the `cout_total`, `risque_capital_a_rembourser_a_echeance` and `necessite_epargne_ou_garantie_associee` elements must be considered important points of vigilance.

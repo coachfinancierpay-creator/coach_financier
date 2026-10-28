@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class MarketingExtractionService {
     private static final Pattern EMAIL = Pattern.compile("[\\w.+-]+@[\\w-]+\\.[\\w.]+");
     private static final Pattern PHONE = Pattern.compile("(\\+?\\d[\\d .\\-()]{7,}\\d)");
-    private static final String MASK = "[masqué]";
+    private static final String MASK = "[masked]";
 
     private final MarketingProperties properties;
     private final AnonymousIdService anonymousIdService;

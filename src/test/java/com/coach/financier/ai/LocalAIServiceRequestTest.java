@@ -103,7 +103,7 @@ class LocalAIServiceRequestTest {
         RemoteProbe withoutKey = new RemoteProbe("   ");
         var error = org.junit.jupiter.api.Assertions.assertThrows(IllegalStateException.class,
                 withoutKey::requireApiKey);
-        assertTrue(error.getMessage().contains("Clé API absente"), error.getMessage());
+        assertTrue(error.getMessage().contains("Missing API key"), error.getMessage());
 
         Map<String, Object> body = new RemoteProbe("cle").requestBody("s", "u");
         assertEquals(Map.of("type", "json_object"), body.get("response_format"),

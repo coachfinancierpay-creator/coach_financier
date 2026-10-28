@@ -41,10 +41,10 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
     <div className="logs-shell">
       <header className="logs-header">
         <a href="#/advisor-feedback" className="logs-back">
-          <ArrowLeft size={18} /> Retour au suivi
+          <ArrowLeft size={18} /> Back to follow-up
         </a>
         <h1>
-          <History size={22} /> Historique de la conversation
+          <History size={22} /> Conversation history
         </h1>
         <span className="logs-status ok">
           <span className="status-dot" /> Session {sessionId}
@@ -54,20 +54,20 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
       {!loading && available && (
         <div className="logs-toolbar">
           <span className="logs-count">
-            {messages.length} message(s) · échanges enregistrés par le Coach IA
+            {messages.length} message(s) · exchanges recorded by the AI Coach
           </span>
           <a className="logs-back" href={`#/advisor-feedback/session/${encodeURIComponent(sessionId)}`}>
-            <BadgeCheck size={16} /> Évaluer le suivi du Coach
+            <BadgeCheck size={16} /> Rate the Coach&rsquo;s follow-up
           </a>
         </div>
       )}
 
-      {loading && <div className="logs-empty">Chargement de la conversation…</div>}
+      {loading && <div className="logs-empty">Loading the conversation…</div>}
 
       {!loading && !available && (
         <div className="logs-error">
-          Cette conversation n'est plus disponible : l'historique des échanges est conservé en mémoire par le
-          serveur et a pu être perdu (redémarrage du backend).
+          This conversation is no longer available: the exchange history is kept in memory by the
+          server and may have been lost (backend restart).
           {error ? ` (${error})` : ''}
         </div>
       )}
@@ -77,7 +77,7 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
           {summary ? (
             <article className="logs-log">
               <div className="logs-log-head">
-                <span className="logs-id">Synthèse</span>
+                <span className="logs-id">Summary</span>
               </div>
               <div className="logs-log-body">
                 <p className="logs-message">{summary}</p>
@@ -88,7 +88,7 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
           <div className="messages-card">
             <div className="messages-scroll">
               {messages.length === 0 && (
-                <div className="logs-empty">Aucun message enregistré pour cette conversation.</div>
+                <div className="logs-empty">No messages recorded for this conversation.</div>
               )}
               {messages.map((message, index) => (
                 <div key={`conv-${index}`} className={`message-row ${message.role}`}>
@@ -97,7 +97,7 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
                   )}
                   <div className={`message-bubble ${message.role}`}>
                     <div className="message-meta">
-                      <span>{message.role === 'user' ? 'Client' : 'Coach IA'}</span>
+                      <span>{message.role === 'user' ? 'Customer' : 'AI Coach'}</span>
                       {message.timestamp ? <span>{formatTime(message.timestamp)}</span> : null}
                     </div>
                     <div className="message-text">
@@ -121,5 +121,5 @@ export default function ConversationView({ sessionId }: { sessionId: string }) {
 function formatTime(timestamp: string): string {
   const date = new Date(timestamp)
   if (Number.isNaN(date.getTime())) return ''
-  return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 }

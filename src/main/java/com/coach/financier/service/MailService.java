@@ -71,20 +71,20 @@ public class MailService {
      */
     public String unavailabilityReason() {
         if (!enabled) {
-            return "envoi désactivé (app.mail.enabled=false / MAIL_ENABLED)";
+            return "sending disabled (app.mail.enabled=false / MAIL_ENABLED)";
         }
         if (from == null || from.isBlank()) {
-            return "expéditeur non configuré (spring.mail.username / MAIL_USERNAME, ou app.mail.from)";
+            return "sender not configured (spring.mail.username / MAIL_USERNAME, or app.mail.from)";
         }
         if (password == null || password.isBlank()) {
-            return "mot de passe d'application non configuré (spring.mail.password / MAIL_PASSWORD)";
+            return "application password not configured (spring.mail.password / MAIL_PASSWORD)";
         }
         return "";
     }
 
     /** Cible SMTP utilisée, pour diagnostiquer une erreur d'envoi (ex. « smtp.gmail.com:587 »). */
     public String describeTarget() {
-        String h = (host == null || host.isBlank()) ? "hôte SMTP non configuré" : host;
+        String h = (host == null || host.isBlank()) ? "SMTP host not configured" : host;
         return port > 0 ? h + ":" + port : h;
     }
 
@@ -141,7 +141,7 @@ public class MailService {
             log.info("Mail envoyé à {} (sujet : {}, pièces jointes : {})", to, subject,
                     multipart ? attachments.size() : 0);
         } catch (MailException | jakarta.mail.MessagingException | java.io.UnsupportedEncodingException e) {
-            throw new IllegalStateException("Échec de l'envoi du mail à " + to + " via " + describeTarget()
+            throw new IllegalStateException("Failed to send the email to " + to + " via " + describeTarget()
                     + " : " + rootCause(e), e);
         }
     }
@@ -158,16 +158,16 @@ public class MailService {
 
     private void ensureConfigured(String to) {
         if (to == null || to.isBlank()) {
-            throw new IllegalStateException("Destinataire manquant.");
+            throw new IllegalStateException("Missing recipient.");
         }
         if (!enabled) {
-            throw new IllegalStateException("Service mail désactivé (app.mail.enabled=false).");
+            throw new IllegalStateException("Mail service disabled (app.mail.enabled=false).");
         }
         if (from == null || from.isBlank()) {
-            throw new IllegalStateException("Adresse d'expédition non configurée (MAIL_USERNAME ou app.mail.from).");
+            throw new IllegalStateException("Sending address not configured (MAIL_USERNAME or app.mail.from).");
         }
         if (password == null || password.isBlank()) {
-            throw new IllegalStateException("Mot de passe mail non configuré (CLE_GOOGLE_COACH_FINANCIER — mot de passe d'application Gmail).");
+            throw new IllegalStateException("Mail password not configured (CLE_GOOGLE_COACH_FINANCIER — Gmail application password).");
         }
     }
 

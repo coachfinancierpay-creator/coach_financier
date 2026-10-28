@@ -173,7 +173,7 @@ public class ConversationDirectoryService {
     public Optional<DirectoryModels.DirectoryDetail> updateStatus(String sessionId, String status, String comment) {
         DossierStatus target = DossierStatus.parse(status);
         if (target == null) {
-            throw new IllegalArgumentException("Statut inconnu : " + status);
+            throw new IllegalArgumentException("Unknown status: " + status);
         }
         Optional<DirectoryModels.DirectoryDetail> current = detail(sessionId);
         if (current.isEmpty()) {

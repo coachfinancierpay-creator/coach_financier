@@ -30,9 +30,9 @@ public final class AdvisorFeedbackModels {
     public static final List<String> ASSESSMENTS = List.of(RELEVANT, NEEDS_IMPROVEMENT, INCORRECT);
 
     private static final Map<String, String> ASSESSMENT_LABELS = Map.of(
-            RELEVANT, "Pertinente",
-            NEEDS_IMPROVEMENT, "À améliorer",
-            INCORRECT, "Incorrecte");
+            RELEVANT, "Relevant",
+            NEEDS_IMPROVEMENT, "Needs improvement",
+            INCORRECT, "Incorrect");
 
     // ------------------------------------------------------------------ domaines de correction (§5)
 
@@ -51,15 +51,15 @@ public final class AdvisorFeedbackModels {
             AREA_MISSING_INFORMATION, AREA_OTHER);
 
     private static final Map<String, String> AREA_LABELS = Map.of(
-            AREA_SUMMARY, "Résumé de la conversation",
-            AREA_CUSTOMER_NEED, "Compréhension du besoin client",
-            AREA_PROJECT_DETECTION, "Projet détecté",
-            AREA_PRODUCT_RELEVANCE, "Produit proposé / produit d'intérêt",
-            AREA_INTEREST_LEVEL, "Niveau d'intérêt du client",
-            AREA_NEXT_ACTION, "Suivi conseillé",
-            AREA_CLIENT_EMAIL, "Email préparé pour le client",
-            AREA_MISSING_INFORMATION, "Information importante manquante",
-            AREA_OTHER, "Autre");
+            AREA_SUMMARY, "Conversation summary",
+            AREA_CUSTOMER_NEED, "Understanding of the customer's need",
+            AREA_PROJECT_DETECTION, "Detected project",
+            AREA_PRODUCT_RELEVANCE, "Proposed product / product of interest",
+            AREA_INTEREST_LEVEL, "Customer interest level",
+            AREA_NEXT_ACTION, "Recommended follow-up",
+            AREA_CLIENT_EMAIL, "Email prepared for the customer",
+            AREA_MISSING_INFORMATION, "Important missing information",
+            AREA_OTHER, "Other");
 
     // ------------------------------------------------------------------ motifs structurés (§6)
 
@@ -79,16 +79,16 @@ public final class AdvisorFeedbackModels {
             REASON_WRONG_INTEREST_LEVEL, REASON_UNSUPPORTED_RECOMMENDATION, REASON_OTHER);
 
     private static final Map<String, String> REASON_LABELS = Map.of(
-            REASON_WRONG, "Erreur",
-            REASON_INCOMPLETE, "Incomplet",
-            REASON_NOT_RELEVANT, "Non pertinent",
-            REASON_TOO_VERBOSE, "Trop verbeux",
-            REASON_TOO_GENERIC, "Trop générique",
-            REASON_MISSING_CONTEXT, "Contexte manquant",
-            REASON_WRONG_PRODUCT, "Mauvais produit",
-            REASON_WRONG_INTEREST_LEVEL, "Mauvais niveau d'intérêt",
-            REASON_UNSUPPORTED_RECOMMENDATION, "Recommandation non étayée",
-            REASON_OTHER, "Autre");
+            REASON_WRONG, "Error",
+            REASON_INCOMPLETE, "Incomplete",
+            REASON_NOT_RELEVANT, "Not relevant",
+            REASON_TOO_VERBOSE, "Too verbose",
+            REASON_TOO_GENERIC, "Too generic",
+            REASON_MISSING_CONTEXT, "Missing context",
+            REASON_WRONG_PRODUCT, "Wrong product",
+            REASON_WRONG_INTEREST_LEVEL, "Wrong interest level",
+            REASON_UNSUPPORTED_RECOMMENDATION, "Unsupported recommendation",
+            REASON_OTHER, "Other");
 
     // ------------------------------------------------------------------ feedback produit (§7/§8)
 
@@ -106,11 +106,11 @@ public final class AdvisorFeedbackModels {
             REASON_OTHER);
 
     private static final Map<String, String> PRODUCT_REASON_LABELS = Map.of(
-            PRODUCT_REASON_NOT_INTERESTED, "Client non intéressé",
-            PRODUCT_REASON_INCOMPATIBLE, "Produit incompatible avec le besoin",
-            PRODUCT_REASON_OVERESTIMATED, "Intérêt surestimé",
-            PRODUCT_REASON_MENTION_ONLY, "Produit seulement mentionné",
-            REASON_OTHER, "Autre");
+            PRODUCT_REASON_NOT_INTERESTED, "Customer not interested",
+            PRODUCT_REASON_INCOMPATIBLE, "Product incompatible with the need",
+            PRODUCT_REASON_OVERESTIMATED, "Overestimated interest",
+            PRODUCT_REASON_MENTION_ONLY, "Product only mentioned",
+            REASON_OTHER, "Other");
 
     // ------------------------------------------------------------------ niveaux d'intérêt (§9)
 
@@ -126,10 +126,10 @@ public final class AdvisorFeedbackModels {
     public static final List<String> EMAIL_ASSESSMENTS = List.of(EMAIL_READY, EMAIL_MINOR, EMAIL_MAJOR, EMAIL_UNUSABLE);
 
     private static final Map<String, String> EMAIL_LABELS = Map.of(
-            EMAIL_READY, "Prêt à utiliser",
-            EMAIL_MINOR, "Modifications mineures",
-            EMAIL_MAJOR, "Modifications importantes",
-            EMAIL_UNUSABLE, "Non utilisable");
+            EMAIL_READY, "Ready to use",
+            EMAIL_MINOR, "Minor edits",
+            EMAIL_MAJOR, "Major edits",
+            EMAIL_UNUSABLE, "Unusable");
 
     public static final List<String> EDIT_LEVELS = List.of("NO_EDIT", "MINOR_EDIT", "MAJOR_EDIT", "FULL_REWRITE");
 

@@ -40,8 +40,8 @@ class CommercialScoreServiceTest {
 
     @Test
     void aMatureUrgentProjectGetsAHighPriorityAndAnExplanation() {
-        ConversationModels.Conversation conversation = conversation(ProjectType.VEHICLE, "voiture d'occasion",
-                "15000", 6, "Il me faudrait les fonds avant la fin du mois.");
+        ConversationModels.Conversation conversation = conversation(ProjectType.VEHICLE, "used car",
+                "15000", 6, "I would need the funds before the end of the month.");
         SuiviModels.SuiviResult result = result(List.of("sg_credit_auto_expresso"), "HIGH", null);
 
         SuiviModels.CommercialScore score = service.scoreFor(conversation, result, products());
@@ -53,14 +53,14 @@ class CommercialScoreServiceTest {
         assertTrue(score.label().toLowerCase().contains("priorit"), "Le libellé explique la priorité");
         assertFalse(score.reasons().isEmpty(), "Le score est toujours expliqué");
         assertTrue(score.reasons().size() <= 3, "L'explication reste courte (3 raisons au maximum)");
-        assertTrue(score.reasons().stream().anyMatch(reason -> reason.toLowerCase().contains("projet")),
+        assertTrue(score.reasons().stream().anyMatch(reason -> reason.toLowerCase().contains("project")),
                 "Une raison porte sur la maturité du projet");
         assertFalse(score.proposedByAi(), "Sans proposition de l'IA, le score est calculé par le système");
         assertEquals(30, points(score, "MATURITY"));
         assertEquals(25, points(score, "INTEREST"));
         assertEquals(20, points(score, "URGENCY"));
         assertEquals(10, points(score, "ENGAGEMENT"));
-        assertTrue(score.details().stream().anyMatch(detail -> detail.startsWith("Urgence exprimée")),
+        assertTrue(score.details().stream().anyMatch(detail -> detail.startsWith("Urgency expressed")),
                 "Les critères mesurés sont conservés pour l'affichage");
     }
 
@@ -82,7 +82,7 @@ class CommercialScoreServiceTest {
         // Le Coach parle de délais pour tout : seuls les messages du CLIENT comptent.
         ConversationModels.Conversation conversation = conversation(null, null, null, 2,
                 "Bonjour, quelles sont vos offres d'épargne ?");
-        conversation.addMessage("assistant", "Pour une mise à disposition rapide, comptez un délai de 48 heures.");
+        conversation.addMessage("assistant", "For a quick turnaround, allow a 48-hour delay.");
 
         SuiviModels.CommercialScore score = service.scoreFor(conversation, result(List.of(), null, null), List.of());
 
@@ -133,7 +133,7 @@ class CommercialScoreServiceTest {
 
         assertTrue(rejected < neutral, "Une offre explicitement écartée fait baisser le score");
         assertTrue(service.scoreFor(conversation, withRejection, products()).reasons().stream()
-                        .anyMatch(reason -> reason.toLowerCase().contains("écart")),
+                        .anyMatch(reason -> reason.toLowerCase().contains("dismissed")),
                 "La raison mentionne l'offre écartée");
     }
 
@@ -145,7 +145,7 @@ class CommercialScoreServiceTest {
         SuiviModels.CommercialScore score = service.scoreFor(conversation, result(List.of(), null, null), List.of());
 
         assertTrue(points(score, "CAPACITY") <= 4, "Une marge limitée fait baisser le critère capacité");
-        assertTrue(score.details().stream().anyMatch(detail -> detail.contains("découvert")),
+        assertTrue(score.details().stream().anyMatch(detail -> detail.contains("overdraft")),
                 "Les découverts constatés sont signalés");
         assertTrue(score.details().stream().noneMatch(detail -> detail.contains("%")
                         && detail.toLowerCase().contains("maximum")),
@@ -161,7 +161,7 @@ class CommercialScoreServiceTest {
 
         assertEquals(7, points(score, "CAPACITY"), "Sans indicateur : appréciation neutre");
         assertNotNull(score.label());
-        assertTrue(score.details().stream().anyMatch(detail -> detail.contains("indisponibles")));
+        assertTrue(score.details().stream().anyMatch(detail -> detail.contains("unavailable")));
     }
 
     // --- fixtures ---------------------------------------------------------------------------------

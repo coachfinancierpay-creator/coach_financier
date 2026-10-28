@@ -60,9 +60,9 @@ public class SimulatedClientService {
                 conversation == null ? List.of() : conversation.transcript();
         if (transcript.isEmpty()) {
             // Rien à lire : sans historique, le modèle inventerait un client. On explique quoi faire à la place.
-            throw new IllegalArgumentException("Aucun échange dans cette conversation : posez d'abord une "
-                    + "question au Coach, puis cliquez de nouveau (après un redémarrage du backend, "
-                    + "l'historique en mémoire est perdu).");
+            throw new IllegalArgumentException("No exchange in this conversation: first ask the "
+                    + "Coach a question, then click again (after a backend restart, "
+                    + "the in-memory history is lost).");
         }
         FinancialSummary summary = financialAnalysis.analyze();
         int asked = (int) transcript.stream()
@@ -90,9 +90,9 @@ public class SimulatedClientService {
     /** Le mode démo ne peut pas jouer un client crédible : seule une IA réelle est acceptée. */
     private static AIModels.AIProvider requireRealProvider(AIModels.AIProvider provider) {
         if (provider == null || provider == AIModels.AIProvider.MOCK) {
-            throw new IllegalArgumentException("Client auto : il faut une IA réelle pour jouer le client "
-                    + "(DeepSeek, GPT ou un modèle local) — le mode démo ne produit pas de conversation. "
-                    + "Choisissez un fournisseur dans « Avancé ».");
+            throw new IllegalArgumentException("Auto client: a real AI is required to play the client "
+                    + "(DeepSeek, GPT or a local model) — demo mode does not produce a conversation. "
+                    + "Choose a provider in “Advanced”.");
         }
         return provider;
     }

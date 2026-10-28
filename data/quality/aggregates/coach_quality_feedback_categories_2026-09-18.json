@@ -1,13 +1,13 @@
 [ {
   "reason" : "ACTION_NOT_POSSIBLE",
-  "label" : "Je n'ai pas pu réaliser l'action souhaitée",
+  "label" : "I could not complete the desired action",
   "count" : 1,
   "share" : 1.0,
   "previousCount" : null,
   "evolutionPercent" : null
 }, {
   "reason" : "MISSING_INFORMATION",
-  "label" : "Il manquait des informations",
+  "label" : "Information was missing",
   "count" : 0,
   "share" : 0.0,
   "previousCount" : 2,

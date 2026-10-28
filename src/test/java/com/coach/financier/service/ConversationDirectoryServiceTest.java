@@ -74,7 +74,7 @@ class ConversationDirectoryServiceTest {
         assertEquals("Crédit conso", credit.categoryLabel());
         assertEquals(82, credit.score());
         assertEquals(SuiviModels.PRIORITY_VERY_HIGH, credit.priority());
-        assertTrue(credit.priorityLabel().toLowerCase().contains("très haute"));
+        assertTrue(credit.priorityLabel().toLowerCase().contains("very high"));
         assertEquals(2, list.categories().size(), "Les catégories disponibles sont renvoyées pour le filtre");
         assertEquals(1, list.byPriority().get(SuiviModels.PRIORITY_VERY_HIGH));
     }
@@ -181,7 +181,7 @@ class ConversationDirectoryServiceTest {
         DirectoryModels.DirectoryRow row = row(service.list(10, null, null, null, null), "s-credit");
 
         assertEquals("NOUVEAU", row.status(), "un dossier qui vient d'arriver est « Nouveau »");
-        assertEquals("Nouveau", row.statusLabel());
+        assertEquals("New", row.statusLabel());
         assertEquals(null, row.statusUpdatedAt(), "aucun changement de statut n'a encore eu lieu");
         assertEquals(0, row.noteCount(), "aucun message n'a encore été laissé");
         assertEquals(0, service.detail("s-credit").orElseThrow().statusHistory().size());
@@ -194,7 +194,7 @@ class ConversationDirectoryServiceTest {
         DirectoryModels.DirectoryDetail contacte = service
                 .updateStatus("s-credit", "CONTACTE", "Client joint, rappellera lundi").orElseThrow();
         assertEquals("CONTACTE", contacte.row().status());
-        assertEquals("Contacté", contacte.row().statusLabel());
+        assertEquals("Contacted", contacte.row().statusLabel());
         assertNotNull(contacte.row().statusUpdatedAt());
 
         DirectoryModels.DirectoryDetail conclu = service
@@ -264,7 +264,7 @@ class ConversationDirectoryServiceTest {
 
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> service.updateStatus("s-credit", "EN_COURS", null));
-        assertTrue(error.getMessage().contains("Statut inconnu"), "aucun statut n'est deviné");
+        assertTrue(error.getMessage().contains("Unknown status"), "aucun statut n'est deviné");
         assertEquals(0, service.detail("s-credit").orElseThrow().statusHistory().size(),
                 "un refus n'écrit rien");
 
@@ -284,7 +284,7 @@ class ConversationDirectoryServiceTest {
 
         assertNull(row.score());
         assertNull(row.customerId());
-        assertEquals("Autre", row.categoryLabel(), "Sans produit, la catégorie reste « Autre »");
+        assertEquals("Other", row.categoryLabel(), "Sans produit, la catégorie reste « Other »");
         assertEquals("Projet ancien", row.title(), "Le titre retombe sur le projet principal du dossier");
     }
 

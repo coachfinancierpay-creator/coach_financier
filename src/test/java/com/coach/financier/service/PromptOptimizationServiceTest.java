@@ -113,7 +113,7 @@ class PromptOptimizationServiceTest {
         // Le mode démo ne dépend pas du prompt : une campagne y serait dénuée de sens.
         var error = assertThrows(IllegalArgumentException.class,
                 () -> service.start(new StartRequest("credit_conso", QUESTION, 3, null, AIModels.AIProvider.MOCK)));
-        assertTrue(error.getMessage().contains("fournisseur IA réel"));
+        assertTrue(error.getMessage().contains("real AI provider"));
     }
 
     @Test
@@ -122,7 +122,7 @@ class PromptOptimizationServiceTest {
                 PromptOptimizationModels.ZONE_AGENT);
 
         assertFalse(zone.optimizable());
-        assertTrue(zone.error().contains("agent principal"));
+        assertTrue(zone.error().contains("main agent"));
     }
 
     @Test
@@ -139,10 +139,10 @@ class PromptOptimizationServiceTest {
         var snapshot = service.snapshot(campaign.campaignId());
         assertEquals(QUESTION, snapshot.question());
         assertEquals("credit-conso.txt", snapshot.zoneFile());
-        assertTrue(snapshot.initialEditableSection().contains("Crédit à la consommation"),
+        assertTrue(snapshot.initialEditableSection().contains("Consumer Loan"),
                 "la zone V0 est celle du fichier de l'agent");
         assertFalse(snapshot.frozenSystemPrompt().contains("[[["), "aucun marqueur envoyé au LLM");
-        assertTrue(snapshot.frozenSystemPrompt().contains("CONTINUITÉ DE CONVERSATION"),
+        assertTrue(snapshot.frozenSystemPrompt().contains("CONVERSATION CONTINUITY"),
                 "l'agent principal est figé dans le prompt de référence");
         assertFalse(snapshot.frozenTemplate().isBlank(), "le gabarit est figé");
         assertFalse(snapshot.frozenPrincipal().isBlank(), "l'agent principal est figé");
@@ -185,7 +185,7 @@ class PromptOptimizationServiceTest {
         assertNotNull(iteration.controllerFeedback());
         assertTrue(iteration.editorResult().updated());
         assertEquals(3, ai.coachCalls + ai.controllerCalls + ai.editorCalls, "3 appels IA par itération");
-        assertTrue(ai.lastSystemPrompt.contains("Crédit à la consommation"), "prompt de l'agent utilisé");
+        assertTrue(ai.lastSystemPrompt.contains("Consumer Loan"), "prompt de l'agent utilisé");
         assertFalse(ai.lastSystemPrompt.contains("[[["), "le LLM ne reçoit jamais les marqueurs de zone");
 
         var updated = service.campaign(campaignId);
@@ -266,7 +266,7 @@ class PromptOptimizationServiceTest {
 
         assertTrue(iteration.noChange(), "une zone invalide ne doit JAMAIS être appliquée");
         assertEquals("V0", iteration.resultingVersion());
-        assertTrue(iteration.error().contains("sortie de zone"), "le refus est explicite : " + iteration.error());
+        assertTrue(iteration.error().contains("attempt to leave the zone"), "le refus est explicite : " + iteration.error());
         assertEquals(PromptOptimizationModels.ITERATION_COMPLETED, iteration.status(),
                 "le refus d'une proposition n'interrompt pas la campagne");
         assertEquals("V0", service.campaign(campaignId).currentCandidateVersion());
@@ -330,7 +330,7 @@ class PromptOptimizationServiceTest {
 
         service.stop(campaignId);
         var ceiling = assertThrows(IllegalArgumentException.class, () -> service.resume(campaignId, 50));
-        assertTrue(ceiling.getMessage().contains("CUMULÉES"), "le plafond cumulé est infranchissable");
+        assertTrue(ceiling.getMessage().contains("CUMULATIVE"), "le plafond cumulé est infranchissable");
     }
 
     @Test
@@ -487,7 +487,7 @@ class PromptOptimizationServiceTest {
         service.resume(campaignId, 0);
         service.iterate(campaignId);
         var error = assertThrows(IllegalStateException.class, () -> service.iterate(campaignId));
-        assertTrue(error.getMessage().contains("Aucune itération possible"));
+        assertTrue(error.getMessage().contains("No iteration possible"));
     }
 
     // --- Décisions humaines -------------------------------------------------------------------------
@@ -504,7 +504,7 @@ class PromptOptimizationServiceTest {
 
         service.resume(campaignId, 0);
         var active = assertThrows(IllegalStateException.class, () -> service.promoteVersion(campaignId, "V1"));
-        assertTrue(active.getMessage().contains("pendant que la campagne tourne"));
+        assertTrue(active.getMessage().contains("while the campaign is running"));
         assertThrows(IllegalStateException.class, () -> service.acceptVersion(campaignId, "V1"));
         // Aucun fichier de production n'a été touché (la promotion n'est jamais exécutée dans ces tests).
     }
@@ -594,7 +594,7 @@ class PromptOptimizationServiceTest {
         assertEquals(PromptOptimizationModels.CAMPAIGN_COMPLETED, finished.status(), "fin de campagne : COMPLETED");
         assertEquals("V2", finished.currentCandidateVersion());
         var error = assertThrows(IllegalStateException.class, () -> service.iterate(campaignId));
-        assertTrue(error.getMessage().contains("Aucune itération possible"),
+        assertTrue(error.getMessage().contains("No iteration possible"),
                 "aucune itération ne peut démarrer au-delà du cycle demandé");
         assertEquals(List.of("V0", "V1", "V2"), service.versions(campaignId).stream()
                 .map(PromptOptimizationModels.PromptVersion::version).toList(),
@@ -781,7 +781,7 @@ class PromptOptimizationServiceTest {
 
         for (StartRequest request : requests) {
             var error = assertThrows(IllegalArgumentException.class, () -> service.start(request));
-            assertTrue(error.getMessage().contains("fournisseur IA réel"), error.getMessage());
+            assertTrue(error.getMessage().contains("real AI provider"), error.getMessage());
         }
     }
 
@@ -876,14 +876,14 @@ class PromptOptimizationServiceTest {
     void startRefusesAnUnknownOrForeignConversationThread() {
         var unknown = assertThrows(IllegalArgumentException.class, () -> service.start(
                 new StartRequest("credit_conso", QUESTION, 1, null, AIModels.AIProvider.DEEPSEEK, "th-inexistant")));
-        assertTrue(unknown.getMessage().contains("Fil de conversation inconnu"), unknown.getMessage());
+        assertTrue(unknown.getMessage().contains("Unknown conversation thread"), unknown.getMessage());
 
         store.saveThread(new PromptOptimizationModels.ConversationThread("th-epargne", "epargne", "Épargne",
                 PromptOptimizationModels.ZONE_AGENT, List.of(), List.of(),
                 "2026-09-17T08:00:00Z", "2026-09-17T08:00:00Z"));
         var foreign = assertThrows(IllegalArgumentException.class, () -> service.start(
                 new StartRequest("credit_conso", QUESTION, 1, null, AIModels.AIProvider.DEEPSEEK, "th-epargne")));
-        assertTrue(foreign.getMessage().contains("appartient à"), foreign.getMessage());
+        assertTrue(foreign.getMessage().contains("belongs to"), foreign.getMessage());
         assertTrue(store.threads().size() >= 1, "un démarrage refusé n'écrit rien");
     }
 
@@ -955,8 +955,8 @@ class PromptOptimizationServiceTest {
         assertFalse(changed.basePrompt().contains(newZone), "le prompt initial ne la contient pas");
         assertNotEquals(changed.baseCampaignId(), changed.currentCampaignId(),
                 "le bilan relie bien le PREMIER et le DERNIER cycle de la conversation");
-        assertTrue(changed.summary().contains("modifiée"), changed.summary());
-        assertFalse(changed.summary().contains("V0 à V0"),
+        assertTrue(changed.summary().contains("changed"), changed.summary());
+        assertFalse(changed.summary().contains("V0 → V0"),
                 "les noms de version sont locaux au cycle : le bilan ne peut pas parler de « V0 → V0 »");
     }
 
@@ -1029,7 +1029,7 @@ class PromptOptimizationServiceTest {
         assertEquals(PromptOptimizationModels.CAMPAIGN_ACCEPTED, result.campaign().status());
         assertEquals(campaign.basePromptVersion(), result.campaign().promotedVersion());
         assertTrue(result.backupFile().isEmpty(), "aucune écriture ⇒ aucune sauvegarde à restaurer");
-        assertTrue(result.message().contains("Aucune modification"), result.message());
+        assertTrue(result.message().contains("No change was proposed"), result.message());
         assertEquals(before, Files.readString(production), "le prompt de production n'est pas réécrit");
 
         // La conversation est DÉBLOQUÉE : la réponse de l'IA est entrée dans le fil (c'est ce qui permet la suite).
@@ -1077,7 +1077,7 @@ class PromptOptimizationServiceTest {
         assertEquals("V1", thread.turns().get(1).version());
         assertEquals(2, ai.coachCalls, "la réponse de V1 existait déjà : aucun appel IA supplémentaire");
         assertEquals(aiCallsBeforePromotion, result.campaign().aiCalls(), "aucun appel IA ajouté");
-        assertTrue(result.message().contains("produite par cette version"), result.message());
+        assertTrue(result.message().contains("produced by this version"), result.message());
     }
 
     @Test
@@ -1100,7 +1100,7 @@ class PromptOptimizationServiceTest {
         assertEquals("Réponse de la version V1.", thread.history().get(1).content());
         assertEquals(aiCallsBeforePromotion + 1, result.campaign().aiCalls(),
                 "l'appel de rejeu est compté dans la campagne");
-        assertTrue(result.message().contains("générée"), result.message());
+        assertTrue(result.message().contains("generated"), result.message());
     }
 
     /**
@@ -1126,7 +1126,7 @@ class PromptOptimizationServiceTest {
         assertEquals(PromptOptimizationModels.CAMPAIGN_ACCEPTED, result.campaign().status());
         assertEquals("V1", result.campaign().promotedVersion(), "la version est retenue pour la conversation");
         assertTrue(result.backupFile().isEmpty(), "aucune écriture ⇒ aucune sauvegarde");
-        assertTrue(result.message().contains("n'a PAS été modifié"), result.message());
+        assertTrue(result.message().contains("has NOT been modified"), result.message());
         assertEquals(before, Files.readString(production), "le prompt de production reste intact");
         assertFalse(service.appliedInProduction(campaign.campaignId(), "V1"),
                 "acceptée ne veut pas dire écrite : l'humain décide à la fin");
@@ -1192,7 +1192,7 @@ class PromptOptimizationServiceTest {
                 () -> service.start(new StartRequest("assurance_auto", QUESTION, 1, null,
                         AIModels.AIProvider.DEEPSEEK, AIModels.AIProvider.DEEPSEEK, AIModels.AIProvider.DEEPSEEK,
                         null, first.campaignId(), "V1")));
-        assertTrue(foreign.getMessage().contains("impossible d'enchaîner"), foreign.getMessage());
+        assertTrue(foreign.getMessage().contains("cannot chain"), foreign.getMessage());
     }
 
     private StartRequest chainFrom(String campaignId, String version) {
@@ -1231,7 +1231,7 @@ class PromptOptimizationServiceTest {
         var result = service.acceptVersion(campaign.campaignId(), campaign.basePromptVersion());
 
         assertEquals(PromptOptimizationModels.CAMPAIGN_ACCEPTED, result.campaign().status());
-        assertTrue(result.message().contains("ACCEPTÉE pour la conversation"), result.message());
+        assertTrue(result.message().contains("ACCEPTED for the conversation"), result.message());
         assertTrue(result.backupFile().isEmpty());
         assertEquals(before, Files.readString(production));
         assertEquals(1, store.threadOf(campaign.campaignId()).orElseThrow().exchanges(),
@@ -1261,7 +1261,7 @@ class PromptOptimizationServiceTest {
         assertNotNull(context.get("availableData"), "la liste des données disponibles est transmise à Agent B");
         assertFalse(String.valueOf(context.get("availableData")).isBlank(),
                 "le Coach pouvait demander ces fichiers : Agent B peut donc juger une demande manquée");
-        assertTrue(coachPrompt.contains("Crédit à la consommation"),
+        assertTrue(coachPrompt.contains("Consumer Loan"),
                 "le prompt reçu contient bien la partie métier de l'agent");
     }
 
@@ -1337,7 +1337,7 @@ class PromptOptimizationServiceTest {
                 () -> service.clientTurn(null, "   ", 1, 3, AIModels.AIProvider.DEEPSEEK));
         var demo = assertThrows(IllegalArgumentException.class,
                 () -> service.clientTurn(null, "Projet de rénovation", 1, 3, AIModels.AIProvider.MOCK));
-        assertTrue(demo.getMessage().contains("fournisseur IA réel"), demo.getMessage());
+        assertTrue(demo.getMessage().contains("real AI provider"), demo.getMessage());
         assertThrows(IllegalArgumentException.class,
                 () -> service.clientTurn("th-inexistant", "Projet de rénovation", 1, 3, AIModels.AIProvider.DEEPSEEK));
 
@@ -1363,9 +1363,9 @@ class PromptOptimizationServiceTest {
         Map<String, Object> context = ai.lastClientBriefContext;
         Map<?, ?> agent = (Map<?, ?>) context.get("agent");
         assertEquals("credit_conso", agent.get("id"));
-        assertEquals("Crédit à la consommation", agent.get("libelle"));
+        assertEquals("Consumer loan", agent.get("libelle"));
         String agentPrompt = String.valueOf(context.get("agentPrompt"));
-        assertTrue(agentPrompt.contains("Crédit à la consommation"),
+        assertTrue(agentPrompt.contains("Consumer Loan"),
                 "le prompt de l'agent sert de cadre : le projet doit tomber dans son périmètre");
         assertFalse(agentPrompt.contains("[[[") || agentPrompt.contains("]]]"),
                 "les marqueurs de zone ne sont jamais envoyés au LLM");
@@ -1415,7 +1415,7 @@ class PromptOptimizationServiceTest {
         var tooBig = assertThrows(IllegalStateException.class,
                 () -> service.clientBrief("credit_conso", List.of(), AIModels.AIProvider.DEEPSEEK));
         assertTrue(tooBig.getMessage().contains("450000"), tooBig.getMessage());
-        assertTrue(tooBig.getMessage().contains("plafond admis"), tooBig.getMessage());
+        assertTrue(tooBig.getMessage().contains("ceiling allowed"), tooBig.getMessage());
 
         // Montant seulement CITÉ dans le brief (le modèle a oublié de le déclarer) : refusé lui aussi.
         ai.scriptedClientBrief = new PromptOptimizationModels.ClientBrief(
@@ -1454,7 +1454,7 @@ class PromptOptimizationServiceTest {
     void theGeneratedProjectRequiresARealProviderAKnownAgentAndANonEmptyAnswer() {
         var demo = assertThrows(IllegalArgumentException.class,
                 () -> service.clientBrief("credit_conso", List.of(), AIModels.AIProvider.MOCK));
-        assertTrue(demo.getMessage().contains("fournisseur IA réel"), demo.getMessage());
+        assertTrue(demo.getMessage().contains("real AI provider"), demo.getMessage());
         assertThrows(IllegalArgumentException.class,
                 () -> service.clientBrief("agent-inconnu", List.of(), AIModels.AIProvider.DEEPSEEK));
 
@@ -1462,7 +1462,7 @@ class PromptOptimizationServiceTest {
         ai.scriptedClientBrief = new PromptOptimizationModels.ClientBrief("   ", null, "");
         var empty = assertThrows(IllegalStateException.class,
                 () -> service.clientBrief("credit_conso", List.of(), AIModels.AIProvider.DEEPSEEK));
-        assertTrue(empty.getMessage().contains("aucun projet exploitable"), empty.getMessage());
+        assertTrue(empty.getMessage().contains("did not propose any usable project"), empty.getMessage());
     }
 
     // --- Doubles de test ------------------------------------------------------------------------------

@@ -30,13 +30,13 @@ public class CreditSimulationService {
 
     /** Mention obligatoire de toute simulation (règle des prompts du Coach). */
     public static final String DISCLAIMER =
-            "Simulation indicative et non contractuelle : seuls le contrat de prêt et la souscription "
-                    + "signés font foi.";
+            "Indicative and non-contractual simulation: only the signed loan agreement and subscription "
+                    + "are binding.";
 
     /** Hypothèses retenues, celles de la grille de taux. */
     public static final String HYPOTHESES =
-            "Taux hors assurance facultative ; frais de dossier selon l'hypothèse de la grille (0 €) ; "
-                    + "TAEG applicable dépendant du dossier et de la durée.";
+            "Rate excluding optional insurance; arrangement fees per the grid assumption (€0); "
+                    + "applicable APR depending on the case file and the term.";
 
     private static final MathContext MC = MathContext.DECIMAL64;
     private static final MathContext PRECISION = new MathContext(20, RoundingMode.HALF_UP);
@@ -70,32 +70,32 @@ public class CreditSimulationService {
     /** Motif du refus (vide si la simulation est possible) : sert à expliquer le refus à l'appelant. */
     public Optional<String> refusal(String productId, BigDecimal amount, Integer durationMonths) {
         if (productId == null || productId.isBlank()) {
-            return Optional.of("Produit manquant. Produits disponibles dans la grille : "
+            return Optional.of("Missing product. Products available in the grid: "
                     + String.join(", ", gridService.productIds()) + ".");
         }
         if (amount == null || amount.signum() <= 0) {
-            return Optional.of("Montant manquant ou invalide : sans montant, aucun chiffrage n'est possible.");
+            return Optional.of("Missing or invalid amount: without an amount, no quote is possible.");
         }
         if (durationMonths == null || durationMonths <= 0) {
-            return Optional.of("Durée manquante ou invalide : sans durée, aucun chiffrage n'est possible.");
+            return Optional.of("Missing or invalid term: without a term, no quote is possible.");
         }
         if (gridService.rulesFor(productId).isEmpty()) {
-            return Optional.of("Produit absent de la grille de taux : " + productId
-                    + ". Produits disponibles : " + String.join(", ", gridService.productIds()) + ".");
+            return Optional.of("Product not found in the rate grid: " + productId
+                    + ". Products available: " + String.join(", ", gridService.productIds()) + ".");
         }
         if (gridService.isRevolving(productId)) {
-            return Optional.of("Crédit renouvelable : le taux s'applique aux sommes réellement utilisées, aucune "
-                    + "mensualité d'amortissement à échéances constantes ne peut être présentée.");
+            return Optional.of("Revolving credit: the rate applies to the amounts actually used, no "
+                    + "amortising monthly payment with constant instalments can be presented.");
         }
         CreditRateGridService.RateRule rule = gridService.ruleFor(productId, amount, durationMonths).orElse(null);
         if (rule == null) {
-            return Optional.of("Aucune règle de la grille ne couvre " + amount.toPlainString() + " € sur "
-                    + durationMonths + " mois pour ce produit : le TAEG n'est pas renseigné pour cette tranche.");
+            return Optional.of("No rule in the grid covers " + amount.toPlainString() + " € over "
+                    + durationMonths + " months for this product: the APR is not set for this bracket.");
         }
         BigDecimal ceiling = gridService.usuryCeilingPercent(amount).orElse(null);
         if (ceiling != null && rule.taegPercent() != null && rule.taegPercent().compareTo(ceiling) > 0) {
-            return Optional.of("TAEG de la grille (" + rule.taegPercent().toPlainString()
-                    + " %) supérieur au taux d'usure renseigné pour cette tranche de montant ("
+            return Optional.of("APR from the grid (" + rule.taegPercent().toPlainString()
+                    + " %) is higher than the usury rate set for this amount bracket ("
                     + ceiling.toPlainString() + " %).");
         }
         return Optional.empty();

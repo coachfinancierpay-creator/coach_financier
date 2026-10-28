@@ -41,7 +41,7 @@ public class AgentPromptController {
     public Map<String, Object> get(@PathVariable String key) {
         String content = store.read(key);
         if (content == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent inconnu : " + key);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unknown agent: " + key);
         }
         return Map.of("key", key, "content", content);
     }

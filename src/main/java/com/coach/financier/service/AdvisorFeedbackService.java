@@ -51,18 +51,18 @@ public class AdvisorFeedbackService {
     public SubmitResponse submit(AdvisorFeedbackModels.AdvisorFeedbackRequest request) {
         if (!properties.isEnabled()) {
             return new SubmitResponse("DISABLED", null, sessionOf(request), null, null, null,
-                    "Module Feedback Conseiller désactivé.");
+                    "Advisor Feedback module disabled.");
         }
         String sessionId = sessionOf(request);
         if (sessionId == null) {
             return new SubmitResponse("INVALID", null, null, null, null, null,
-                    "sessionId manquant : feedback non enregistré.");
+                    "Missing sessionId: feedback not saved.");
         }
         String assessment = AdvisorFeedbackModels.normalizeAssessment(
                 request == null ? null : request.overallAssessment());
         if (assessment == null) {
             return new SubmitResponse("INVALID", null, sessionId, null, null, null,
-                    "Évaluation globale manquante ou invalide (RELEVANT, NEEDS_IMPROVEMENT, INCORRECT).");
+                    "Missing or invalid overall assessment (RELEVANT, NEEDS_IMPROVEMENT, INCORRECT).");
         }
 
         // Pseudonymisation : aucun nom de conseiller n'est stocké ni exposé dans les agrégats.
@@ -93,7 +93,7 @@ public class AdvisorFeedbackService {
             // Même session, même conseiller, contenu identique : double clic / retry → aucun nouvel événement.
             return new SubmitResponse("DUPLICATE", current.feedbackId(), sessionId, current.event(),
                     current.version(), current.overallAssessment(),
-                    "Ce feedback a déjà été enregistré (aucun doublon créé).");
+                    "This feedback has already been saved (no duplicate created).");
         }
         int version = current == null ? 1 : current.version() + 1;
 
@@ -119,12 +119,12 @@ public class AdvisorFeedbackService {
         AdvisorFeedbackStore.SaveResult result = store.save(request, feedback);
         if (result.duplicate()) {
             return new SubmitResponse("DUPLICATE", feedback.feedbackId(), sessionId, feedback.event(),
-                    version, assessment, "Ce feedback a déjà été enregistré (aucun doublon créé).");
+                    version, assessment, "This feedback has already been saved (no duplicate created).");
         }
         if (!result.saved()) {
             log.warn("Feedback conseiller non enregistré ({}) : {}", sessionId, result.error());
             return new SubmitResponse("STORAGE_ERROR", feedback.feedbackId(), sessionId, feedback.event(),
-                    version, assessment, "Feedback non enregistré : le dossier conseiller n'est pas impacté.");
+                    version, assessment, "Feedback not saved: the advisor case file is not affected.");
         }
         return new SubmitResponse("SAVED", feedback.feedbackId(), sessionId, feedback.event(), version,
                 assessment, null);

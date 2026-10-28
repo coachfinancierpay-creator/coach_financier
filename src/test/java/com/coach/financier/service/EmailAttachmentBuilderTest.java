@@ -27,7 +27,7 @@ class EmailAttachmentBuilderTest {
         assertTrue(attachment.filename().startsWith("email_client_prepare_"));
         assertTrue(attachment.filename().endsWith(".txt"));
         assertEquals("text/plain", attachment.contentType());
-        assertTrue(content.startsWith("Objet : Votre projet automobile"));
+        assertTrue(content.startsWith("Subject: Votre projet automobile"));
         assertTrue(content.contains("Découvrir le Prêt Auto : https://exemple.test/auto"));
     }
 

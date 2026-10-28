@@ -8,7 +8,7 @@
   },
   "produits": {
     "id": "sg_assurance_habitation",
-    "nom": "Assurance Habitation SG",
+    "nom": "SG Home Insurance",
     "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation",
     "famille": "assurance_habitation",
     "assureur": "Sogessur",
@@ -21,7 +21,7 @@
     "formules": [
       {
         "id": "sg_habitation_initiale",
-        "nom": "Initiale",
+        "nom": "Initial",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation",
         "niveau_protection": 1,
         "cible": [
@@ -32,7 +32,7 @@
       },
       {
         "id": "sg_habitation_confort",
-        "nom": "Confort",
+        "nom": "Comfort",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation",
         "niveau_protection": 2,
         "cible": [
@@ -43,7 +43,7 @@
       },
       {
         "id": "sg_habitation_optimale",
-        "nom": "Optimale",
+        "nom": "Optimal",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation",
         "niveau_protection": 3,
         "cible": [
@@ -54,7 +54,7 @@
       },
       {
         "id": "sg_habitation_etudiante",
-        "nom": "Étudiante",
+        "nom": "Student",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation-etudiant",
         "cible": [
           "etudiant"
@@ -63,7 +63,7 @@
       },
       {
         "id": "sg_habitation_pno",
-        "nom": "Propriétaire non occupant",
+        "nom": "Non-occupant owner",
         "url": "https://particuliers.sg.fr/assurances/nos-offres/assurance-habitation-investisseur-proprietaire-non-occupant-bailleur",
         "acronyme": "PNO",
         "cible": [
@@ -119,8 +119,8 @@
       "assistance_violences_conjugales_et_intrafamiliales"
     ],
     "avantage_credit_sg": {
-      "nom": "Plus Tranquillité Bancaire",
-      "description": "Prise en charge possible de mensualités du prêt immobilier SG en cas de sinistre grave, selon conditions du contrat.",
+      "nom": "Banking Peace of Mind Plus",
+      "description": "Possible coverage of SG mortgage monthly payments in the event of a serious claim, subject to the contract terms.",
       "maximum_mensualites": 12
     },
     "regles_recommandation": {

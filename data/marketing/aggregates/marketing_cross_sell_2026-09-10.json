@@ -1,32 +1,32 @@
 [ {
   "sourceProductId" : "sg_auto_tiers",
-  "sourceProductName" : "Assurance Auto SG – Tiers",
+  "sourceProductName" : "SG Car Insurance – Third Party",
   "targetProductId" : "sg_pea",
-  "targetProductName" : "Plan d'Épargne en Actions (PEA)",
+  "targetProductName" : "PEA (equity savings plan)",
   "commonSessions" : 1,
   "sourceSessions" : 1,
   "rate" : 1.0
 }, {
   "sourceProductId" : "sg_habitation_confort",
-  "sourceProductName" : "Assurance Habitation SG – Confort",
+  "sourceProductName" : "SG Home Insurance – Comfort",
   "targetProductId" : "sg_livret_a",
-  "targetProductName" : "Livret A",
+  "targetProductName" : "Livret A savings account",
   "commonSessions" : 1,
   "sourceSessions" : 1,
   "rate" : 1.0
 }, {
   "sourceProductId" : "sg_livret_a",
-  "sourceProductName" : "Livret A",
+  "sourceProductName" : "Livret A savings account",
   "targetProductId" : "sg_habitation_confort",
-  "targetProductName" : "Assurance Habitation SG – Confort",
+  "targetProductName" : "SG Home Insurance – Comfort",
   "commonSessions" : 1,
   "sourceSessions" : 2,
   "rate" : 0.5
 }, {
   "sourceProductId" : "sg_pea",
-  "sourceProductName" : "Plan d'Épargne en Actions (PEA)",
+  "sourceProductName" : "PEA (equity savings plan)",
   "targetProductId" : "sg_auto_tiers",
-  "targetProductName" : "Assurance Auto SG – Tiers",
+  "targetProductName" : "SG Car Insurance – Third Party",
   "commonSessions" : 1,
   "sourceSessions" : 1,
   "rate" : 1.0

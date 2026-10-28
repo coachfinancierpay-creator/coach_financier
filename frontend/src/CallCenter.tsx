@@ -29,25 +29,36 @@ import { renderMessageContent } from './messageFormat'
 
 /** Périodes proposées (jours) ; `0` = tout l'historique disponible. */
 const PERIODS: { days: number; label: string }[] = [
-  { days: 5, label: '5 derniers jours' },
-  { days: 10, label: '10 derniers jours' },
-  { days: 30, label: '30 derniers jours' },
-  { days: 0, label: 'Tout' },
+  { days: 5, label: 'Last 5 days' },
+  { days: 10, label: 'Last 10 days' },
+  { days: 30, label: 'Last 30 days' },
+  { days: 0, label: 'All' },
 ]
 
 function wait(milliseconds: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, milliseconds))
 }
 
+/** Délai par défaut, en secondes, entre la fin de la réponse IA et la question suivante du client (replay). */
+const DEFAULT_REPLAY_DELAY_SECONDS = 3
+const REPLAY_DELAY_STORAGE_KEY = 'coach-replay-next-question-delay'
+const MIN_REPLAY_DELAY_SECONDS = 0
+const MAX_REPLAY_DELAY_SECONDS = 60
+
+function clampReplayDelaySeconds(value: number): number {
+  if (!Number.isFinite(value)) return DEFAULT_REPLAY_DELAY_SECONDS
+  return Math.min(MAX_REPLAY_DELAY_SECONDS, Math.max(MIN_REPLAY_DELAY_SECONDS, Math.round(value)))
+}
+
 const COLUMNS: { key: DirectorySort | 'agence' | 'statut' | 'rdv' | 'rappel'; label: string; sortable: boolean }[] = [
-  { key: 'categorie', label: 'Catégorie', sortable: true },
-  { key: 'client', label: 'Client', sortable: true },
-  { key: 'agence', label: 'Agence', sortable: false },
+  { key: 'categorie', label: 'Category', sortable: true },
+  { key: 'client', label: 'Customer', sortable: true },
+  { key: 'agence', label: 'Agency', sortable: false },
   { key: 'titre', label: 'Conversation', sortable: true },
-  { key: 'score', label: 'Score commercial', sortable: true },
-  { key: 'statut', label: 'Statut', sortable: false },
-  { key: 'rdv', label: 'RDV pris', sortable: false },
-  { key: 'rappel', label: 'Être rappelé', sortable: false },
+  { key: 'score', label: 'Sales score', sortable: true },
+  { key: 'statut', label: 'Status', sortable: false },
+  { key: 'rdv', label: 'Appointment booked', sortable: false },
+  { key: 'rappel', label: 'Callback requested', sortable: false },
   { key: 'date', label: 'DATE', sortable: true },
 ]
 
@@ -95,7 +106,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
       setList(data)
       setError(null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Chargement impossible')
+      setError(e instanceof Error ? e.message : 'Unable to load')
     } finally {
       setLoading(false)
     }
@@ -125,10 +136,10 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
     <div className="logs-shell marketing-page cc-page">
       <header className="logs-header">
         <a className="logs-back" href="#/">
-          <ArrowLeft size={16} /> Retour au chat
+          <ArrowLeft size={16} /> Back to chat
         </a>
         <h1>
-          <PhoneCall size={20} /> Centre d&rsquo;appels — conversations
+          <PhoneCall size={20} /> Call center — conversations
         </h1>
         <span className="logs-status ok">
           <span className="status-dot" /> {rows.length} conversation(s)
@@ -136,10 +147,10 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
       </header>
 
       <p className="mkt-subtitle">
-        Toutes les conversations clôturées avec le Coach IA, avec leur <strong>score de sens commercial</strong>{' '}
-        (priorisation des relances). Le détail affiche la même synthèse que le mail envoyé au conseiller, sa
-        <strong> pièce jointe</strong> (le brouillon d&rsquo;email préparé pour le client) et l&rsquo;intégralité des
-        échanges.
+        All conversations closed with the AI Coach, with their <strong>sales score</strong>{' '}
+        (used to prioritise follow-ups). The detail shows the same summary as the email sent to the advisor, its
+        <strong> attachment</strong> (the email draft prepared for the customer) and the full
+        exchange.
       </p>
 
       <div className="mkt-toolbar">
@@ -156,11 +167,11 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           ))}
         </div>
         <select
-          aria-label="Filtrer par catégorie"
+          aria-label="Filter by category"
           value={category}
           onChange={(event) => setCategory(event.target.value)}
         >
-          <option value="">Toutes les catégories</option>
+          <option value="">All categories</option>
           {categories.map((item) => (
             <option key={item.code} value={item.code}>
               {item.label} ({item.count})
@@ -168,12 +179,12 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           ))}
         </select>
         <select
-          aria-label="Filtrer par agence"
-          title="Agence"
+          aria-label="Filter by agency"
+          title="Agency"
           value={agency}
           onChange={(event) => setAgency(event.target.value)}
         >
-          <option value="">Toutes les agences</option>
+          <option value="">All agencies</option>
           {agencies.map((item) => (
             <option key={item.code} value={item.code}>
               {item.name} ({item.code}) ({item.count})
@@ -181,11 +192,11 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           ))}
         </select>
         <select
-          aria-label="Filtrer par statut"
+          aria-label="Filter by status"
           value={status}
           onChange={(event) => setStatus(event.target.value)}
         >
-          <option value="">Tous les statuts</option>
+          <option value="">All statuses</option>
           {DOSSIER_STATUSES.map((item) => (
             <option key={item.code} value={item.code}>
               {item.label} ({statuses.find((entry) => entry.code === item.code)?.count ?? 0})
@@ -196,13 +207,13 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           <Search size={15} />
           <input
             type="search"
-            placeholder="Client, titre, projet, produit…"
+            placeholder="Customer, title, project, product…"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
         <button type="button" className="mkt-action" onClick={() => void load()} disabled={loading}>
-          <RefreshCw size={15} /> Rafraîchir
+          <RefreshCw size={15} /> Refresh
         </button>
       </div>
 
@@ -213,19 +224,19 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
           </span>
           {['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'].map((priority) => (
             <span key={priority} className={`cc-kpi ${scoreClass(priority)}`}>
-              {priorityLabel(priority)} : <strong>{byPriority[priority] ?? 0}</strong>
+              {priorityLabel(priority)}: <strong>{byPriority[priority] ?? 0}</strong>
             </span>
           ))}
         </div>
       )}
 
-      {loading && <div className="logs-empty">Chargement des conversations…</div>}
+      {loading && <div className="logs-empty">Loading conversations…</div>}
       {error && <div className="logs-error">{error}</div>}
 
       {!loading && !error && rows.length === 0 && (
         <div className="logs-empty">
-          Aucune conversation clôturée sur cette période. Les conversations apparaissent ici après leur
-          clôture (bouton « Terminer » du chat), y compris en mode démonstration.
+          No conversation closed for this period. Conversations appear here after they are
+          closed ("End the conversation" button in the chat), including in demo mode.
         </div>
       )}
 
@@ -241,7 +252,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                         type="button"
                         className="cc-sort"
                         onClick={() => toggleSort(column.key as DirectorySort)}
-                        title={`Trier par ${column.label.toLowerCase()}`}
+                        title={`Sort by ${column.label.toLowerCase()}`}
                       >
                         {column.label}
                         {sort === column.key ? (order === 'asc' ? ' ▲' : ' ▼') : ''}
@@ -251,7 +262,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     )}
                   </th>
                 ))}
-                <th className="cc-offers">Offres</th>
+                <th className="cc-offers">Offers</th>
               </tr>
             </thead>
             <tbody>
@@ -286,24 +297,24 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                   <td>
                     <span
                       className={`cc-status ${statusClass(effectiveStatusCode(row.status, getAdvisorIntent(row.sessionId)))}`}
-                      title={row.statusUpdatedAt ? `Statut modifié le ${formatDateTime(row.statusUpdatedAt)}` : undefined}
+                      title={row.statusUpdatedAt ? `Status changed on ${formatDateTime(row.statusUpdatedAt)}` : undefined}
                     >
                       {statusLabelOf(effectiveStatusCode(row.status, getAdvisorIntent(row.sessionId)))}
                     </span>
                     {row.noteCount > 0 && (
-                      <span className="cc-note-count" title={`${row.noteCount} message(s) laissé(s) sur ce dossier`}>
+                      <span className="cc-note-count" title={`${row.noteCount} message(s) left on this case file`}>
                         <MessageSquare size={12} /> {row.noteCount}
                       </span>
                     )}
                   </td>
                   <td>
                     {getAdvisorIntent(row.sessionId).prisRDV && (
-                      <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
+                      <Check className="cc-intent-icon positive" size={16} aria-label="Yes" />
                     )}
                   </td>
                   <td>
                     {getAdvisorIntent(row.sessionId).etreRappele && (
-                      <Check className="cc-intent-icon positive" size={16} aria-label="Oui" />
+                      <Check className="cc-intent-icon positive" size={16} aria-label="Yes" />
                     )}
                   </td>
                   <td>{formatDateTime(row.closedAt)}</td>
@@ -311,7 +322,7 @@ export default function CallCenter({ initialSessionId }: { initialSessionId?: st
                     {row.productCount > 0
                       ? row.topProduct
                         ? `${row.topProduct}${row.productCount > 1 ? ', ....' : ''}`
-                        : `${row.productCount} offre(s)`
+                        : `${row.productCount} offer(s)`
                       : '—'}
                   </td>
                 </tr>
@@ -353,7 +364,19 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
   const [statusComment, setStatusComment] = useState('')
   const [savingStatus, setSavingStatus] = useState(false)
   const [exportingPdf, setExportingPdf] = useState(false)
+  const [replayDelaySeconds, setReplayDelaySeconds] = useState(() => {
+    const stored = sessionStorage.getItem(REPLAY_DELAY_STORAGE_KEY)
+    const parsed = stored === null ? Number.NaN : Number(stored)
+    return Number.isFinite(parsed) && parsed >= MIN_REPLAY_DELAY_SECONDS && parsed <= MAX_REPLAY_DELAY_SECONDS
+      ? parsed : DEFAULT_REPLAY_DELAY_SECONDS
+  })
   const popupRef = useRef<HTMLDivElement>(null)
+
+  /** Lance la démonstration en mémorisant le délai choisi entre deux questions du client. */
+  function startReplay() {
+    sessionStorage.setItem(REPLAY_DELAY_STORAGE_KEY, String(clampReplayDelaySeconds(replayDelaySeconds)))
+    window.location.hash = `#/replay/${encodeURIComponent(sessionId)}`
+  }
 
   useEffect(() => {
     void (async () => {
@@ -364,7 +387,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
         setStatusDraft(effectiveStatusCode(loaded.row.status, getAdvisorIntent(sessionId)))
         setError(null)
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Dossier indisponible')
+        setError(e instanceof Error ? e.message : 'Case file unavailable')
       } finally {
         setLoading(false)
       }
@@ -415,7 +438,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
       setError(null)
       onStatusChanged()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Statut non enregistré')
+      setError(e instanceof Error ? e.message : 'Status not saved')
     } finally {
       setSavingStatus(false)
     }
@@ -439,7 +462,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
       // Laisser React rendre les sections avant la capture du DOM.
       await new Promise<void>((resolve) => window.setTimeout(resolve, 100))
       const popup = popupRef.current
-      if (!popup) throw new Error('Popup indisponible')
+      if (!popup) throw new Error('Popup unavailable')
 
       const canvas = await html2canvas(popup, {
         backgroundColor: '#ffffff',
@@ -482,11 +505,11 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
 
       pdf.setProperties({
         title: `Conversation ${row?.customerId ?? sessionId}`,
-        subject: 'Détail de conversation — Centre d’appels',
+        subject: 'Conversation detail — Call center',
       })
       pdf.save(`conversation-${sessionId.replace(/[^a-z0-9_-]/gi, '_')}.pdf`)
     } catch (e) {
-      setError(e instanceof Error ? `Export PDF impossible : ${e.message}` : 'Export PDF impossible')
+      setError(e instanceof Error ? `PDF export failed: ${e.message}` : 'PDF export failed')
     } finally {
       setShowCriteria(previousState.showCriteria)
       setShowSynthesis(previousState.showSynthesis)
@@ -514,16 +537,16 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
           <div>
             <h2>{row?.title ?? 'Conversation'}</h2>
             <p className="mkt-subtitle">
-              {row?.customerId ?? 'Client inconnu'} · {row?.categoryLabel ?? '—'} · clôturée le{' '}
+              {row?.customerId ?? 'Unknown customer'} · {row?.categoryLabel ?? '—'} · closed on{' '}
               {formatDateTime(row?.closedAt ?? null)}
             </p>
           </div>
-          <button type="button" className="icon-button" onClick={onClose} title="Fermer">
+          <button type="button" className="icon-button" onClick={onClose} title="Close">
             <X size={18} />
           </button>
         </div>
 
-        {loading && <div className="logs-empty">Chargement du dossier…</div>}
+        {loading && <div className="logs-empty">Loading case file…</div>}
         {error && <div className="logs-error">{error}</div>}
 
         {!loading && !error && detail && (
@@ -533,21 +556,21 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                 {row?.score === null || row?.score === undefined ? '—' : `${row.score}/100`}
               </span>
               <div>
-                <strong>Score de sens commercial — {row?.priorityLabel ?? 'non calculé'}</strong>
+                <strong>Sales score — {row?.priorityLabel ?? 'not calculated'}</strong>
                 <ul className="cc-list">
                   {(detail.scoreReasons ?? []).map((reason, index) => (
                     <li key={`reason-${index}`}>{reason}</li>
                   ))}
                   {(detail.scoreReasons ?? []).length === 0 && (
-                    <li>Aucune explication enregistrée pour ce dossier.</li>
+                    <li>No explanation recorded for this case file.</li>
                   )}
                 </ul>
                 {(detail.scoreCriteria ?? []).length > 0 && (
                   <>
                     <button type="button" className="cc-toggle" onClick={() => setShowCriteria((v) => !v)}>
                       {showCriteria ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
-                      Critères mesurés ({detail.scoreCriteria.length})
-                      {detail.scoreProposedByAi ? ' — score affiné par l’IA' : ' — score calculé par le système'}
+                      Criteria measured ({detail.scoreCriteria.length})
+                      {detail.scoreProposedByAi ? ' — score refined by AI' : ' — score calculated by the system'}
                     </button>
                     {showCriteria && (
                       <ul className="cc-list small">
@@ -561,14 +584,14 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
               </div>
               {detail.contactPhone ? (
                 <a className="mkt-action cc-call" href={`tel:${detail.contactPhone}`}>
-                  <PhoneCall size={15} /> Appeler le client ({detail.contactPhone})
+                  <PhoneCall size={15} /> Call customer ({detail.contactPhone})
                 </a>
               ) : null}
             </div>
 
             <section className="cc-section cc-status-box">
               <h3>
-                <MessageSquare size={16} /> Suivi du dossier
+                <MessageSquare size={16} /> Case file follow-up
               </h3>
               <div className="cc-status-row">
                 <span
@@ -579,7 +602,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                   {statusLabelOf(effectiveStatusCode(row?.status ?? '', getAdvisorIntent(sessionId)))}
                 </span>
                 <select
-                  aria-label="Nouveau statut"
+                  aria-label="New status"
                   value={statusDraft}
                   disabled={savingStatus}
                   onChange={(event) => setStatusDraft(event.target.value)}
@@ -594,7 +617,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
               <textarea
                 rows={2}
                 className="cc-status-message"
-                placeholder="Message : compte rendu d'appel, objection du client, prochaine action…"
+                placeholder="Message: call report, customer objection, next action…"
                 value={statusComment}
                 disabled={savingStatus}
                 onChange={(event) => setStatusComment(event.target.value)}
@@ -607,11 +630,11 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                     || (statusDraft === row?.status && statusComment.trim().length === 0)}
                   onClick={() => void saveStatus()}
                 >
-                  {savingStatus ? 'Enregistrement…' : 'Enregistrer le suivi'}
+                  {savingStatus ? 'Saving…' : 'Save follow-up'}
                 </button>
                 <span className="cc-subject">
-                  Le statut peut être changé seul, ou avec un message : un message seul est journalisé sans
-                  changer le statut.
+                  The status can be changed on its own, or with a message: a message on its own is
+                  logged without changing the status.
                 </span>
               </div>
               {(detail.statusHistory ?? []).length > 0 ? (
@@ -622,21 +645,21 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                       <li key={`status-${index}`}>
                         <strong>{formatDateTime(event.timestamp)}</strong>
                         {changed
-                          ? <> — statut : {statusLabelOf(event.previousStatus)} → <strong>{statusLabelOf(event.status)}</strong></>
-                          : <> — {statusLabelOf(event.status)}, inchangé</>}
-                        {event.comment ? <> · « {event.comment} »</> : null}
+                          ? <> — status: {statusLabelOf(event.previousStatus)} → <strong>{statusLabelOf(event.status)}</strong></>
+                          : <> — {statusLabelOf(event.status)}, unchanged</>}
+                        {event.comment ? <> · “{event.comment}”</> : null}
                       </li>
                     )
                   })}
                 </ul>
               ) : (
-                <p className="cc-subject">Aucun suivi enregistré : le dossier n&rsquo;a pas encore été traité.</p>
+                <p className="cc-subject">No follow-up recorded: this case file has not been handled yet.</p>
               )}
             </section>
 
             {(detail.nextActions ?? []).length > 0 && (
               <section className="cc-section">
-                <h3>Prochaines actions de suivi</h3>
+                <h3>Next follow-up actions</h3>
                 <ul className="cc-list">
                   {detail.nextActions.map((action, index) => (
                     <li key={`action-${index}`}>{action}</li>
@@ -647,14 +670,14 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
 
             {(detail.products ?? []).length > 0 && (
               <section className="cc-section">
-                <h3>Offres d&rsquo;intérêt</h3>
+                <h3>Offers of interest</h3>
                 <table className="mkt-table compact">
                   <thead>
                     <tr>
-                      <th>Offre</th>
-                      <th>Famille</th>
-                      <th>Intérêt</th>
-                      <th>Pourquoi</th>
+                      <th>Offer</th>
+                      <th>Family</th>
+                      <th>Interest</th>
+                      <th>Why</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -684,7 +707,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                 onClick={() => setShowSynthesis((v) => !v)}
               >
                 {showSynthesis ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
-                <Sparkles size={15} /> Synthèse envoyée au conseiller
+                <Sparkles size={15} /> Summary sent to the advisor
               </button>
               {showSynthesis && (
                 <div className="cc-toggle-body cc-synthesis-body">
@@ -707,7 +730,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                   onClick={() => setShowAttachment((v) => !v)}
                 >
                   {showAttachment ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
-                  <Paperclip size={15} /> Pièce jointe — email client préparé
+                  <Paperclip size={15} /> Attachment — prepared customer email
                 </button>
                 {showAttachment && (
                   <div className="cc-toggle-body cc-attachment-body">
@@ -716,8 +739,8 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                       {renderMessageContent(`client-${sessionId}`, detail.customerEmailBody, sessionId)}
                     </div>
                     <p className="cc-hint">
-                      Brouillon préparé par le Coach : il n&rsquo;est jamais envoyé automatiquement — à relire et
-                      à adapter avant tout envoi au client.
+                      Draft prepared by the Coach: it is never sent automatically — review and
+                      adapt it before sending anything to the customer.
                     </p>
                   </div>
                 )}
@@ -732,12 +755,12 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                 onClick={() => setShowTranscript((v) => !v)}
               >
                 {showTranscript ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
-                <History size={15} /> Conversation complète ({messages.length} message(s))
+                <History size={15} /> Full conversation ({messages.length} message(s))
               </button>
               {showTranscript && (
                 <div className="cc-transcript">
                   {messages.length === 0 && (
-                    <div className="logs-empty">Aucun échange enregistré avec ce dossier.</div>
+                    <div className="logs-empty">No exchange recorded for this case file.</div>
                   )}
                   {messages.map((message, index) => (
                     <div key={`msg-${index}`} className={`message-row ${message.role ?? 'user'}`}>
@@ -748,7 +771,7 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
                       )}
                       <div className={`message-bubble ${message.role ?? 'user'}`}>
                         <div className="message-meta">
-                          <span>{message.role === 'user' ? 'Client' : 'Coach IA'}</span>
+                          <span>{message.role === 'user' ? 'Customer' : 'AI Coach'}</span>
                           {message.timestamp ? <span>{formatTime(message.timestamp)}</span> : null}
                         </div>
                         <div className="message-text">
@@ -767,14 +790,32 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
         )}
 
         <div className="cc-popup-foot">
+          <label
+            className="cc-replay-delay"
+            htmlFor="cc-replay-delay-input"
+            title="Time between the end of the AI answer and the customer's next question (0 = manual: press Space to continue)"
+          >
+            <span>Next question delay</span>
+            <input
+              id="cc-replay-delay-input"
+              type="number"
+              min={MIN_REPLAY_DELAY_SECONDS}
+              max={MAX_REPLAY_DELAY_SECONDS}
+              step={1}
+              value={replayDelaySeconds}
+              onChange={(event) => setReplayDelaySeconds(Number(event.target.value))}
+              onBlur={() => setReplayDelaySeconds((current) => clampReplayDelaySeconds(current))}
+            />
+            <span>s</span>
+          </label>
           <button
             type="button"
             className="mkt-action cc-call-client"
-            onClick={() => { window.location.hash = `#/replay/${encodeURIComponent(sessionId)}` }}
+            onClick={startReplay}
             disabled={loading || !detail}
-            title="Rejouer cette conversation dans le Coach pour une démonstration"
+            title="Replay this conversation in the Coach for a demo"
           >
-            Favorie
+            Replay
           </button>
           <button
             type="button"
@@ -782,15 +823,15 @@ function ConversationPopup({ sessionId, onClose, onStatusChanged }: {
             onClick={() => void downloadConversationPdf()}
             disabled={loading || !detail || exportingPdf}
           >
-            <Download size={15} /> {exportingPdf ? 'Préparation du PDF…' : 'Télécharger en PDF'}
+            <Download size={15} /> {exportingPdf ? 'Preparing PDF…' : 'Download as PDF'}
           </button>
           {detail?.feedbackUrl ? (
             <a className="logs-back" href={`#/advisor-feedback/session/${encodeURIComponent(sessionId)}`}>
-              <BadgeCheck size={15} /> {detail.evaluated ? 'Avis conseiller enregistré' : 'Évaluer le suivi'}
+              <BadgeCheck size={15} /> {detail.evaluated ? 'Advisor feedback saved' : 'Rate the follow-up'}
             </a>
           ) : null}
           <button type="button" className="mkt-action" onClick={onClose}>
-            Fermer
+            Close
           </button>
         </div>
       </div>
@@ -835,13 +876,13 @@ function scoreClass(priority: string | null): string {
 function priorityLabel(priority: string): string {
   switch (priority) {
     case 'VERY_HIGH':
-      return 'Très haute'
+      return 'Very high'
     case 'HIGH':
-      return 'Haute'
+      return 'High'
     case 'MEDIUM':
-      return 'Moyenne'
+      return 'Medium'
     default:
-      return 'Faible'
+      return 'Low'
   }
 }
 
@@ -849,7 +890,7 @@ function formatDateTime(timestamp: string | null): string {
   if (!timestamp) return '—'
   const date = new Date(timestamp)
   if (Number.isNaN(date.getTime())) return timestamp
-  return date.toLocaleString('fr-FR', {
+  return date.toLocaleString('en-GB', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
@@ -861,5 +902,5 @@ function formatDateTime(timestamp: string | null): string {
 function formatTime(timestamp: string): string {
   const date = new Date(timestamp)
   if (Number.isNaN(date.getTime())) return ''
-  return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
 }

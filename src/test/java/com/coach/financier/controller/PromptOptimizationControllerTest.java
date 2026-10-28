@@ -109,7 +109,7 @@ class PromptOptimizationControllerTest {
                 """.formatted(QUESTION), 400);
 
         assertEquals("BAD_REQUEST", body.get("error"));
-        assertTrue(String.valueOf(body.get("message")).contains("Campagne inconnue"),
+        assertTrue(String.valueOf(body.get("message")).contains("Unknown campaign"),
                 "le chaînage est validé avant tout appel IA : " + body.get("message"));
     }
 
@@ -143,7 +143,7 @@ class PromptOptimizationControllerTest {
                 """.formatted(QUESTION), 400);
 
         assertEquals("BAD_REQUEST", body.get("error"));
-        assertTrue(String.valueOf(body.get("message")).contains("fournisseur IA réel"),
+        assertTrue(String.valueOf(body.get("message")).contains("real AI provider"),
                 "le message explique qu'un fournisseur réel est nécessaire");
     }
 
@@ -152,7 +152,7 @@ class PromptOptimizationControllerTest {
         Map<String, Object> empty = postBody("/api/prompt-optimization/campaigns", """
                 {"agentId":"credit_conso","question":"   ","iterations":3,"provider":"DEEPSEEK"}
                 """, 400);
-        assertTrue(String.valueOf(empty.get("message")).contains("question de test"));
+        assertTrue(String.valueOf(empty.get("message")).contains("test question"));
 
         Map<String, Object> zero = postBody("/api/prompt-optimization/campaigns", """
                 {"agentId":"credit_conso","question":"%s","iterations":0,"provider":"DEEPSEEK"}
@@ -200,7 +200,7 @@ class PromptOptimizationControllerTest {
     void anUnknownConversationThreadIsAReadableError() throws Exception {
         Map<String, Object> body = getBody("/api/prompt-optimization/threads/th-inexistante", 400);
         assertEquals("BAD_REQUEST", body.get("error"));
-        assertTrue(String.valueOf(body.get("message")).contains("Fil de conversation inconnu"),
+        assertTrue(String.valueOf(body.get("message")).contains("Unknown conversation thread"),
                 "l'IHM affiche un message lisible, jamais un identifiant brut");
 
         // L'identifiant est validé (anti-traversée de chemin) AVANT toute lecture de fichier.
@@ -227,13 +227,13 @@ class PromptOptimizationControllerTest {
                 {"agentId":"credit_conso","provider":"MOCK"}
                 """, 400);
         assertEquals("BAD_REQUEST", demo.get("error"));
-        assertTrue(String.valueOf(demo.get("message")).contains("fournisseur IA réel"),
+        assertTrue(String.valueOf(demo.get("message")).contains("real AI provider"),
                 "le mode démo ne peut pas inventer de projet : " + demo.get("message"));
 
         Map<String, Object> unknown = postBody("/api/prompt-optimization/client/brief", """
                 {"agentId":"agent-inconnu","provider":"DEEPSEEK"}
                 """, 400);
-        assertTrue(String.valueOf(unknown.get("message")).contains("Agent inconnu"),
+        assertTrue(String.valueOf(unknown.get("message")).contains("Unknown agent"),
                 "l'IHM affiche un message lisible, jamais un identifiant brut");
     }
 }

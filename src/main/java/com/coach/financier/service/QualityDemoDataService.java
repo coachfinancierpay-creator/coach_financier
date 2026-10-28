@@ -84,7 +84,7 @@ public class QualityDemoDataService {
                             properties.severityFor(checkType),
                             detected,
                             QualityModels.SOURCE_DEMO,
-                            detected ? detail(checkType) : "Aucune anomalie détectée (démonstration).",
+                            detected ? detail(checkType) : "No issue detected (demo).",
                             detected ? 0.8 : null));
                 }
 
@@ -99,7 +99,7 @@ public class QualityDemoDataService {
                 String comment = rating <= 2
                         ? negativeComment(index, realCreditViolation)
                         : (rating >= 4 && random.nextInt(3) == 0
-                                ? "Échanges utiles et clairs, merci." : "");
+                                ? "Useful and clear exchanges, thank you." : "");
                 feedback.add(new QualityModels.CoachFeedback(
                         "fb-" + UUID.nameUUIDFromBytes(("demo-feedback-" + sessionId).getBytes(StandardCharsets.UTF_8)),
                         timestamp,
@@ -118,7 +118,7 @@ public class QualityDemoDataService {
         List<QualityModels.CoachFeedback> writtenFeedback = feedbackStore.appendDemo(feedback);
         checkStore.append(checks);
         return new DemoResult(start.toString(), end.toString(), effectiveDays, writtenFeedback.size(),
-                checks.size(), "Données de démonstration (source=DEMO) — ne pas interpréter comme de vrais avis.");
+                checks.size(), "Demo data (source=DEMO) — do not interpret as real reviews.");
     }
 
     private static int pickRating(java.util.Random random) {
@@ -147,30 +147,30 @@ public class QualityDemoDataService {
 
     private static String negativeComment(int index, boolean realCreditViolation) {
         if (realCreditViolation) {
-            return "Le Coach m'a annoncé une mensualité sans référence de taux, impossible à vérifier.";
+            return "The Coach gave me a monthly payment without any rate reference, impossible to verify.";
         }
         return switch (index % 4) {
-            case 0 -> "Le Coach répétait les mêmes chiffres à chaque message.";
-            case 1 -> "Je voulais une estimation chiffrée, le Coach m'a seulement renvoyé vers un simulateur.";
-            case 2 -> "Les explications étaient longues et difficiles à suivre.";
-            default -> "Il manquait des informations sur l'offre proposée.";
+            case 0 -> "The Coach kept repeating the same figures in every message.";
+            case 1 -> "I wanted a quantified estimate, the Coach just pointed me to a simulator.";
+            case 2 -> "The explanations were long and hard to follow.";
+            default -> "Information about the proposed offer was missing.";
         };
     }
 
     private static String detail(String checkType) {
         return switch (checkType) {
             case QualityModels.CREDIT_SIMULATION_VIOLATION ->
-                    "Le Coach semble avoir produit un chiffrage de crédit sans s'appuyer sur la grille de taux "
-                            + "fournie (anomalie de démonstration).";
+                    "The Coach appears to have produced a credit quote without relying on the rate grid "
+                            + "provided (demo issue).";
             case QualityModels.PRODUCT_MISMATCH ->
-                    "Une offre hors familles autorisées a été présentée (anomalie de démonstration).";
+                    "An offer outside the allowed families was presented (demo issue).";
             case QualityModels.EXCESSIVE_REPETITION ->
-                    "Plusieurs informations ont été répétées sans nécessité apparente (démonstration).";
+                    "Several pieces of information were repeated with no apparent need (demo).";
             case QualityModels.UNANSWERED_REQUEST ->
-                    "La conversation se termine sur un message client sans réponse (démonstration).";
+                    "The conversation ends with a customer message left unanswered (demo).";
             case QualityModels.MISSING_DATA_NOT_RETRIEVED ->
-                    "Données demandées par l'IA et non fournies (démonstration).";
-            default -> "Anomalie de démonstration.";
+                    "Data requested by the AI was not provided (demo).";
+            default -> "Demo issue.";
         };
     }
 

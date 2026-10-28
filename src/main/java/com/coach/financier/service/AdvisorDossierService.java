@@ -38,9 +38,9 @@ public class AdvisorDossierService {
     private static final Logger log = LoggerFactory.getLogger(AdvisorDossierService.class);
 
     /** Verbes d'action utilisés pour extraire le « suivi conseillé » du mail conseiller (heuristique locale). */
-    private static final List<String> ACTION_KEYWORDS = List.of("rappeler", "revoir", "vérifier", "verifier",
-            "réaliser", "realiser", "accompagner", "proposer", "envoyer", "prendre rendez-vous", "préparer",
-            "preparer", "étudier", "etudier", "confirmer", "simulation", "devis", "éligibilité", "eligibilite");
+    private static final List<String> ACTION_KEYWORDS = List.of("call back", "review", "check",
+            "carry out", "accompany", "propose", "send", "book an appointment", "prepare",
+            "study", "confirm", "simulation", "quote", "eligibility");
 
     private final AdvisorDossierStore dossierStore;
     private final AdvisorFeedbackStore feedbackStore;
@@ -70,10 +70,10 @@ public class AdvisorDossierService {
      */
     public String feedbackBlock(String sessionId) {
         return "--------------------------------\n"
-                + "Votre retour nous aide à améliorer le Coach IA.\n"
+                + "Your feedback helps us improve the AI Coach.\n"
                 + "\n"
-                + "Donnez votre avis sur la synthèse et les recommandations préparées par le Coach :\n"
-                + "[URL|Évaluer le suivi du Coach|" + feedbackUrl(sessionId) + "]";
+                + "Share your opinion on the summary and recommendations prepared by the Coach:\n"
+                + "[URL|Rate the Coach's follow-up|" + feedbackUrl(sessionId) + "]";
     }
 
     /** URL de consultation de l'historique d'une conversation : uniquement le sessionId, jamais de donnée personnelle. */
@@ -93,8 +93,8 @@ public class AdvisorDossierService {
      * exposée par l'API et par la pop-in du centre d'appels) : le bloc est conservé pour un usage ultérieur.
      */
     public String conversationBlock(String sessionId) {
-        return "Échanges de la conversation avec le Coach :\n"
-                + "[URL|Consulter l'historique de la conversation|" + conversationUrl(sessionId) + "]";
+        return "Conversation with the Coach:\n"
+                + "[URL|View the conversation history|" + conversationUrl(sessionId) + "]";
     }
 
     /** La base IHM est-elle configurée ? Sinon les liens ajoutés au mail restent relatifs. */
@@ -222,13 +222,13 @@ public class AdvisorDossierService {
                 continue;
             }
             String lower = line.toLowerCase(Locale.ROOT);
-            if (lower.contains("suivi conseill") || lower.contains("prochaine action")) {
+            if (lower.contains("follow-up") || lower.contains("next action")) {
                 inSection = true;
                 continue;
             }
             // Fin de la section : mention de la pièce jointe, séparateur ou nouvelle rubrique.
-            if (inSection && (lower.contains("pièce jointe") || lower.contains("piece jointe")
-                    || line.startsWith("---") || line.startsWith("Votre retour"))) {
+            if (inSection && (lower.contains("attachment")
+                    || line.startsWith("---") || line.startsWith("Your feedback"))) {
                 inSection = false;
                 continue;
             }

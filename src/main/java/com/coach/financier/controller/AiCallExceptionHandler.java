@@ -36,7 +36,7 @@ public class AiCallExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, Object>> onIllegalState(IllegalStateException exception) {
         String message = exception.getMessage() == null || exception.getMessage().isBlank()
-                ? "Échec de l'appel au fournisseur IA (aucun détail fourni)."
+                ? "AI provider call failed (no details provided)."
                 : exception.getMessage();
         // La trace reste côté SERVEUR (diagnostic), le client ne reçoit que le message exploitable.
         log.warn("[IA] échec de l'appel au fournisseur : {}", message);

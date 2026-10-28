@@ -11,11 +11,11 @@ import java.util.Locale;
  * n'est inventée : une conversation sans produit ni projet identifiable reste « Autre ».
  */
 public enum ConversationCategory {
-    CREDIT_CONSO("Crédit conso"),
-    CREDIT_IMMO("Crédit immobilier"),
-    EPARGNE("Épargne"),
-    ASSURANCE("Assurance"),
-    AUTRE("Autre");
+    CREDIT_CONSO("Consumer loan"),
+    CREDIT_IMMO("Mortgage"),
+    EPARGNE("Savings"),
+    ASSURANCE("Insurance"),
+    AUTRE("Other");
 
     private final String label;
 

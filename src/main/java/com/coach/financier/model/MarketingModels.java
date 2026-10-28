@@ -56,91 +56,91 @@ public final class MarketingModels {
      * code brut, jamais d'invention.
      */
     private static final Map<String, String> PROJECT_TYPE_LABELS = labels(new String[][]{
-            {"VEHICLE", "Achat d'un véhicule"},
-            {"REAL_ESTATE", "Projet immobilier"},
-            {"HOME_WORK", "Travaux / aménagement"},
-            {"ELECTRONICS", "Achat high-tech"},
-            {"FURNITURE", "Achat mobilier"},
-            {"TRAVEL", "Voyage"},
-            {"EDUCATION", "Études / formation"},
-            {"WEDDING", "Mariage"},
-            {"HEALTH_EXPENSE", "Dépense de santé"},
-            {"CASH_NEED", "Besoin de trésorerie"},
-            {"DEBT_RESTRUCTURING", "Regroupement de crédits"},
-            {"SAVINGS", "Épargne / placement"},
-            {"INVESTMENT", "Investissement"},
-            {"INSURANCE", "Assurance"},
-            {"BUDGET", "Gestion du budget"},
+            {"VEHICLE", "Vehicle purchase"},
+            {"REAL_ESTATE", "Real estate project"},
+            {"HOME_WORK", "Home improvement / renovation"},
+            {"ELECTRONICS", "Electronics purchase"},
+            {"FURNITURE", "Furniture purchase"},
+            {"TRAVEL", "Travel"},
+            {"EDUCATION", "Studies / education"},
+            {"WEDDING", "Wedding"},
+            {"HEALTH_EXPENSE", "Health expense"},
+            {"CASH_NEED", "Cash need"},
+            {"DEBT_RESTRUCTURING", "Debt consolidation"},
+            {"SAVINGS", "Savings / investment"},
+            {"INVESTMENT", "Investment"},
+            {"INSURANCE", "Insurance"},
+            {"BUDGET", "Budget management"},
             // variantes observées côté IA (libellé français malgré tout, jamais un code brut)
-            {"REAL_ESTATE_PURCHASE", "Achat immobilier"},
-            {"REAL_ESTATE_INVESTMENT", "Investissement immobilier"},
-            {"CAR_PURCHASE", "Achat d'un véhicule"},
-            {"HOME_RENOVATION", "Travaux / aménagement"},
-            {"LIQUIDITY_NEED", "Besoin de trésorerie"},
-            {"OTHER", "Autre projet"},
-            {"UNKNOWN", "Projet non identifié"}});
+            {"REAL_ESTATE_PURCHASE", "Property purchase"},
+            {"REAL_ESTATE_INVESTMENT", "Property investment"},
+            {"CAR_PURCHASE", "Vehicle purchase"},
+            {"HOME_RENOVATION", "Home improvement / renovation"},
+            {"LIQUIDITY_NEED", "Cash need"},
+            {"OTHER", "Other project"},
+            {"UNKNOWN", "Unidentified project"}});
 
     /** Familles de produits du catalogue (crédits, assurances, épargne). */
     private static final Map<String, String> PRODUCT_FAMILY_LABELS = labels(new String[][]{
-            {"AUTO_LOAN", "Crédit auto"},
-            {"PERSONAL_LOAN", "Crédit personnel"},
-            {"MORTGAGE", "Crédit immobilier"},
-            {"STUDENT_LOAN", "Prêt étudiant"},
-            {"YOUNG_ACTIVE_LOAN", "Prêt jeune actif"},
-            {"DRIVER_LICENSE_LOAN", "Crédit permis de conduire"},
-            {"REVOLVING_CREDIT", "Crédit renouvelable"},
-            {"DEBT_CONSOLIDATION", "Regroupement de crédits"},
-            {"INSURANCE_AUTO", "Assurance auto"},
-            {"INSURANCE_HOME", "Assurance habitation"},
-            {"INSURANCE_BORROWER", "Assurance emprunteur"},
-            {"LIFE_INSURANCE", "Assurance vie"},
-            {"SAVINGS_PRODUCT", "Produit d'épargne"},
-            {"HOME_SAVINGS", "Épargne logement"},
-            {"RETIREMENT_SAVINGS", "Épargne retraite"},
-            {"TERM_DEPOSIT", "Dépôt à terme"},
-            {"EQUITY_INVESTMENT", "Investissement en actions"}});
+            {"AUTO_LOAN", "Car loan"},
+            {"PERSONAL_LOAN", "Personal loan"},
+            {"MORTGAGE", "Mortgage"},
+            {"STUDENT_LOAN", "Student loan"},
+            {"YOUNG_ACTIVE_LOAN", "Young professional loan"},
+            {"DRIVER_LICENSE_LOAN", "Driving licence loan"},
+            {"REVOLVING_CREDIT", "Revolving credit"},
+            {"DEBT_CONSOLIDATION", "Debt consolidation"},
+            {"INSURANCE_AUTO", "Car insurance"},
+            {"INSURANCE_HOME", "Home insurance"},
+            {"INSURANCE_BORROWER", "Mortgage protection insurance"},
+            {"LIFE_INSURANCE", "Life insurance"},
+            {"SAVINGS_PRODUCT", "Savings product"},
+            {"HOME_SAVINGS", "Home savings"},
+            {"RETIREMENT_SAVINGS", "Retirement savings"},
+            {"TERM_DEPOSIT", "Term deposit"},
+            {"EQUITY_INVESTMENT", "Equity investment"}});
 
     /** Motifs de REFUS d'un produit (le client écarte l'offre). */
     private static final Map<String, String> REJECTION_REASON_LABELS = labels(new String[][]{
-            {"PRICE", "Prix / coût trop élevé"},
-            {"RATE", "Taux jugé trop élevé"},
-            {"PREFERS_CASH", "Préfère payer comptant"},
-            {"DOES_NOT_WANT_CREDIT", "Ne souhaite pas de crédit"},
-            {"INSUFFICIENT_COVERAGE", "Garanties insuffisantes"},
-            {"DURATION", "Durée inadaptée"},
-            {"CONDITIONS", "Conditions non acceptées"},
-            {"COMPETITOR", "Offre concurrente préférée"},
-            {"NOT_NEEDED", "Besoin non confirmé"},
-            {"TOO_COMPLEX", "Offre jugée trop complexe"},
-            {"OTHER", "Autre motif"}});
+            {"PRICE", "Price / cost too high"},
+            {"RATE", "Rate considered too high"},
+            {"PREFERS_CASH", "Prefers to pay cash"},
+            {"DOES_NOT_WANT_CREDIT", "Does not want credit"},
+            {"INSUFFICIENT_COVERAGE", "Insufficient coverage"},
+            {"DURATION", "Unsuitable term"},
+            {"CONDITIONS", "Conditions not accepted"},
+            {"COMPETITOR", "Prefers a competitor offer"},
+            {"NOT_NEEDED", "Need not confirmed"},
+            {"TOO_COMPLEX", "Offer considered too complex"},
+            {"OTHER", "Other reason"}});
 
     /** Motifs d'INTÉRÊT du client (pourquoi il s'intéresse au produit). */
     private static final Map<String, String> INTEREST_REASON_LABELS = labels(new String[][]{
-            {"DETAIL_REQUEST", "Demande de détails"},
-            {"PRICE_REQUEST", "Demande de prix"},
-            {"RATE_REQUEST", "Demande de taux"},
-            {"COVERAGE_REQUEST", "Demande sur les garanties"},
-            {"COMPARISON", "Comparaison d'offres"},
-            {"SUBSCRIPTION_REQUEST", "Souhaite souscrire"},
-            {"QUOTE_REQUEST", "Demande de devis"},
-            {"ADVISOR_REQUEST", "Souhaite parler à un conseiller"},
-            {"OTHER", "Autre motif"}});
+            {"DETAIL_REQUEST", "Request for details"},
+            {"PRICE_REQUEST", "Price request"},
+            {"RATE_REQUEST", "Rate request"},
+            {"COVERAGE_REQUEST", "Request about coverage"},
+            {"COMPARISON", "Offer comparison"},
+            {"SUBSCRIPTION_REQUEST", "Wants to subscribe"},
+            {"QUOTE_REQUEST", "Quote request"},
+            {"ADVISOR_REQUEST", "Wants to speak to an advisor"},
+            {"OTHER", "Other reason"}});
 
     /** Motifs d'un BESOIN NON COUVERT (aucune offre adaptée au catalogue). */
     private static final Map<String, String> UNMET_REASON_LABELS = labels(new String[][]{
-            {"NO_SUITABLE_PRODUCT", "Aucune offre adaptée au besoin"},
-            {"PRICE_RANGE_NOT_COVERED", "Montant hors gamme d'offres"},
-            {"ELIGIBILITY_NOT_MET", "Critères d'éligibilité non couverts"},
-            {"PRODUCT_MISSING", "Produit absent du catalogue"},
-            {"OTHER", "Autre motif"}});
+            {"NO_SUITABLE_PRODUCT", "No offer suited to the need"},
+            {"PRICE_RANGE_NOT_COVERED", "Amount outside the offer range"},
+            {"ELIGIBILITY_NOT_MET", "Eligibility criteria not covered"},
+            {"PRODUCT_MISSING", "Product missing from catalogue"},
+            {"OTHER", "Other reason"}});
 
     /** Motifs d'INFORMATION PRODUIT MANQUANTE (question restée sans réponse). */
     private static final Map<String, String> MISSING_INFO_REASON_LABELS = labels(new String[][]{
-            {"MISSING_COVERAGE_INFORMATION", "Garanties non documentées"},
-            {"MISSING_PRICING_INFORMATION", "Tarif non documenté"},
-            {"MISSING_CONDITIONS_INFORMATION", "Conditions non documentées"},
-            {"MISSING_ELIGIBILITY_INFORMATION", "Éligibilité non documentée"},
-            {"OTHER", "Autre information manquante"}});
+            {"MISSING_COVERAGE_INFORMATION", "Coverage not documented"},
+            {"MISSING_PRICING_INFORMATION", "Pricing not documented"},
+            {"MISSING_CONDITIONS_INFORMATION", "Conditions not documented"},
+            {"MISSING_ELIGIBILITY_INFORMATION", "Eligibility not documented"},
+            {"OTHER", "Other missing information"}});
 
     private static Map<String, String> labels(String[][] entries) {
         Map<String, String> map = new LinkedHashMap<>();

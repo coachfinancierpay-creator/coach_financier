@@ -1,77 +1,77 @@
-# Guide IA — Assurance Auto SG
+# AI guide — SG Car Insurance
 
 ## Structure
 
-Le JSON contient un objet `produit` avec plusieurs `formules`, puis des `reductions` et une `assistance_generale`.
+The JSON contains a `produit` object with several `formules`, then `reductions` and a general `assistance_generale`.
 
-Les caractéristiques d'une formule et les caractéristiques générales du produit doivent être combinées sans supposer qu'une option est incluse lorsqu'elle est seulement listée comme option.
+A plan's characteristics and the product's general characteristics must be combined without assuming an option is included when it is only listed as an option.
 
-## Formules
+## Plans
 
-Chaque formule possède :
-- `id`, `nom` ;
-- `niveau_protection` lorsqu'il est fourni ;
-- `tarif_indicatif_mensuel` ;
-- `garanties` ;
-- `assistance` ;
-- `options` ;
+Each plan has:
+- `id`, `nom`;
+- `niveau_protection` when provided;
+- `tarif_indicatif_mensuel`;
+- `garanties`;
+- `assistance`;
+- `options`;
 - `regles_recommandation`.
 
-Le niveau de protection sert à ordonner les niveaux décrits, mais ne remplace pas la comparaison des garanties.
+The protection level is used to order the levels described, but does not replace comparing the guarantees.
 
-## Tarif
+## Price
 
-`tarif_indicatif_mensuel.a_partir_de` est un prix mensuel indicatif à partir duquel la formule est présentée. Ce n'est pas un devis personnalisé ni un tarif garanti.
+`tarif_indicatif_mensuel.a_partir_de` is an indicative monthly price from which the plan is presented. It is not a personalised quote or a guaranteed rate.
 
-Les prix des `options` sont également indicatifs.
+The prices of the `options` are also indicative.
 
-## Garanties
+## Guarantees
 
-La liste `garanties` décrit les garanties incluses dans la formule selon le catalogue.
+The `garanties` list describes the guarantees included in the plan according to the catalogue.
 
-Ne pas confondre :
-- une garantie incluse dans `garanties` ;
-- une garantie/service dans `options` ;
-- un élément dans `avantages`.
+Do not confuse:
+- a guarantee included in `garanties`;
+- a guarantee/service in `options`;
+- an item in `avantages`.
 
-Une option ne doit pas être présentée comme incluse de base.
+An option must not be presented as included as standard.
 
 ## Assistance
 
-- `accident_km: 0` : assistance accident indiquée à partir de 0 km.
-- `panne_km: 25` : seuil de panne indiqué.
-- certaines formules ajoutent des services (`remise_route_rapide`, `service_voiture_a_domicile`).
+- `accident_km: 0`: accident assistance indicated from 0 km.
+- `panne_km: 25`: breakdown threshold indicated.
+- some plans add services (`remise_route_rapide`, `service_voiture_a_domicile`).
 
-`assistance_generale` contient des caractéristiques communes du produit : disponibilité, objectif de dépannage, réseau de garages, etc.
+`assistance_generale` contains characteristics common to the product: availability, breakdown objective, garage network, etc.
 
-## Indemnisation
+## Compensation
 
-`minimum_indemnisation` et l'objet `indemnisation` décrivent les niveaux indiqués. `valeur_a_neuf_jusqua_mois` doit être interprété comme une durée maximale indiquée et non comme une garantie universelle hors conditions contractuelles.
+`minimum_indemnisation` and the `indemnisation` object describe the levels indicated. `valeur_a_neuf_jusqua_mois` must be interpreted as a maximum duration indicated and not as a universal guarantee outside contractual conditions.
 
 ## Leasing
 
-La formule `Leasing` possède une `cible` explicite (`vehicule_leasing`, `loa`, `lld`) et une `priorite_tres_elevee_si`. Pour un véhicule en LOA/LLD, elle doit donc être examinée en priorité.
+The `Leasing` plan has an explicit `cible` (`vehicule_leasing`, `loa`, `lld`) and a `priorite_tres_elevee_si`. For a vehicle under LOA/LLD, it must therefore be examined as a priority.
 
-## Réductions
+## Discounts
 
-Chaque entrée de `reductions` contient un identifiant, un pourcentage et des `conditions`.
+Each `reductions` entry contains an identifier, a percentage and `conditions`.
 
-Une réduction ne doit être appliquée que si ses conditions sont satisfaites. Le fichier ne dit pas nécessairement que plusieurs réductions sont cumulables : ne pas supposer le cumul.
+A discount must only be applied if its conditions are met. The file does not necessarily state that several discounts can be combined: do not assume they stack.
 
-`reduction_pct_maximum` signifie réduction maximale et non réduction systématique.
+`reduction_pct_maximum` means maximum discount and not systematic discount.
 
-## Recommandation
+## Recommendation
 
-Comparer notamment :
-- budget ;
-- âge et valeur du véhicule ;
-- véhicule neuf/récent/ancien ;
-- besoin de couverture des dommages propres ;
-- leasing ;
-- garanties souhaitées ;
-- besoin d'assistance ;
-- options souhaitées.
+Compare in particular:
+- budget;
+- vehicle age and value;
+- new/recent/older vehicle;
+- need for own-damage cover;
+- leasing;
+- desired guarantees;
+- assistance needs;
+- desired options.
 
-Les règles `priorite_si` sont des signaux de pertinence, pas des critères d'éligibilité.
+The `priorite_si` rules are relevance signals, not eligibility criteria.
 
-Ne pas sélectionner automatiquement la formule la plus protectrice : la recommandation doit tenir compte du besoin et du budget.
+Do not automatically select the most protective plan: the recommendation must take the need and the budget into account.

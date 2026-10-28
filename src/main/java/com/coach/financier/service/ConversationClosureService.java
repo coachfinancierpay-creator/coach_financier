@@ -51,19 +51,19 @@ import java.util.Set;
 public class ConversationClosureService {
     private static final Logger log = LoggerFactory.getLogger(ConversationClosureService.class);
     private static final String ATTACHMENT_NOTICE =
-            "Vous trouverez en pièce jointe un brouillon d'email préparé à destination du client. "
-            + "Merci de le vérifier et de l'adapter avant tout envoi.";
+            "Please find attached an email draft prepared for the customer. "
+            + "Please check and adapt it before sending.";
     /** Libellé de l'agent affiché en badge sur la page Logs. */
-    private static final String SUIVI_AGENT_LABEL = "Agent de suivi (suivi.txt)";
+    private static final String SUIVI_AGENT_LABEL = "Follow-up agent (suivi.txt)";
     /** Libellé de la « parole client » d'une trace de clôture (il n'y a pas de message client). */
-    private static final String CLOSE_TRACE_MESSAGE = "Clôture de conversation — dossier de suivi";
+    private static final String CLOSE_TRACE_MESSAGE = "Conversation closure — follow-up case file";
     /**
      * Préfixe de l'objet du mail de NOTIFICATION envoyé au conseiller : il permet d'identifier et de
      * trier automatiquement les dossiers de suivi dans la boîte du conseiller.
      */
     private static final String ADVISOR_SUBJECT_PREFIX = "[coach_financier] ";
     /** Objet de repli du mail conseiller lorsque l'IA n'en fournit pas. */
-    private static final String DEFAULT_ADVISOR_SUBJECT = "Suivi client — dossier préparé";
+    private static final String DEFAULT_ADVISOR_SUBJECT = "Customer follow-up — case file prepared";
 
     private final ConversationService conversationService;
     private final AIServiceFactory aiServiceFactory;
@@ -172,18 +172,18 @@ public class ConversationClosureService {
             log.warn("Clôture ignorée : aucune conversation en mémoire pour la session {}", sessionId);
             return new SuiviModels.CloseConversationResponse(
                     sessionId, "NO_CONVERSATION",
-                    firstNonBlank(req.advisorName(), configuredAdvisorName, "Conseiller"),
+                    firstNonBlank(req.advisorName(), configuredAdvisorName, "Advisor"),
                     firstNonBlank(req.advisorEmail(), configuredAdvisorEmail, ""),
                     null, List.of(),
                     new SuiviModels.ConversationSummary("", List.of(), List.of()),
                     List.of(), List.of(),
                     new SuiviModels.EmailContent("", ""),
                     new SuiviModels.EmailContent("", ""),
-                    List.of("Aucune conversation en mémoire pour cette session (backend redémarré ou session "
-                            + "expirée) : aucun dossier n'a été préparé et aucun email n'a été envoyé."));
+                    List.of("No conversation in memory for this session (backend restarted or session "
+                            + "expired): no case file was prepared and no email was sent."));
         }
 
-        String advisorName = firstNonBlank(req.advisorName(), configuredAdvisorName, "Conseiller");
+        String advisorName = firstNonBlank(req.advisorName(), configuredAdvisorName, "Advisor");
         String advisorAddress = firstNonBlank(req.advisorEmail(), configuredAdvisorEmail, "");
         String format = firstNonBlank(req.attachmentFormat(), defaultAttachmentFormat, "txt");
         List<String> warnings = new ArrayList<>();
@@ -235,7 +235,7 @@ public class ConversationClosureService {
             logSuiviFailure(sessionId, conversation, suiviPrompt, context, sentChars, provider,
                     candidateProducts.size(), advisorAddress, e);
             throw new ResponseStatusException(HttpStatus.BAD_GATEWAY,
-                    "Échec de l'IA de synthèse : " + e.getMessage(), e);
+                    "Summary AI failure: " + e.getMessage(), e);
         }
 
         // 5) Validation backend : produits réels, refus exclus, URLs non inventées.
@@ -264,9 +264,9 @@ public class ConversationClosureService {
             advisorDossierService.persist(sessionId, result, dossierExtras(conversation, result, score));
             if (callCenterStatusStore.latestBySession(sessionId).isEmpty()) {
                 if (Boolean.TRUE.equals(req.prisRDV())) {
-                    callCenterStatusStore.save(sessionId, "RDV", "RDV planifié", "NOUVEAU", null);
+                    callCenterStatusStore.save(sessionId, "RDV", "Appointment booked", "NOUVEAU", null);
                 } else if (Boolean.TRUE.equals(req.etreRappele())) {
-                    callCenterStatusStore.save(sessionId, "A_CONTACTER", "A contacter", "NOUVEAU", null);
+                    callCenterStatusStore.save(sessionId, "A_CONTACTER", "To contact", "NOUVEAU", null);
                 }
             }
         }
@@ -289,14 +289,14 @@ public class ConversationClosureService {
             status = "PREPARED";
         } else if (advisorAddress.isBlank()) {
             status = "MAIL_UNAVAILABLE";
-            mailError = "destinataire conseiller non configuré (ADVISOR_EMAIL / app.advisor.email)";
-            warnings.add("Mail conseiller NON envoyé — " + mailError + ". Dossier préparé mais non envoyé.");
+            mailError = "advisor recipient not configured (ADVISOR_EMAIL / app.advisor.email)";
+            warnings.add("Advisor email NOT sent — " + mailError + ". Case file prepared but not sent.");
         } else {
             String reason = mailService.unavailabilityReason();
             if (reason != null && !reason.isBlank()) {
                 status = "MAIL_UNAVAILABLE";
-                mailError = "service mail indisponible : " + reason;
-                warnings.add("Mail conseiller NON envoyé — " + mailError + " : dossier préparé mais non envoyé.");
+                mailError = "mail service unavailable: " + reason;
+                warnings.add("Advisor email NOT sent — " + mailError + " : case file prepared but not sent.");
             } else {
                 try {
                     String advisorBody = advisorMailHtml
@@ -308,9 +308,9 @@ public class ConversationClosureService {
                     sentTo = List.of(advisorAddress);
                 } catch (Exception e) {
                     status = "SEND_FAILED";
-                    mailError = "échec de l'envoi à " + advisorAddress + " via "
+                    mailError = "failed to send to " + advisorAddress + " via "
                             + mailService.describeTarget() + " : " + oneLine(rootCause(e));
-                    warnings.add("Mail conseiller NON envoyé — " + mailError);
+                    warnings.add("Advisor email NOT sent — " + mailError);
                     log.warn("Échec de l'envoi du dossier de suivi pour la session {} : {}", sessionId, e.getMessage());
                 }
             }
@@ -366,11 +366,11 @@ public class ConversationClosureService {
             body.append("\n\n").append(scoreBlockText);
         }
         body.append("\n\n--------------------------------\n")
-                .append("Actions demandées par le client :\n")
-                .append("- Être rappelé : ").append(etreRappele ? "Oui" : "Non").append('\n')
-                .append("- RDV pris : ").append(prisRDV ? "Oui" : "Non");
+                .append("Actions requested by the customer:\n")
+                .append("- Callback requested: ").append(etreRappele ? "Yes" : "No").append('\n')
+                .append("- Appointment booked: ").append(prisRDV ? "Yes" : "No");
         if (prisRDV) {
-            body.append('\n').append("[URL|Voir le RDV|#]");
+            body.append('\n').append("[URL|View appointment|#]");
         }
         String directoryLink = advisorDossierService.directoryUrl(sessionId);
         if (!advisorDossierService.hasFrontendUrl() && !dossierUrl.isBlank()) {
@@ -378,7 +378,7 @@ public class ConversationClosureService {
             directoryLink = dossierUrl;
         }
         if (!directoryLink.isBlank()) {
-            body.append("\n\nDossier client : [URL|Ouvrir le dossier du client|")
+            body.append("\n\nCustomer case file: [URL|Open the customer case file|")
                     .append(directoryLink).append(']');
         }
         if (archive) {
@@ -403,12 +403,12 @@ public class ConversationClosureService {
         }
         StringBuilder block = new StringBuilder();
         block.append("--------------------------------\n");
-        block.append("**Score de sens commercial : ").append(score.display()).append("**\n");
+        block.append("**Sales score: ").append(score.display()).append("**\n");
         if (!score.reasons().isEmpty()) {
-            block.append("Pourquoi ce score : ").append(String.join(" ", score.reasons())).append('\n');
+            block.append("Why this score: ").append(String.join(" ", score.reasons())).append('\n');
         }
         if (!customerPhone.isBlank()) {
-            block.append("Contacter le client : [URL|Appeler le client|tel:")
+            block.append("Contact the customer: [URL|Call the customer|tel:")
                     .append(customerPhone).append(']');
         }
         return block.toString().stripTrailing();
@@ -505,7 +505,7 @@ public class ConversationClosureService {
      * n'est ajouté qu'une seule fois, même si l'appel est rejoué.
      */
     private static String advisorSubject(String subject) {
-        String base = firstNonBlank(subject, DEFAULT_ADVISOR_SUBJECT, "Suivi client");
+        String base = firstNonBlank(subject, DEFAULT_ADVISOR_SUBJECT, "Customer follow-up");
         return base.startsWith(ADVISOR_SUBJECT_PREFIX.strip())
                 ? base
                 : ADVISOR_SUBJECT_PREFIX + base;
@@ -537,7 +537,7 @@ public class ConversationClosureService {
             for (SuiviModels.ProductOfInterest product : result.productsOfInterest()) {
                 String id = product.productId() == null ? "" : product.productId().trim();
                 if (id.isEmpty() || !candidateIds.contains(id)) {
-                    warnings.add("Produit ignoré (non présenté pendant l'échange) : "
+                    warnings.add("Product ignored (not presented during the exchange): "
                             + (id.isEmpty() ? product.name() : id));
                     continue;
                 }
@@ -560,16 +560,16 @@ public class ConversationClosureService {
         UrlLinkRenderer.SanitizeResult advisorUrlCheck = UrlLinkRenderer.sanitize(advisor.body(), allowedUrls);
         UrlLinkRenderer.SanitizeResult customerUrlCheck = UrlLinkRenderer.sanitize(customerEmail.body(), allowedUrls);
         for (String violation : advisorUrlCheck.violations()) {
-            warnings.add("URL non fournie neutralisée dans l'email conseiller : " + violation);
+            warnings.add("URL not provided neutralised in the advisor email: " + violation);
         }
         for (String violation : customerUrlCheck.violations()) {
-            warnings.add("URL non fournie neutralisée dans le brouillon client : " + violation);
+            warnings.add("URL not provided neutralised in the customer draft: " + violation);
         }
 
-        String advisorSubject = firstNonBlank(advisor.subject(), DEFAULT_ADVISOR_SUBJECT, "Suivi client");
-        String customerSubject = firstNonBlank(customerEmail.subject(), summary.mainProject(), "Votre projet");
+        String advisorSubject = firstNonBlank(advisor.subject(), DEFAULT_ADVISOR_SUBJECT, "Customer follow-up");
+        String customerSubject = firstNonBlank(customerEmail.subject(), summary.mainProject(), "Your project");
         String advisorBody = advisorUrlCheck.text();
-        if (!advisorBody.toLowerCase(Locale.ROOT).contains("pièce jointe")) {
+        if (!advisorBody.toLowerCase(Locale.ROOT).contains("attached")) {
             advisorBody = advisorBody.stripTrailing() + "\n\n" + ATTACHMENT_NOTICE;
         }
 
@@ -601,7 +601,7 @@ public class ConversationClosureService {
             }
         }
         if (removed > 0) {
-            warnings.add("Brouillon client corrigé : mention(s) d'un produit refusé retirée(s).");
+            warnings.add("Customer draft corrected: mention(s) of a rejected product removed.");
         }
         return new SuiviModels.EmailContent(email.subject(), kept.toString().stripTrailing());
     }
@@ -634,7 +634,7 @@ public class ConversationClosureService {
                     result.marketingEvents(), sessionId, conversation, customerReference(conversation), provider);
             return marketingEventStore.append(events).size();
         } catch (Exception e) {
-            warnings.add("Signaux Marketing non persistés : " + e.getMessage());
+            warnings.add("Marketing signals not persisted: " + e.getMessage());
             log.warn("Persistance des signaux Marketing impossible (session {}) : {}", sessionId, e.getMessage());
             return 0;
         }
@@ -650,7 +650,7 @@ public class ConversationClosureService {
         try {
             return coachQualityCheckService.run(sessionId, conversation).size();
         } catch (Exception e) {
-            warnings.add("Contrôles qualité non exécutés : " + e.getMessage());
+            warnings.add("Quality checks not run: " + e.getMessage());
             log.warn("Contrôles qualité impossibles (session {}) : {}", sessionId, e.getMessage());
             return 0;
         }
@@ -690,40 +690,40 @@ public class ConversationClosureService {
         sb.append("candidateProducts=").append(candidateCount).append('\n');
         sb.append("productsOfInterest=0\n");
         sb.append("  HIGH=0\n  MEDIUM=0\n  LOW=0\n  REJECTED=0\n");
-        sb.append("attachmentFormat=(aucune)\n");
-        sb.append("attachmentName=(aucune)\n");
+        sb.append("attachmentFormat=(none)\n");
+        sb.append("attachmentName=(none)\n");
         sb.append("mailStatus=AI_FAILED\n");
         sb.append("mailSent=false\n");
         sb.append("mailTarget=").append(nullToEmpty(mailService.describeTarget())).append('\n');
-        sb.append("mailError=échec de la synthèse IA : ").append(cause).append('\n');
+        sb.append("mailError=AI summary failed: ").append(cause).append('\n');
         sb.append("advisor=").append(advisorAddress == null ? "" : advisorAddress).append('\n');
         sb.append("warnings=1\n");
 
         aiLogService.log(sessionId, CLOSE_TRACE_MESSAGE, suiviDataSent(conversation, candidateCount),
                 conversation.transcript().size(), charCount, AIModels.AIStatus.ERROR, List.of(),
                 SUIVI_AGENT_LABEL, suiviPromptSnapshot(systemPrompt, context), sb.toString(),
-                "Échec de la synthèse IA : " + cause, "AI_FAILED");
+                "AI summary failed: " + cause, "AI_FAILED");
     }
 
     /** Descriptions des données transmises à l'agent de suivi (affichées sur la page Logs). */
     private static List<String> suiviDataSent(ConversationModels.Conversation conversation, int candidateCount) {
         List<String> dataSent = new ArrayList<>();
-        dataSent.add("Historique de conversation (" + conversation.transcript().size() + " messages)");
-        dataSent.add("Contexte client (synthèse financière + projets)");
-        dataSent.add("Contexte conseiller");
-        dataSent.add("Produits présentés (" + candidateCount + ")");
-        dataSent.add("URLs utiles");
+        dataSent.add("Conversation history (" + conversation.transcript().size() + " messages)");
+        dataSent.add("Customer context (financial summary + projects)");
+        dataSent.add("Advisor context");
+        dataSent.add("Products presented (" + candidateCount + ")");
+        dataSent.add("Useful URLs");
         return dataSent;
     }
 
     /** Prompt visible via « Voir le prompt » : prompt système (suivi.txt) + contexte de clôture. */
     private String suiviPromptSnapshot(String systemPrompt, Map<String, Object> context) {
         try {
-            return "=== PROMPT SYSTÈME (agent/" + AgentFiles.SUIVI_PROMPT_FILE + ") ===\n" + systemPrompt
-                    + "\n\n=== CONTEXTE DE CLÔTURE (payload JSON envoyé) ===\n"
+            return "=== SYSTEM PROMPT (agent/" + AgentFiles.SUIVI_PROMPT_FILE + ") ===\n" + systemPrompt
+                    + "\n\n=== CLOSURE CONTEXT (JSON payload sent) ===\n"
                     + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(context);
         } catch (Exception e) {
-            return "Impossible de reconstituer le prompt de suivi : " + e.getMessage();
+            return "Unable to rebuild the follow-up prompt: " + e.getMessage();
         }
     }
 
@@ -762,7 +762,7 @@ public class ConversationClosureService {
         sb.append("mailStatus=").append(sendStatus).append('\n');
         sb.append("mailSent=").append("SENT".equals(sendStatus)).append('\n');
         sb.append("mailTarget=").append(nullToEmpty(mailTarget)).append('\n');
-        sb.append("mailError=").append(mailError == null || mailError.isBlank() ? "(aucune)" : mailError).append('\n');
+        sb.append("mailError=").append(mailError == null || mailError.isBlank() ? "(none)" : mailError).append('\n');
         sb.append("advisor=").append(advisorAddress == null ? "" : advisorAddress).append('\n');
         sb.append("warnings=").append(warnings == null ? 0 : warnings.size()).append('\n');
         return sb.toString();
@@ -784,7 +784,7 @@ public class ConversationClosureService {
     /** Résumé lisible d'une cause racine : type simple + message sur UNE seule ligne. */
     private static String oneLine(Throwable cause) {
         if (cause == null) {
-            return "cause inconnue";
+            return "unknown cause";
         }
         String message = cause.getMessage() == null ? "" : cause.getMessage().replaceAll("\\s+", " ").trim();
         return cause.getClass().getSimpleName() + (message.isEmpty() ? "" : " — " + message);

@@ -42,17 +42,17 @@ export default function FeedbackPopup({ onSubmit, onSkip, submitting }: Feedback
   return (
     <div className="qlt-popup-backdrop" role="dialog" aria-modal="true" aria-labelledby="qlt-popup-title">
       <div className="qlt-popup">
-        <h2 id="qlt-popup-title">Comment s&rsquo;est passée votre conversation avec le Coach&nbsp;?</h2>
-        <p className="mkt-subtitle">Votre avis nous aide à améliorer le Coach.</p>
+        <h2 id="qlt-popup-title">How was your conversation with the Coach?</h2>
+        <p className="mkt-subtitle">Your feedback helps us improve the Coach.</p>
 
-        <div className="qlt-stars" role="radiogroup" aria-label="Note de 1 à 5 étoiles">
+        <div className="qlt-stars" role="radiogroup" aria-label="Rating from 1 to 5 stars">
           {[1, 2, 3, 4, 5].map((value) => (
             <button
               key={value}
               type="button"
               role="radio"
               aria-checked={rating === value}
-              aria-label={`${value} étoile${value > 1 ? 's' : ''}`}
+              aria-label={`${value} star${value > 1 ? 's' : ''}`}
               className={rating !== null && value <= rating ? 'qlt-star active' : 'qlt-star'}
               onClick={() => setRating(value)}
             >
@@ -61,11 +61,11 @@ export default function FeedbackPopup({ onSubmit, onSkip, submitting }: Feedback
           ))}
         </div>
 
-        {rating !== null && rating >= 4 && <p className="qlt-thanks">Merci pour votre retour.</p>}
+        {rating !== null && rating >= 4 && <p className="qlt-thanks">Thank you for your feedback.</p>}
 
         {showReasons && (
           <div className="qlt-reasons">
-            <p className="qlt-reasons-title">Qu&rsquo;est-ce qui pourrait être amélioré&nbsp;?</p>
+            <p className="qlt-reasons-title">What could be improved?</p>
             {QUALITY_REASONS.map((reason) => (
               <label key={reason.code} className="qlt-reason">
                 <input
@@ -83,22 +83,22 @@ export default function FeedbackPopup({ onSubmit, onSkip, submitting }: Feedback
           className="qlt-comment"
           rows={3}
           maxLength={1000}
-          placeholder="Commentaire (facultatif)"
+          placeholder="Comment (optional)"
           value={comment}
           onChange={(event) => setComment(event.target.value)}
         />
 
         <div className="qlt-popup-actions">
           <button type="button" className="qlt-send" onClick={send} disabled={rating === null || submitting}>
-            Envoyer mon avis
+            Send my feedback
           </button>
           <button type="button" className="mkt-action" onClick={onSkip} disabled={submitting}>
-            Passer
+            Skip
           </button>
         </div>
         <p className="mkt-hint">
-          Avis facultatif et anonyme : aucune donnée personnelle n&rsquo;est enregistrée. Si l&rsquo;enregistrement
-          échoue, la conversation est clôturée normalement.
+          Optional and anonymous feedback: no personal data is recorded. If saving
+          fails, the conversation is closed as usual.
         </p>
       </div>
     </div>

@@ -58,7 +58,7 @@ class ChatControllerTest {
         assertTrue(log.debug().contains("[AGENT]"), "bloc [AGENT] présent");
         assertTrue(log.debug().contains("[COACH]"), "bloc [COACH] présent");
         assertTrue(log.debug().contains("theme="));
-        assertTrue(aiLogService.promptOf(log.id()).contains("=== PROMPT SYSTÈME ==="));
+        assertTrue(aiLogService.promptOf(log.id()).contains("=== SYSTEM PROMPT ==="));
         assertTrue(log.charCount() > 0, "le compteur de caractères envoyés est renseigné");
     }
 

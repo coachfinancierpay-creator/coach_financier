@@ -318,7 +318,7 @@ class PromptOptimizationStoreTest {
         assertEquals(PromptOptimizationModels.CAMPAIGN_ERROR, campaign.status());
         assertFalse(campaign.isActive());
         assertFalse(PromptOptimizationModels.campaignBusy(campaign.status()));
-        assertEquals("Erreur", PromptOptimizationModels.campaignStatusLabel(campaign.status()));
+        assertEquals("Error", PromptOptimizationModels.campaignStatusLabel(campaign.status()));
     }
 
     @Test

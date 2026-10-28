@@ -76,12 +76,12 @@ public class QualityReportService {
                 date.toString(),
                 new QualityModels.ReportPeriod(date.toString(), date.toString()),
                 new QualityModels.ExecutiveSummary("INSUFFICIENT_DATA",
-                        "Analyse IA indisponible : les indicateurs calculés restent consultables."),
+                        "AI analysis unavailable: the calculated indicators remain available."),
                 new QualityModels.SatisfactionAnalysis("", List.of(), List.of()),
                 new QualityModels.QualityAndCompliance("", List.of(), List.of()),
                 new QualityModels.SatisfactionVsCompliance("", List.of()),
                 List.of(), List.of(), List.of(), List.of(),
-                "Aucune analyse IA n'a pu être produite pour cette période.",
+                "No AI analysis could be produced for this period.",
                 Instant.now().toString(), null, Boolean.FALSE, error == null ? null : error.getMessage());
     }
 

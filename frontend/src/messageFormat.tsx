@@ -23,7 +23,7 @@ export function renderInline(text: string, key: string, depth = 0, sessionId?: s
           key={k}
           type="button"
           className="callback-link"
-          title="Un conseiller vous recontactera dans les plus brefs délais"
+          title="An advisor will contact you as soon as possible"
           onClick={() => requestAdvisorCallback(sessionId)}
         >
           {callback[1].trim()}
@@ -40,13 +40,13 @@ export function renderInline(text: string, key: string, depth = 0, sessionId?: s
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
       // En POC, le lien de prise de rendez-vous ouvre une information simulée au lieu de naviguer.
-      if (/^prendre\s+rendez-vous\b/.test(normalizedLabel)) {
+      if (/^(book|make|schedule)\s+(an?\s+)?appointment\b|^prendre\s+rendez-vous\b/.test(normalizedLabel)) {
         return (
           <button
             key={k}
             type="button"
             className="callback-link appointment-link"
-            title="Simuler la prise de rendez-vous avec un conseiller"
+            title="Simulate booking an appointment with an advisor"
             onClick={() => requestAdvisorAppointment(sessionId)}
           >
             {label}

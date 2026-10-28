@@ -49,7 +49,7 @@ public class CreditSimulationController {
         return simulationService.simulateFromGrid(productId, amount, durationMonths)
                 .<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.badRequest().body(
-                        error("La simulation n'a pas pu être calculée à partir de la grille de taux.")));
+                        error("The simulation could not be calculated from the rate grid.")));
     }
 
     private static Map<String, Object> error(String message) {

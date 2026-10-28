@@ -41,9 +41,9 @@ import java.util.regex.Pattern;
 public class CoachContextBuilder {
 
     /** Question de clarification posée quand le projet est inconnu/ambigu (aucun appel au Coach). */
-    public static final String CLARIFICATION_MESSAGE = "Pour vous proposer un financement adapté, "
-            + "pourriez-vous préciser à quoi servira cet argent (par exemple l'achat d'un véhicule, "
-            + "des travaux, etc.) ?";
+    public static final String CLARIFICATION_MESSAGE = "To offer you suitable financing, "
+            + "could you clarify what this money will be used for (for example buying a vehicle, "
+            + "home improvements, etc.)?";
 
     /** Intentions qui déclenchent la bascule vers l'agent spécialisé du thème. */
     private static final Set<FinancialIntent> AGENT_ROUTABLE_INTENTS = EnumSet.of(
@@ -166,7 +166,7 @@ public class CoachContextBuilder {
         (customerId == null ? financialSynthesisStore.load() : financialSynthesisStore.loadForCustomer(customerId))
                 .ifPresent(node -> {
             Map<String, Object> synthesisEntry = new LinkedHashMap<>();
-            synthesisEntry.put("description", "Synthèse financière");
+            synthesisEntry.put("description", "Financial summary");
             synthesisEntry.put("data", node);
             providedData.add(synthesisEntry);
         });
@@ -252,19 +252,19 @@ public class CoachContextBuilder {
                 + (message == null ? "" : message)).toLowerCase(Locale.ROOT);
         // Assurance-vie = placement (épargne), pas une assurance dommage. Les mots-clés courts sont comparés
         // en MOT ENTIER : « placer » ne doit pas matcher « remplacer », ni « pea » matcher « peau ».
-        if (hay.contains("assurance-vie") || containsWord(hay, "livret", "pea", "placer", "placement")
-                || hay.contains("épargne") || hay.contains("epargne")) {
+        if (hay.contains("life insurance") || containsWord(hay, "savings", "pea", "invest", "investment")
+                || hay.contains("savings")) {
             return "epargne";
         }
-        if (containsAnyStr(hay, "assurance", "mutuelle", "assureur")) {
+        if (containsAnyStr(hay, "insurance", "insurer", "mutual")) {
             return insuranceSubTheme(message, projectObject, project);
         }
-        if (containsAnyStr(hay, "crédit immobilier", "credit immobilier", "prêt immobilier",
-                "pret immobilier", "crédit immo", "credit immo", "emprunt immo")) {
+        if (containsAnyStr(hay, "mortgage", "home loan", "real estate loan",
+                "property loan", "property financing", "housing loan")) {
             return "credit_immo";
         }
-        if (containsAnyStr(hay, "crédit conso", "credit conso", "crédit à la consommation",
-                "credit a la consommation", "crédit consommation", "credit consommation")) {
+        if (containsAnyStr(hay, "consumer loan", "consumer credit", "personal loan",
+                "personal credit", "consumer financing")) {
             return "credit_conso";
         }
         return null;
@@ -280,13 +280,12 @@ public class CoachContextBuilder {
     private static String insuranceSubTheme(String message, String projectObject, CurrentProject project) {
         String hay = ((projectObject == null ? "" : projectObject + " ")
                 + (message == null ? "" : message)).toLowerCase(Locale.ROOT);
-        int emprunteur = countWords(hay, "assurance de prêt", "assurance pret", "assurance crédit",
-                "assurance credit", "prêt immobilier", "pret immobilier", "crédit immobilier",
-                "credit immobilier", "assurance emprunteur", "emprunteur");
-        int habitation = countWords(hay, "habitation", "maison", "appartement", "logement", "locataire",
-                "résidence", "residence");
-        int auto = countWords(hay, "voiture", "véhicule", "vehicule", "auto", "moto", "deux-roues",
-                "deux roues", "permis");
+        int emprunteur = countWords(hay, "mortgage protection", "loan insurance", "credit insurance",
+                "mortgage", "home loan", "mortgage insurance", "borrower");
+        int habitation = countWords(hay, "home", "house", "apartment", "flat", "accommodation",
+                "tenant", "residence");
+        int auto = countWords(hay, "car", "vehicle", "auto", "motorcycle", "two-wheeler",
+                "driving licence");
         if (emprunteur > 0 && emprunteur >= habitation && emprunteur >= auto) {
             return "assurance_emprunteur";
         }
@@ -500,11 +499,11 @@ public class CoachContextBuilder {
             payload.put("providedData", descriptions); // données jointes = descriptions seules, pas le contenu
             payload.put("conversationHistory", ctx.history() == null ? List.of() : ctx.history());
             String system = AgentFiles.systemPromptFor(ctx.agentTheme());
-            return "=== PROMPT SYSTÈME ===\n" + system
-                    + "\n\n=== PAYLOAD UTILISATEUR (sans le contenu des données jointes) ===\n"
+            return "=== SYSTEM PROMPT ===\n" + system
+                    + "\n\n=== USER PAYLOAD (without the content of the attached data) ===\n"
                     + objectMapper.writeValueAsString(payload);
         } catch (Exception e) {
-            return "Impossible de reconstituer le prompt : " + e.getMessage();
+            return "Unable to rebuild the prompt: " + e.getMessage();
         }
     }
 }

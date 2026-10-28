@@ -1,7 +1,7 @@
 [
   {
     "id": "ag-generic",
-    "libelle": "Générique (questions factuelles)",
+    "libelle": "Generic (factual questions)",
     "theme": "generic",
     "prompt": "generic.txt",
     "data": [
@@ -9,7 +9,7 @@
   },
   {
     "id": "ag-credit-conso",
-    "libelle": "Crédit à la consommation",
+    "libelle": "Consumer loan",
     "theme": "credit_conso",
     "prompt": "credit-conso.txt",
     "data": [
@@ -21,7 +21,7 @@
   },
   {
     "id": "ag-credit-immo",
-    "libelle": "Crédit immobilier",
+    "libelle": "Mortgage",
     "theme": "credit_immo",
     "prompt": "credit-immo.txt",
     "data": [
@@ -32,7 +32,7 @@
   },
   {
     "id": "ag-epargne",
-    "libelle": "Épargne et placements",
+    "libelle": "Savings and investments",
     "theme": "epargne",
     "prompt": "epargne.txt",
     "data": [
@@ -43,7 +43,7 @@
   },
   {
     "id": "ag-assurance-auto",
-    "libelle": "Assurance auto",
+    "libelle": "Car insurance",
     "theme": "assurance_auto",
     "prompt": "assurance-auto.txt",
     "data": [
@@ -54,7 +54,7 @@
   },
   {
     "id": "ag-assurance-habitation",
-    "libelle": "Assurance habitation",
+    "libelle": "Home insurance",
     "theme": "assurance_habitation",
     "prompt": "assurance-habitation.txt",
     "data": [
@@ -65,7 +65,7 @@
   },
   {
     "id": "ag-assurance-emprunteur",
-    "libelle": "Assurance emprunteur immobilier",
+    "libelle": "Mortgage protection insurance",
     "theme": "assurance_emprunteur",
     "prompt": "assurance-emprunteur.txt",
     "data": [

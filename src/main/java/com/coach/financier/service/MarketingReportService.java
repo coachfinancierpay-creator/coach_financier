@@ -73,7 +73,7 @@ public class MarketingReportService {
         return new MarketingModels.MarketingReport(
                 date.toString(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(), List.of(),
                 List.of(), List.of(), List.of(),
-                "Analyse IA indisponible sur la période : les statistiques restent consultables.",
+                "AI analysis unavailable for the period: the statistics remain available.",
                 Instant.now().toString(), null, Boolean.FALSE, error.getMessage());
     }
 

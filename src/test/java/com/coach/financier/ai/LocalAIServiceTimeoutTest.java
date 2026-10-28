@@ -80,7 +80,7 @@ class LocalAIServiceTimeoutTest {
 
         String message = failure.getMessage();
         assertNotNull(message);
-        assertTrue(message.contains("Délai de lecture dépassé après 1 s"),
+        assertTrue(message.contains("Read timeout exceeded after 1 s"),
                 "le délai RÉELLEMENT expiré doit être cité : " + message);
         assertTrue(message.contains("LOCAL_READ_TIMEOUT_SECONDS"),
                 "le message doit désigner le réglage à modifier : " + message);

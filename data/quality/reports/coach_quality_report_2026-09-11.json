@@ -6,61 +6,61 @@
   },
   "executiveSummary" : {
     "status" : "INSUFFICIENT_DATA",
-    "summary" : "5 avis reçu(s) sur 8 conversation(s) terminée(s), note moyenne 3.8 / 5, avis positifs 60.0 %, avis négatifs 20.0 %. Le volume d'avis reste limité : ces observations sont préliminaires."
+    "summary" : "5 reviews for 8 closed conversation(s), average rating 3.8 / 5, positive reviews 60.0 %, negative reviews 20.0 %. Review volume remains limited: these observations are preliminary."
   },
   "satisfactionAnalysis" : {
-    "summary" : "5 avis reçu(s) sur 8 conversation(s) terminée(s), note moyenne 3.8 / 5, avis positifs 60.0 %, avis négatifs 20.0 %. Le volume d'avis reste limité : ces observations sont préliminaires.",
+    "summary" : "5 reviews for 8 closed conversation(s), average rating 3.8 / 5, positive reviews 60.0 %, negative reviews 20.0 %. Review volume remains limited: these observations are preliminary.",
     "positivePoints" : [ ],
-    "mainIrritants" : [ "Il manquait des informations (2 avis)", "Les explications étaient difficiles à comprendre (1 avis)", "Les explications étaient difficiles à comprendre — 1 commentaire(s)", "Les réponses étaient trop répétitives — 1 commentaire(s)", "Je n'ai pas pu réaliser l'action souhaitée — 1 commentaire(s)" ]
+    "mainIrritants" : [ "Information was missing (2 reviews)", "The explanations were hard to understand (1 review)", "The explanations were hard to understand — 1 comment(s)", "The answers were too repetitive — 1 comment(s)", "I could not complete the desired action — 1 comment(s)" ]
   },
   "qualityAndCompliance" : {
-    "summary" : "48 contrôle(s) exécuté(s), 2 anomalie(s) dont 0 de sévérité HIGH. Aucune violation du garde-fou interdisant les simulations de crédit n'a été détectée.",
-    "mainIssues" : [ "Répétition excessive : 2 détection(s) sur 8 contrôle(s) exécuté(s) (sévérité LOW)" ],
+    "summary" : "48 check(s) run, 2 issue(s), of which 0 HIGH severity. No violation of the safeguard banning credit simulations was detected.",
+    "mainIssues" : [ "Excessive repetition: 2 detection(s) out of 8 check(s) run (severity LOW)" ],
     "criticalIssues" : [ ]
   },
   "satisfactionVsCompliance" : {
-    "summary" : "Croisement sur les avis reçus : 3 client(s) satisfait(s) avec Coach conforme, 0 satisfait(s) avec anomalie, 0 insatisfait(s) avec Coach CONFORME, 1 insatisfait(s) avec anomalie réelle.",
-    "notableCases" : [ "Cas prioritaire : insatisfaction ET anomalie confirmée côté Coach (1)." ]
+    "summary" : "Cross-check on the reviews received: 3 satisfied customer(s) with a compliant Coach, 0 satisfied with an issue, 0 dissatisfied with a COMPLIANT Coach, 1 dissatisfied with a real issue.",
+    "notableCases" : [ "Priority case: dissatisfaction AND confirmed Coach issue (1)." ]
   },
   "ruleFriction" : [ ],
   "trends" : [ {
     "type" : "DEGRADING",
-    "topic" : "Demande non résolue",
-    "observation" : "0 vs 1 (-100.0 %) sur la période précédente."
+    "topic" : "Unresolved request",
+    "observation" : "0 vs 1 (-100.0 %) versus the previous period."
   }, {
     "type" : "DEGRADING",
-    "topic" : "Donnée demandée non récupérée",
-    "observation" : "0 vs 1 (-100.0 %) sur la période précédente."
+    "topic" : "Requested data not retrieved",
+    "observation" : "0 vs 1 (-100.0 %) versus the previous period."
   }, {
     "type" : "STABLE",
-    "topic" : "Anomalies détectées",
-    "observation" : "2 vs 4 (-50.0 %) sur la période précédente."
+    "topic" : "Issues detected",
+    "observation" : "2 vs 4 (-50.0 %) versus the previous period."
   }, {
     "type" : "STABLE",
-    "topic" : "Avis reçus",
-    "observation" : "5 vs 5 (0.0 %) sur la période précédente."
+    "topic" : "Reviews received",
+    "observation" : "5 vs 5 (0.0 %) versus the previous period."
   }, {
     "type" : "DEGRADING",
-    "topic" : "Répétition excessive",
-    "observation" : "2 vs 2 (0.0 %) sur la période précédente."
+    "topic" : "Excessive repetition",
+    "observation" : "2 vs 2 (0.0 %) versus the previous period."
   } ],
   "priorityImprovements" : [ {
     "priority" : "MEDIUM",
-    "title" : "Traiter le principal irritant client",
-    "observation" : "Il manquait des informations (2 avis)",
-    "recommendation" : "Tester une réponse plus concise et moins répétitive sur les questions de suivi, sans modifier les garde-fous métier.",
-    "expectedBenefit" : "Meilleure lisibilité perçue et satisfaction en hausse."
+    "title" : "Address the main customer irritant",
+    "observation" : "Information was missing (2 reviews)",
+    "recommendation" : "Test a more concise and less repetitive answer on follow-up questions, without changing the business safeguards.",
+    "expectedBenefit" : "Better perceived clarity and rising satisfaction."
   } ],
   "alerts" : [ {
     "level" : "WATCH",
-    "title" : "Échantillon d'avis limité",
-    "description" : "Le volume d'avis est faible : les observations doivent être confirmées sur plusieurs périodes."
+    "title" : "Limited review sample",
+    "description" : "Review volume is low: observations must be confirmed over several periods."
   }, {
     "level" : "WATCH",
-    "title" : "Part d'avis négatifs élevée",
-    "description" : "20.0 % des avis sont négatifs (1 ou 2 étoiles)."
+    "title" : "High share of negative reviews",
+    "description" : "20.0 % of reviews are negative (1 or 2 stars)."
   } ],
-  "finalAssessment" : "Rapport généré en mode démo à partir des statistiques agrégées : satisfaction client et conformité du Coach restent deux dimensions distinctes, aucune anomalie n'est déduite d'une mauvaise note.",
+  "finalAssessment" : "Report generated in demo mode from aggregated statistics: customer satisfaction and Coach compliance remain two distinct dimensions; no issue is inferred from a poor rating.",
   "generatedAt" : "2026-09-11T09:42:11.920510900Z",
   "model" : "MOCK",
   "aiGenerated" : true,

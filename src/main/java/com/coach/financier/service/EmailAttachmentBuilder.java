@@ -51,7 +51,7 @@ public class EmailAttachmentBuilder {
 
     /** Rendu texte brut : {@code Objet : ...} puis le corps, liens en {@code nom : url}. */
     static String textDocument(String subject, String body) {
-        return "Objet : " + (subject == null ? "" : subject) + "\n\n" + UrlLinkRenderer.toText(body);
+        return "Subject: " + (subject == null ? "" : subject) + "\n\n" + UrlLinkRenderer.toText(body);
     }
 
     /** Rendu HTML autonome (pièce jointe .html) : contenu échappé, liens cliquables. */
@@ -59,13 +59,13 @@ public class EmailAttachmentBuilder {
         String htmlBody = UrlLinkRenderer.toHtml(body);
         return """
                 <!DOCTYPE html>
-                <html lang="fr">
+                <html lang="en">
                 <head>
                 <meta charset="utf-8">
                 <title>%s</title>
                 </head>
                 <body style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #1f2937;">
-                <h2 style="font-size: 16px;">Objet : %s</h2>
+                <h2 style="font-size: 16px;">Subject: %s</h2>
                 <div>%s</div>
                 </body>
                 </html>

@@ -20,9 +20,9 @@ import type {
 } from './types.advisor'
 
 const ASSESSMENTS: { code: AdvisorAssessment; label: string; icon: typeof ThumbsUp }[] = [
-  { code: 'RELEVANT', label: 'Pertinente', icon: ThumbsUp },
-  { code: 'NEEDS_IMPROVEMENT', label: 'À améliorer', icon: ThumbsUp },
-  { code: 'INCORRECT', label: 'Incorrecte', icon: ThumbsDown },
+  { code: 'RELEVANT', label: 'Relevant', icon: ThumbsUp },
+  { code: 'NEEDS_IMPROVEMENT', label: 'Needs improvement', icon: ThumbsUp },
+  { code: 'INCORRECT', label: 'Incorrect', icon: ThumbsDown },
 ]
 
 /**
@@ -96,17 +96,17 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
         setSent(true)
         setMessage(null)
       } else {
-        setMessage(response.message ?? `Feedback non enregistré (${response.status}).`)
+        setMessage(response.message ?? `Feedback not saved (${response.status}).`)
       }
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : 'Erreur inconnue')
+      setMessage(e instanceof Error ? e.message : 'Unknown error')
     }
   }
 
   if (loading) {
     return (
       <div className="logs-shell marketing-page">
-        <p className="mkt-empty">Chargement du dossier…</p>
+        <p className="mkt-empty">Loading the case file…</p>
       </div>
     )
   }
@@ -116,17 +116,17 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
       <div className="logs-shell marketing-page">
         <header className="logs-header">
           <a className="logs-back" href="#/advisor-feedback">
-            <ArrowLeft size={16} /> Tableau de suivi
+            <ArrowLeft size={16} /> Follow-up dashboard
           </a>
           <h1>
-            <BadgeCheck size={20} /> Feedback conseiller
+            <BadgeCheck size={20} /> Advisor feedback
           </h1>
         </header>
         <div className="mkt-card">
-          <h2>Ce dossier n&rsquo;est plus disponible.</h2>
+          <h2>This case file is no longer available.</h2>
           <p className="mkt-empty">
-            La conversation correspondante n&rsquo;est plus accessible (session inconnue, backend redémarré ou
-            dossier purgé). Aucune donnée n&rsquo;est perdue : le tableau de suivi reste consultable.
+            The corresponding conversation is no longer accessible (unknown session, backend restarted or
+            case file purged). No data is lost: the follow-up dashboard remains available.
           </p>
         </div>
       </div>
@@ -139,30 +139,30 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
     <div className="logs-shell marketing-page">
       <header className="logs-header">
         <a className="logs-back" href="#/advisor-feedback">
-          <ArrowLeft size={16} /> Tableau de suivi
+          <ArrowLeft size={16} /> Follow-up dashboard
         </a>
         <h1>
-          <BadgeCheck size={20} /> Feedback conseiller
+          <BadgeCheck size={20} /> Advisor feedback
         </h1>
         <span className="mkt-muted">
           {view.feedbackStatus === 'COMPLETED'
-            ? `Feedback déjà donné (version ${view.feedback?.version ?? 1})`
-            : 'En attente de votre avis'}
+            ? `Feedback already given (version ${view.feedback?.version ?? 1})`
+            : 'Awaiting your feedback'}
         </span>
       </header>
 
       <div className="mkt-card wide">
-        <h2>Conversation du {dossier.timestamp.slice(0, 10)}</h2>
+        <h2>Conversation of {dossier.timestamp.slice(0, 10)}</h2>
         <div className="mkt-report-cols">
           <div>
-            <h3>Projet détecté</h3>
-            <p className="mkt-empty">{dossier.mainProject || 'Non identifié'}</p>
+            <h3>Detected project</h3>
+            <p className="mkt-empty">{dossier.mainProject || 'Not identified'}</p>
             {dossier.otherProjects.length > 0 && (
-              <p className="mkt-muted">Autres sujets : {dossier.otherProjects.join(' · ')}</p>
+              <p className="mkt-muted">Other topics: {dossier.otherProjects.join(' · ')}</p>
             )}
             {dossier.preferences.length > 0 && (
               <>
-                <h3>Préférences relevées</h3>
+                <h3>Preferences identified</h3>
                 <ul className="mkt-report-list">
                   {dossier.preferences.map((item) => (
                     <li key={item}>{item}</li>
@@ -172,9 +172,9 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
             )}
           </div>
           <div>
-            <h3>Suivi conseillé</h3>
+            <h3>Recommended follow-up</h3>
             {dossier.nextActions.length === 0 ? (
-              <p className="mkt-empty">Aucune action de suivi extraite du mail conseiller.</p>
+              <p className="mkt-empty">No follow-up action extracted from the advisor email.</p>
             ) : (
               <ul className="mkt-report-list">
                 {dossier.nextActions.map((item) => (
@@ -184,26 +184,26 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
             )}
           </div>
         </div>
-        <h3>Synthèse préparée par le Coach</h3>
-        <pre className="afb-summary">{dossier.advisorEmail.body || '(vide)'}</pre>
+        <h3>Summary prepared by the Coach</h3>
+        <pre className="afb-summary">{dossier.advisorEmail.body || '(empty)'}</pre>
       </div>
 
       {sent ? (
         <div className="mkt-card wide">
           <h2>
-            <Check size={16} /> Merci, votre retour a bien été enregistré.
+            <Check size={16} /> Thank you, your feedback has been recorded.
           </h2>
           <p className="mkt-empty">
-            Il alimente les indicateurs de pertinence et l&rsquo;analyse IA. Aucune modification du Coach
-            n&rsquo;est appliquée automatiquement : l&rsquo;équipe décide des évolutions.
+            It feeds the relevance indicators and the AI analysis. No change to the Coach is applied
+            automatically: the team decides on evolutions.
           </p>
           <a className="mkt-action" href="#/advisor-feedback">
-            Retour au tableau de suivi
+            Back to the follow-up dashboard
           </a>
         </div>
       ) : (
         <div className="mkt-card wide">
-          <h2>Votre avis sur cette analyse</h2>
+          <h2>Your feedback on this analysis</h2>
           <div className="mkt-periods" style={{ width: 'fit-content' }}>
             {ASSESSMENTS.map((item) => {
               const Icon = item.icon
@@ -222,7 +222,7 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
 
           {(assessment === 'NEEDS_IMPROVEMENT' || assessment === 'INCORRECT') && (
             <>
-              <h3>Qu&rsquo;est-ce qui doit être amélioré&nbsp;?</h3>
+              <h3>What needs to be improved&nbsp;?</h3>
               <div className="afb-areas">
                 {ADVISOR_AREAS.map((area) => (
                   <div key={area.code} className="afb-area">
@@ -236,13 +236,13 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
                     </label>
                     {area.code in areaReasons && (
                       <select
-                        aria-label={`Motif pour ${area.label}`}
+                        aria-label={`Reason for ${area.label}`}
                         value={areaReasons[area.code]}
                         onChange={(event) =>
                           setAreaReasons({ ...areaReasons, [area.code]: event.target.value })
                         }
                       >
-                        <option value="">Motif (facultatif)</option>
+                        <option value="">Reason (optional)</option>
                         {ADVISOR_REASONS.map((reason) => (
                           <option key={reason.code} value={reason.code}>
                             {reason.label}
@@ -256,19 +256,19 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
             </>
           )}
 
-          <h3>Produits identifiés</h3>
+          <h3>Products identified</h3>
           {dossier.productsOfInterest.length === 0 ? (
-            <p className="mkt-empty">Aucun produit d&rsquo;intérêt dans ce dossier.</p>
+            <p className="mkt-empty">No product of interest in this case file.</p>
           ) : (
             <table className="mkt-table compact">
               <thead>
                 <tr>
-                  <th>Produit</th>
-                  <th>Intérêt IA</th>
-                  <th>Motif du Coach</th>
-                  <th>Votre jugement</th>
-                  <th>Intérêt corrigé</th>
-                  <th>Motif</th>
+                  <th>Product</th>
+                  <th>AI interest</th>
+                  <th>Coach reason</th>
+                  <th>Your assessment</th>
+                  <th>Corrected interest</th>
+                  <th>Reason</th>
                 </tr>
               </thead>
               <tbody>
@@ -296,23 +296,23 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
                           className={entry.advisorAssessment === 'RELEVANT_PRODUCT' ? 'mkt-period active' : 'mkt-period'}
                           onClick={() => update({ advisorAssessment: 'RELEVANT_PRODUCT' })}
                         >
-                          <ThumbsUp size={12} /> Pertinent
+                          <ThumbsUp size={12} /> Relevant
                         </button>{' '}
                         <button
                           type="button"
                           className={entry.advisorAssessment === 'NOT_RELEVANT' ? 'mkt-period active' : 'mkt-period'}
                           onClick={() => update({ advisorAssessment: 'NOT_RELEVANT' })}
                         >
-                          <ThumbsDown size={12} /> Non pertinent
+                          <ThumbsDown size={12} /> Not relevant
                         </button>
                       </td>
                       <td>
                         <select
-                          aria-label={`Niveau d'intérêt corrigé pour ${product.productId}`}
+                          aria-label={`Corrected interest level for ${product.productId}`}
                           value={entry.advisorInterestLevel ?? ''}
                           onChange={(event) => update({ advisorInterestLevel: event.target.value || undefined })}
                         >
-                          <option value="">(inchangé)</option>
+                          <option value="">(unchanged)</option>
                           {ADVISOR_INTEREST_LEVELS.map((level) => (
                             <option key={level} value={level}>
                               {level}
@@ -323,11 +323,11 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
                       <td>
                         {entry.advisorAssessment === 'NOT_RELEVANT' ? (
                           <select
-                            aria-label={`Motif pour ${product.productId}`}
+                            aria-label={`Reason for ${product.productId}`}
                             value={entry.reason ?? ''}
                             onChange={(event) => update({ reason: event.target.value || undefined })}
                           >
-                            <option value="">Motif (facultatif)</option>
+                            <option value="">Reason (optional)</option>
                             {ADVISOR_PRODUCT_REASONS.map((reason) => (
                               <option key={reason.code} value={reason.code}>
                                 {reason.label}
@@ -345,9 +345,9 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
             </table>
           )}
 
-          <h3>Un produit pertinent a-t-il été oublié&nbsp;?</h3>
+          <h3>Was a relevant product missed&nbsp;?</h3>
           <select
-            aria-label="Produit manquant (catalogue)"
+            aria-label="Missing product (catalogue)"
             value=""
             onChange={(event) => {
               if (event.target.value && !missing.includes(event.target.value)) {
@@ -355,7 +355,7 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
               }
             }}
           >
-            <option value="">— ajouter un produit du catalogue —</option>
+            <option value="">— add a product from the catalogue —</option>
             {catalogue.map((product) => (
               <option key={product.productId} value={product.productId}>
                 {product.productName}
@@ -372,27 +372,27 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
             </ul>
           )}
 
-          <h3>Suivi conseillé et email préparé</h3>
+          <h3>Recommended follow-up and prepared email</h3>
           <div className="mkt-report-cols">
             <div>
               <select
-                aria-label="Évaluation du suivi conseillé"
+                aria-label="Recommended follow-up assessment"
                 value={nextAction}
                 onChange={(event) => setNextAction(event.target.value)}
               >
-                <option value="">Suivi conseillé : non évalué</option>
-                <option value="RELEVANT">Pertinent</option>
-                <option value="NEEDS_IMPROVEMENT">À améliorer</option>
+                <option value="">Recommended follow-up: not assessed</option>
+                <option value="RELEVANT">Relevant</option>
+                <option value="NEEDS_IMPROVEMENT">Needs improvement</option>
                 <option value="INCORRECT">Incorrect</option>
               </select>
             </div>
             <div>
               <select
-                aria-label="Évaluation de l'email préparé"
+                aria-label="Prepared email assessment"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
               >
-                <option value="">Email client : non évalué</option>
+                <option value="">Customer email: not assessed</option>
                 {ADVISOR_EMAIL_ASSESSMENTS.map((item) => (
                   <option key={item.code} value={item.code}>
                     {item.label}
@@ -402,12 +402,12 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
             </div>
           </div>
 
-          <h3>Commentaire facultatif</h3>
+          <h3>Optional comment</h3>
           <textarea
             className="qlt-comment"
             rows={3}
             maxLength={1000}
-            placeholder="Commentaire (facultatif)"
+            placeholder="Comment (optional)"
             value={comment}
             onChange={(event) => setComment(event.target.value)}
           />
@@ -415,11 +415,11 @@ export default function DossierFeedback({ sessionId }: { sessionId: string }) {
           {message && <div className="mkt-notice warn">{message}</div>}
           <div className="qtl-send-row">
             <button type="button" className="qlt-send" onClick={() => void submit()} disabled={!assessment}>
-              <Send size={14} /> Envoyer mon feedback
+              <Send size={14} /> Send my feedback
             </button>
             <p className="mkt-hint">
-              Un avis déjà enregistré peut être révisé : une nouvelle version est créée, l&rsquo;historique est
-              conservé. Aucune donnée personnelle n&rsquo;est stockée.
+              Already recorded feedback can be revised: a new version is created and the history is kept. No
+              personal data is stored.
             </p>
           </div>
         </div>

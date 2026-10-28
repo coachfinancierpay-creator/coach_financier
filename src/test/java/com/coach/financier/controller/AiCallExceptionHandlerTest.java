@@ -46,7 +46,7 @@ class AiCallExceptionHandlerTest {
 
         Map<String, Object> body = response.getBody();
         assertNotNull(body);
-        assertTrue(String.valueOf(body.get("message")).contains("fournisseur IA"),
+        assertTrue(String.valueOf(body.get("message")).contains("AI provider"),
                 "un échec sans message doit rester compréhensible : " + body.get("message"));
     }
 }

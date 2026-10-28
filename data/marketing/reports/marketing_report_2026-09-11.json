@@ -1,23 +1,23 @@
 {
   "reportDate" : "2026-09-11",
   "executiveSummary" : [ {
-    "title" : "Volume analysé",
-    "description" : "24 conversation(s) analysée(s), 18 avec intérêt produit, 21 intérêt(s) HIGH.",
+    "title" : "Volume analysed",
+    "description" : "24 conversation(s) analysed, 18 with product interest, 21 HIGH interest(s).",
     "importance" : "HIGH"
   }, {
-    "title" : "Intentions fortes",
-    "description" : "3 intention(s) de souscription et 6 demande(s) de rendez-vous.",
+    "title" : "Strong intentions",
+    "description" : "3 subscription intention(s) and 6 appointment request(s).",
     "importance" : "HIGH"
   }, {
-    "title" : "Besoins non couverts",
-    "description" : "2 besoin(s) exprimé(s) sans offre clairement adaptée.",
+    "title" : "Uncovered needs",
+    "description" : "2 need(s) expressed without a clearly suitable offer.",
     "importance" : "HIGH"
   } ],
   "mainTrends" : [ {
     "type" : "UP",
     "entityType" : "PRODUCT",
     "entityId" : "sg_credit_auto_expresso",
-    "entityName" : "Crédit Auto Expresso",
+    "entityName" : "Expresso Auto Loan",
     "observation" : "5 vs 2 (150.0 %)"
   }, {
     "type" : "UP",
@@ -29,71 +29,71 @@
     "type" : "DOWN",
     "entityType" : "PRODUCT",
     "entityId" : "sg_pel",
-    "entityName" : "Plan Épargne Logement (PEL)",
+    "entityName" : "Home Savings Plan (PEL)",
     "observation" : "0 vs 2 (-100.0 %)"
   }, {
     "type" : "UP",
     "entityType" : "PRODUCT",
     "entityId" : "sg_habitation_confort",
-    "entityName" : "Assurance Habitation SG – Confort",
+    "entityName" : "SG Home Insurance – Comfort",
     "observation" : "3 vs 2 (50.0 %)"
   }, {
     "type" : "DOWN",
     "entityType" : "PRODUCT",
     "entityId" : "sg_pea",
-    "entityName" : "Plan d'Épargne en Actions (PEA)",
+    "entityName" : "PEA (equity savings plan)",
     "observation" : "1 vs 2 (-50.0 %)"
   } ],
   "recommendationPerformance" : [ {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
-    "observation" : "Recommandé dans 3 session(s), 5 avec intérêt réel (taux 100.0 %)."
+    "productName" : "SG Car Insurance – Comprehensive",
+    "observation" : "Recommended in 3 session(s), 5 with actual interest (rate 100.0%)."
   }, {
     "productId" : "sg_credit_auto_expresso",
-    "productName" : "Crédit Auto Expresso",
-    "observation" : "Recommandé dans 8 session(s), 5 avec intérêt réel (taux 62.5 %)."
+    "productName" : "Expresso Auto Loan",
+    "observation" : "Recommended in 8 session(s), 5 with actual interest (rate 62.5%)."
   }, {
     "productId" : "sg_pret_etudiant_evolutif",
-    "productName" : "Prêt Étudiant Évolutif",
-    "observation" : "Recommandé dans 6 session(s), 4 avec intérêt réel (taux 66.7 %)."
+    "productName" : "Progressive Student Loan",
+    "observation" : "Recommended in 6 session(s), 4 with actual interest (rate 66.7%)."
   }, {
     "productId" : "sg_habitation_confort",
-    "productName" : "Assurance Habitation SG – Confort",
-    "observation" : "Recommandé dans 4 session(s), 3 avec intérêt réel (taux 75.0 %)."
+    "productName" : "SG Home Insurance – Comfort",
+    "observation" : "Recommended in 4 session(s), 3 with actual interest (rate 75.0%)."
   }, {
     "productId" : "sg_auto_tiers",
-    "productName" : "Assurance Auto SG – Tiers",
-    "observation" : "Recommandé dans 5 session(s), 2 avec intérêt réel (taux 40.0 %)."
+    "productName" : "SG Car Insurance – Third Party",
+    "observation" : "Recommended in 5 session(s), 2 with actual interest (rate 40.0%)."
   } ],
   "customerFriction" : [ {
     "category" : "DURATION",
-    "observation" : "1 refus (25.0 %)."
+    "observation" : "1 rejection(s) (25.0%)."
   }, {
     "category" : "COMPETITOR",
-    "observation" : "1 refus (25.0 %)."
+    "observation" : "1 rejection(s) (25.0%)."
   }, {
     "category" : "CONDITIONS",
-    "observation" : "1 refus (25.0 %)."
+    "observation" : "1 rejection(s) (25.0%)."
   }, {
     "category" : "PREFERS_CASH",
-    "observation" : "1 refus (25.0 %)."
+    "observation" : "1 rejection(s) (25.0%)."
   } ],
   "crossSellInsights" : [ {
-    "sourceProduct" : "Assurance Auto SG – Tiers",
-    "targetProduct" : "Assurance Auto SG – Tous Risques",
-    "observation" : "2 session(s) communes (100 %) — association à étudier comme piste de parcours."
+    "sourceProduct" : "SG Car Insurance – Third Party",
+    "targetProduct" : "SG Car Insurance – Comprehensive",
+    "observation" : "2 shared session(s) (100%) — association to be assessed as a journey opportunity."
   }, {
-    "sourceProduct" : "Assurance Auto SG – Tous Risques",
-    "targetProduct" : "Assurance Auto SG – Tous Risques+",
-    "observation" : "2 session(s) communes (40 %) — association à étudier comme piste de parcours."
+    "sourceProduct" : "SG Car Insurance – Comprehensive",
+    "targetProduct" : "SG Car Insurance – Comprehensive+",
+    "observation" : "2 shared session(s) (40%) — association to be assessed as a journey opportunity."
   }, {
-    "sourceProduct" : "Assurance Auto SG – Tous Risques",
-    "targetProduct" : "Assurance Auto SG – Tiers",
-    "observation" : "2 session(s) communes (40 %) — association à étudier comme piste de parcours."
+    "sourceProduct" : "SG Car Insurance – Comprehensive",
+    "targetProduct" : "SG Car Insurance – Third Party",
+    "observation" : "2 shared session(s) (40%) — association to be assessed as a journey opportunity."
   }, {
-    "sourceProduct" : "Assurance Auto SG – Tous Risques+",
-    "targetProduct" : "Assurance Auto SG – Tous Risques",
-    "observation" : "2 session(s) communes (100 %) — association à étudier comme piste de parcours."
+    "sourceProduct" : "SG Car Insurance – Comprehensive+",
+    "targetProduct" : "SG Car Insurance – Comprehensive",
+    "observation" : "2 shared session(s) (100%) — association to be assessed as a journey opportunity."
   } ],
   "unmetNeeds" : [ {
     "projectType" : "SAVINGS",
@@ -105,48 +105,48 @@
   "missingProductInformation" : [ {
     "productId" : "UNKNOWN",
     "productName" : "UNKNOWN",
-    "observation" : "2 question(s) sans réponse (MISSING_PRICING_INFORMATION)."
+    "observation" : "2 unanswered question(s) (MISSING_PRICING_INFORMATION)."
   }, {
     "productId" : "UNKNOWN",
     "productName" : "UNKNOWN",
-    "observation" : "1 question(s) sans réponse (MISSING_CONDITIONS_INFORMATION)."
+    "observation" : "1 unanswered question(s) (MISSING_CONDITIONS_INFORMATION)."
   } ],
   "aiCoachQuality" : [ ],
   "alerts" : [ {
     "level" : "IMPORTANT",
-    "title" : "Besoins non couverts",
-    "description" : "2 besoin(s) sans solution adaptée sur la période."
+    "title" : "Uncovered needs",
+    "description" : "2 need(s) without a suitable solution over the period."
   }, {
     "level" : "WATCH",
-    "title" : "Informations produit manquantes",
-    "description" : "3 question(s) sans réponse dans le catalogue."
+    "title" : "Missing product information",
+    "description" : "3 unanswered question(s) in the catalogue."
   }, {
     "level" : "WATCH",
-    "title" : "Hausse marquée : Crédit Auto Expresso",
-    "description" : "Variation de 150.0 % — à confirmer sur plusieurs périodes."
+    "title" : "Marked increase: Expresso Auto Loan",
+    "description" : "Change of 150.0% — to be confirmed over several periods."
   }, {
     "level" : "WATCH",
-    "title" : "Hausse marquée : Conversations",
-    "description" : "Variation de 118.18 % — à confirmer sur plusieurs périodes."
+    "title" : "Marked increase: Conversations",
+    "description" : "Change of 118.18% — to be confirmed over several periods."
   }, {
     "level" : "WATCH",
-    "title" : "Baisse marquée : Plan Épargne Logement (PEL)",
-    "description" : "Variation de -100.0 % — à confirmer sur plusieurs périodes."
+    "title" : "Marked decline: Home Savings Plan (PEL)",
+    "description" : "Change of -100.0% — to be confirmed over several periods."
   }, {
     "level" : "WATCH",
-    "title" : "Hausse marquée : Assurance Habitation SG – Confort",
-    "description" : "Variation de 50.0 % — à confirmer sur plusieurs périodes."
+    "title" : "Marked increase: SG Home Insurance – Comfort",
+    "description" : "Change of 50.0% — to be confirmed over several periods."
   }, {
     "level" : "WATCH",
-    "title" : "Baisse marquée : Plan d'Épargne en Actions (PEA)",
-    "description" : "Variation de -50.0 % — à confirmer sur plusieurs périodes."
+    "title" : "Marked decline: PEA (equity savings plan)",
+    "description" : "Change of -50.0% — to be confirmed over several periods."
   } ],
   "opportunities" : [ {
-    "title" : "Enrichir la connaissance produit",
-    "description" : "Les questions clients non couvertes par le catalogue fournissent des pistes d'enrichissement.",
-    "recommendation" : "Étudier les informations produit manquantes les plus fréquentes avant toute décision."
+    "title" : "Enrich product knowledge",
+    "description" : "Customer questions not covered by the catalogue provide opportunities for enrichment.",
+    "recommendation" : "Review the most frequent missing product information before making any decision."
   } ],
-  "finalSummary" : "Rapport généré en mode démo à partir des statistiques agrégées.",
+  "finalSummary" : "Report generated in demo mode from aggregated statistics.",
   "generatedAt" : "2026-09-11T15:29:41.189979300Z",
   "model" : "MOCK",
   "aiGenerated" : true,

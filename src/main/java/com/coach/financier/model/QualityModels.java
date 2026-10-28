@@ -41,14 +41,14 @@ public final class QualityModels {
      * le modèle analytique (le code reste la clé de stockage et d'agrégation).
      */
     private static final Map<String, String> REASON_LABELS = Map.of(
-            NOT_ANSWERING_QUESTION, "La réponse ne répondait pas à ma question",
-            HARD_TO_UNDERSTAND, "Les explications étaient difficiles à comprendre",
-            TOO_LONG, "Les réponses étaient trop longues",
-            TOO_REPETITIVE, "Les réponses étaient trop répétitives",
-            PRODUCT_NOT_RELEVANT, "Les produits proposés ne correspondaient pas à mon besoin",
-            MISSING_INFORMATION, "Il manquait des informations",
-            ACTION_NOT_POSSIBLE, "Je n'ai pas pu réaliser l'action souhaitée",
-            OTHER, "Autre");
+            NOT_ANSWERING_QUESTION, "The answer did not address my question",
+            HARD_TO_UNDERSTAND, "The explanations were hard to understand",
+            TOO_LONG, "The answers were too long",
+            TOO_REPETITIVE, "The answers were too repetitive",
+            PRODUCT_NOT_RELEVANT, "The proposed products did not match my need",
+            MISSING_INFORMATION, "Some information was missing",
+            ACTION_NOT_POSSIBLE, "I could not carry out the action I wanted",
+            OTHER, "Other");
 
     public static Map<String, String> reasonLabels() {
         return new LinkedHashMap<>(REASON_LABELS);
@@ -90,16 +90,16 @@ public final class QualityModels {
             INVENTED_DATA, INVENTED_URL, CONVERSATION_CONTEXT_LOST);
 
     private static final Map<String, String> CHECK_LABELS = Map.of(
-            PRODUCT_MISMATCH, "Produit incompatible",
-            UNANSWERED_REQUEST, "Demande non résolue",
-            MISSING_DATA_NOT_RETRIEVED, "Donnée demandée non récupérée",
-            UNNECESSARY_ADVISOR_REDIRECT, "Redirection conseiller inutile",
-            EXCESSIVE_REPETITION, "Répétition excessive",
-            CREDIT_SIMULATION_VIOLATION, "Simulation de crédit interdite",
-            UNSUPPORTED_PRODUCT_CLAIM, "Promesse produit non étayée",
-            INVENTED_DATA, "Donnée inventée",
-            INVENTED_URL, "URL inventée",
-            CONVERSATION_CONTEXT_LOST, "Contexte de conversation perdu");
+            PRODUCT_MISMATCH, "Incompatible product",
+            UNANSWERED_REQUEST, "Unresolved request",
+            MISSING_DATA_NOT_RETRIEVED, "Requested data not retrieved",
+            UNNECESSARY_ADVISOR_REDIRECT, "Unnecessary advisor redirect",
+            EXCESSIVE_REPETITION, "Excessive repetition",
+            CREDIT_SIMULATION_VIOLATION, "Forbidden credit simulation",
+            UNSUPPORTED_PRODUCT_CLAIM, "Unsupported product claim",
+            INVENTED_DATA, "Invented data",
+            INVENTED_URL, "Invented URL",
+            CONVERSATION_CONTEXT_LOST, "Conversation context lost");
 
     public static Map<String, String> checkLabels() {
         return new LinkedHashMap<>(CHECK_LABELS);
@@ -453,9 +453,9 @@ public final class QualityModels {
             return "";
         }
         String cleaned = comment.replace('\r', ' ').replace('\n', ' ');
-        cleaned = EMAIL.matcher(cleaned).replaceAll("[email masqué]");
-        cleaned = PHONE.matcher(cleaned).replaceAll("[numéro masqué]");
-        cleaned = LONG_NUMBER.matcher(cleaned).replaceAll("[numéro masqué]");
+        cleaned = EMAIL.matcher(cleaned).replaceAll("[email hidden]");
+        cleaned = PHONE.matcher(cleaned).replaceAll("[number hidden]");
+        cleaned = LONG_NUMBER.matcher(cleaned).replaceAll("[number hidden]");
         cleaned = cleaned.replaceAll("\\s{2,}", " ").trim();
         int max = maxLength <= 0 ? 1000 : maxLength;
         return cleaned.length() > max ? cleaned.substring(0, max) + "…" : cleaned;

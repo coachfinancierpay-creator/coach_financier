@@ -1,66 +1,66 @@
-cascade - ARBRE DE DÉCISION — CRÉDIT CONSO
+cascade - DECISION TREE — CONSUMER LOAN
 ================================
 
-Rôle : recommander le crédit à la consommation (ou le paiement comptant) le plus adapté au besoin et au profil du client.
-Utilisation : suivre les étapes dans l'ordre ; appliquer la première condition qui correspond au client.
+Role: recommend the consumer loan (or cash payment) best suited to the customer's need and profile.
+Usage: follow the steps in order; apply the first condition that matches the customer.
 
 
-ÉTAPE 1 — Périmètre
-- SI la demande ne concerne PAS un besoin de financement conso : ALORS aucune recommandation de crédit conso (sortir).
-- SINON : passer à l'étape 2.
+STEP 1 — Scope
+- IF the request does NOT concern a consumer financing need: THEN no consumer loan recommendation (exit).
+- OTHERWISE: go to step 2.
 
 
-ÉTAPE 2 — Le client peut-il financer sans crédit ?
-- Le client peut-il payer comptant le projet tout en conservant une épargne de sécurité suffisante ?
-- SI OUI : recommander un paiement comptant (ou partiellement comptant), puis éventuellement comparer avec un crédit.
-- SI NON : passer à l'étape 3.
+STEP 2 — Can the customer finance without a loan?
+- Can the customer pay for the project in cash while keeping sufficient emergency savings?
+- IF YES: recommend a cash payment (or partly cash), then possibly compare with a loan.
+- IF NO: go to step 3.
 
 
-ÉTAPE 3 — Regroupement de crédits ?
-- SI OUI :
-    - Client éligible BFM → comparer « BFM Perspective » vs « Crédit Compact ».
-    - Sinon → « Crédit Compact ».
-- SI NON : passer à l'étape 4.
+STEP 3 — Loan consolidation?
+- IF YES:
+    - BFM-eligible customer → compare « BFM Perspective » vs « Compact Loan ».
+    - Otherwise → « Compact Loan ».
+- IF NO: go to step 4.
 
 
-ÉTAPE 4 — Projet véhicule ?
-- SI OUI :
-    - Client éligible BFM → comparer « BFM Liberté Auto » vs « Crédit Auto Expresso ».
-    - Sinon → « Crédit Auto Expresso ».
-- SI NON : passer à l'étape 5.
+STEP 4 — Vehicle project?
+- IF YES:
+    - BFM-eligible customer → compare « BFM Freedom Loan Auto » vs « Expresso Auto Loan ».
+    - Otherwise → « Expresso Auto Loan ».
+- IF NO: go to step 5.
 
 
-ÉTAPE 5 — Client étudiant ?
-- SI OUI :
-    - Élève de la fonction publique → « BFM Élève ».
-    - Permis + âge 15-25 ans → « Prêt Permis à 1 € / jour ».
-    - Sinon → « Prêt Étudiant Évolutif ».
-- SI NON : passer à l'étape 6.
+STEP 5 — Student customer?
+- IF YES:
+    - Public-sector school student → « BFM Student Loan ».
+    - Driving licence + age 15-25 → « €1-a-day Driving Licence Loan ».
+    - Otherwise → « Progressive Student Loan ».
+- IF NO: go to step 6.
 
 
-ÉTAPE 6 — Jeune actif (18-29 ans) ?
-- SI OUI :
-    - Éligible BFM → comparer « BFM Jeunes Actifs » / « BFM Liberté ».
-    - Sinon → « Expresso Jeune Actif ».
-- SI NON : passer à l'étape 7.
+STEP 6 — Young professional (18-29)?
+- IF YES:
+    - BFM eligible → compare « BFM Young Professionals Loan » / « BFM Freedom Loan ».
+    - Otherwise → « Expresso Young Professional Loan ».
+- IF NO: go to step 7.
 
 
-ÉTAPE 7 — Éligible BFM / fonction publique ?
-- SI OUI :
-    - Mobilité / reconversion → « BFM Mobilité / Reconversion ».
-    - Besoin exact de 1 500 € + profil éligible → « Avance BFM ».
-    - Projet personnel classique → « BFM Liberté ».
-- SI NON : passer à l'étape 8.
+STEP 7 — BFM eligible / public sector?
+- IF YES:
+    - Mobility / career change → « BFM Mobility / Career Change Loan ».
+    - Exact need of 1 500 € + eligible profile → « BFM Advance Loan ».
+    - Standard personal project → « BFM Freedom Loan ».
+- IF NO: go to step 8.
 
 
-ÉTAPE 8 — Besoin ponctuel ou récurrent ?
-- Besoin PONCTUEL → « Crédit Expresso ».
-- Besoin RÉCURRENT / réserve de trésorerie → « Alterna ».
+STEP 8 — One-off or recurring need?
+- ONE-OFF need → « Expresso Loan ».
+- RECURRING need / cash reserve → « Alterna Revolving Credit ».
 
 
-ÉTAPE 9 — Contrôle final de soutenabilité
-Vérifier : mensualité ; reste à vivre ; taux d'endettement ; incidents bancaires ; épargne restante ; coût total du crédit.
+STEP 9 — Final affordability check
+Check: monthly payment; remaining income after charges; debt-to-income ratio; banking incidents; remaining savings; total cost of the loan.
 
 
-ÉTAPE 10 — Réponse au client (IA)
-Expliquer en français : la recommandation retenue et pourquoi ; des alternatives ; les points de vigilance.
+STEP 10 — Answer to the customer (AI)
+Explain in English: the recommendation retained and why; alternatives; points of vigilance.

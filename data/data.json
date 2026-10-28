@@ -1,138 +1,138 @@
 [
   {
     "path": "/data/catalogue/assurance_auto.json",
-    "description": "Assurance auto"
+    "description": "Car insurance"
   },
   {
     "path": "/data/catalogue/assurance_emprunteur_immo.json",
-    "description": "Assurance emprunteur immobilier"
+    "description": "Mortgage protection insurance"
   },
   {
     "path": "/data/catalogue/assurance_habitation.json",
-    "description": "Assurance habitation"
+    "description": "Home insurance"
   },
   {
     "path": "/data/catalogue/credit_conso.json",
-    "description": "Crédit consommation"
+    "description": "Consumer loan"
   },
   {
     "path": "/data/catalogue/taux/grilles_taux_credit_conso.json",
-    "description": "Grille de taux de crédit consommation"
+    "description": "Consumer loan rate grid"
   },
   {
     "path": "/data/catalogue/credit_immo.json",
-    "description": "Crédit immobilier"
+    "description": "Mortgage"
   },
   {
     "path": "/data/catalogue/epargne.json",
-    "description": "Épargne"
+    "description": "Savings"
   },
   {
     "path": "/data/catalogue/guide/assurance_auto_guide.md",
-    "description": "Assurance auto"
+    "description": "Car insurance"
   },
   {
     "path": "/data/catalogue/guide/assurance_emprunteur_immo_guide.md",
-    "description": "Assurance emprunteur immobilier"
+    "description": "Mortgage protection insurance"
   },
   {
     "path": "/data/catalogue/guide/assurance_habitation_guide.md",
-    "description": "Assurance habitation"
+    "description": "Home insurance"
   },
   {
     "path": "/data/catalogue/guide/credit_conso_guide.md",
-    "description": "Crédit consommation"
+    "description": "Consumer loan"
   },
   {
     "path": "/data/catalogue/guide/credit_immo_guide.md",
-    "description": "Crédit immobilier"
+    "description": "Mortgage"
   },
   {
     "path": "/data/catalogue/guide/epargne_guide.md",
-    "description": "Épargne"
+    "description": "Savings"
   },
   {
     "path": "/data/catalogue/cascade/assurance_auto.txt",
-    "description": "Cascade de décision assurance auto"
+    "description": "Car insurance decision cascade"
   },
   {
     "path": "/data/catalogue/cascade/assurance_emprunteur_immo.txt",
-    "description": "Cascade de décision assurance emprunteur immobilier"
+    "description": "Mortgage protection insurance decision cascade"
   },
   {
     "path": "/data/catalogue/cascade/assurance_habitation.txt",
-    "description": "Cascade de décision assurance habitation"
+    "description": "Home insurance decision cascade"
   },
   {
     "path": "/data/catalogue/cascade/credit_conso.txt",
-    "description": "Cascade de décision crédit consommation"
+    "description": "Consumer loan decision cascade"
   },
   {
     "path": "/data/catalogue/cascade/credit_immo.txt",
-    "description": "Cascade de décision crédit immobilier"
+    "description": "Mortgage decision cascade"
   },
   {
     "path": "/data/catalogue/cascade/epargne.txt",
-    "description": "Cascade de décision épargne"
+    "description": "Savings decision cascade"
   },
   {
     "path": "/data/synthese_financier.json",
-    "description": "Synthèse financière"
+    "description": "Financial summary"
   },
   {
     "path": "/data/transaction/transactions_2025_07.json",
-    "description": "Transactions juillet 2025, compte courant"
+    "description": "July 2025 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2025_08.json",
-    "description": "Transactions août 2025, compte courant"
+    "description": "August 2025 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2025_09.json",
-    "description": "Transactions septembre 2025, compte courant"
+    "description": "September 2025 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2025_10.json",
-    "description": "Transactions octobre 2025, compte courant"
+    "description": "October 2025 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2025_11.json",
-    "description": "Transactions novembre 2025, compte courant"
+    "description": "November 2025 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2025_12.json",
-    "description": "Transactions décembre 2025, compte courant"
+    "description": "December 2025 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_01.json",
-    "description": "Transactions janvier 2026, compte courant"
+    "description": "January 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_02.json",
-    "description": "Transactions février 2026, compte courant"
+    "description": "February 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_03.json",
-    "description": "Transactions mars 2026, compte courant"
+    "description": "March 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_04.json",
-    "description": "Transactions avril 2026, compte courant"
+    "description": "April 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_05.json",
-    "description": "Transactions mai 2026, compte courant"
+    "description": "May 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_06.json",
-    "description": "Transactions juin 2026, compte courant"
+    "description": "June 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_07.json",
-    "description": "Transactions juillet 2026, compte courant"
+    "description": "July 2026 transactions, current account"
   },
   {
     "path": "/data/transaction/transactions_2026_08.json",
-    "description": "Transactions août 2026"
+    "description": "August 2026 transactions"
   }
 ]

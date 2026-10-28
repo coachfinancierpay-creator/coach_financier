@@ -11,19 +11,19 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_credit_auto_expresso",
-    "productName" : "Crédit Auto Expresso",
+    "productName" : "Expresso Auto Loan",
     "count" : 4
   }, {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
+    "productName" : "SG Car Insurance – Comprehensive",
     "count" : 1
   }, {
     "productId" : "sg_auto_tous_risques_plus",
-    "productName" : "Assurance Auto SG – Tous Risques+",
+    "productName" : "SG Car Insurance – Comprehensive+",
     "count" : 1
   }, {
     "productId" : "credit-auto-expresso",
-    "productName" : "Crédit Auto Expresso",
+    "productName" : "Expresso Auto Loan",
     "count" : 1
   } ],
   "previousVolume" : 1,
@@ -41,7 +41,7 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_pret_etudiant_evolutif",
-    "productName" : "Prêt Étudiant Évolutif",
+    "productName" : "Progressive Student Loan",
     "count" : 1
   } ],
   "previousVolume" : 1,
@@ -59,11 +59,11 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_livret_a",
-    "productName" : "Livret A",
+    "productName" : "Livret A savings account",
     "count" : 2
   }, {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
+    "productName" : "SG Car Insurance – Comprehensive",
     "count" : 1
   } ],
   "previousVolume" : 2,
@@ -81,15 +81,15 @@
   "unmetNeedCount" : 1,
   "topProducts" : [ {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
+    "productName" : "SG Car Insurance – Comprehensive",
     "count" : 1
   }, {
     "productId" : "sg_auto_tiers",
-    "productName" : "Assurance Auto SG – Tiers",
+    "productName" : "SG Car Insurance – Third Party",
     "count" : 1
   }, {
     "productId" : "sg_pret_etudiant_evolutif",
-    "productName" : "Prêt Étudiant Évolutif",
+    "productName" : "Progressive Student Loan",
     "count" : 1
   } ],
   "previousVolume" : 5,
@@ -106,11 +106,11 @@
   "unmetNeedCount" : 1,
   "topProducts" : [ {
     "productId" : "sg_habitation_confort",
-    "productName" : "Assurance Habitation SG – Confort",
+    "productName" : "SG Home Insurance – Comfort",
     "count" : 1
   }, {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
+    "productName" : "SG Car Insurance – Comprehensive",
     "count" : 1
   } ],
   "previousVolume" : 1,
@@ -128,19 +128,19 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_habitation_confort",
-    "productName" : "Assurance Habitation SG – Confort",
+    "productName" : "SG Home Insurance – Comfort",
     "count" : 2
   }, {
     "productId" : "sg_pret_etudiant_evolutif",
-    "productName" : "Prêt Étudiant Évolutif",
+    "productName" : "Progressive Student Loan",
     "count" : 2
   }, {
     "productId" : "sg_pea",
-    "productName" : "Plan d'Épargne en Actions (PEA)",
+    "productName" : "PEA (equity savings plan)",
     "count" : 1
   }, {
     "productId" : "sg_credit_auto_expresso",
-    "productName" : "Crédit Auto Expresso",
+    "productName" : "Expresso Auto Loan",
     "count" : 1
   } ],
   "previousVolume" : null,
@@ -157,7 +157,7 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_livret_a",
-    "productName" : "Livret A",
+    "productName" : "Livret A savings account",
     "count" : 1
   } ],
   "previousVolume" : 1,
@@ -172,23 +172,23 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_auto_tiers",
-    "productName" : "Assurance Auto SG – Tiers",
+    "productName" : "SG Car Insurance – Third Party",
     "count" : 1
   }, {
     "productId" : "sg_auto_tiers_plus",
-    "productName" : "Assurance Auto SG – Tiers+",
+    "productName" : "SG Car Insurance – Third Party+",
     "count" : 1
   }, {
     "productId" : "sg_auto_tous_risques",
-    "productName" : "Assurance Auto SG – Tous Risques",
+    "productName" : "SG Car Insurance – Comprehensive",
     "count" : 1
   }, {
     "productId" : "sg_auto_tous_risques_plus",
-    "productName" : "Assurance Auto SG – Tous Risques+",
+    "productName" : "SG Car Insurance – Comprehensive+",
     "count" : 1
   }, {
     "productId" : "sg_auto_leasing",
-    "productName" : "Assurance Auto SG – Leasing",
+    "productName" : "SG Car Insurance – Leasing",
     "count" : 1
   } ],
   "previousVolume" : null,
@@ -203,15 +203,15 @@
   "unmetNeedCount" : 0,
   "topProducts" : [ {
     "productId" : "sg_habitation_initiale",
-    "productName" : "Assurance Habitation SG – Initiale",
+    "productName" : "SG Home Insurance – Initial",
     "count" : 1
   }, {
     "productId" : "sg_habitation_confort",
-    "productName" : "Assurance Habitation SG – Confort",
+    "productName" : "SG Home Insurance – Comfort",
     "count" : 1
   }, {
     "productId" : "sg_habitation_optimale",
-    "productName" : "Assurance Habitation SG – Optimale",
+    "productName" : "SG Home Insurance – Optimal",
     "count" : 1
   } ],
   "previousVolume" : null,

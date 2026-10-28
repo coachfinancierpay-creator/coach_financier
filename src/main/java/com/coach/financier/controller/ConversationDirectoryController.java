@@ -72,7 +72,7 @@ public class ConversationDirectoryController {
         StatusRequest body = request == null ? new StatusRequest(null, null) : request;
         return directoryService.updateStatus(sessionId, body.status(), body.comment())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Aucun dossier de suivi pour la session " + sessionId));
+                        "No follow-up case file for session " + sessionId));
     }
 
     /**
@@ -83,7 +83,7 @@ public class ConversationDirectoryController {
     public DirectoryModels.DirectoryDetail detail(@PathVariable String sessionId) {
         return directoryService.detail(sessionId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Aucun dossier de suivi pour la session " + sessionId));
+                        "No follow-up case file for session " + sessionId));
     }
 
     /**
@@ -93,6 +93,6 @@ public class ConversationDirectoryController {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> badRequest(IllegalArgumentException e) {
-        return Map.of("error", "BAD_REQUEST", "message", e.getMessage() == null ? "Requête invalide" : e.getMessage());
+        return Map.of("error", "BAD_REQUEST", "message", e.getMessage() == null ? "Invalid request" : e.getMessage());
     }
 }

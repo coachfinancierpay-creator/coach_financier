@@ -33,7 +33,7 @@ class PromptZoneServiceTest {
 
         assertFalse(zone.marked());
         assertFalse(zone.valid());
-        assertTrue(zone.error().contains("Aucune zone éditable"));
+        assertTrue(zone.error().contains("No editable zone detected"));
     }
 
     @Test
@@ -41,7 +41,7 @@ class PromptZoneServiceTest {
         var zone = service.parse("[[[\na\n]]]\n[[[\nb\n]]]");
 
         assertFalse(zone.valid());
-        assertTrue(zone.error().contains("Délimiteurs de zone invalides"));
+        assertTrue(zone.error().contains("Invalid zone delimiters"));
     }
 
     @Test
@@ -49,7 +49,7 @@ class PromptZoneServiceTest {
         var zone = service.parse("[[[\na\nfin sans fermeture");
 
         assertFalse(zone.valid());
-        assertTrue(zone.error().contains("Délimiteurs de zone invalides"));
+        assertTrue(zone.error().contains("Invalid zone delimiters"));
     }
 
     @Test
@@ -57,7 +57,7 @@ class PromptZoneServiceTest {
         var zone = service.parse("]]]\na\n[[[");
 
         assertFalse(zone.valid());
-        assertTrue(zone.error().contains("inversés"));
+        assertTrue(zone.error().contains("Inverted"));
     }
 
     @Test
@@ -65,7 +65,7 @@ class PromptZoneServiceTest {
         var zone = service.parse("AVANT\n[[[\n\n]]]\nAPRÈS");
 
         assertFalse(zone.valid());
-        assertTrue(zone.error().contains("vide"));
+        assertTrue(zone.error().contains("Empty editable zone"));
     }
 
     @Test
@@ -96,7 +96,7 @@ class PromptZoneServiceTest {
         IllegalArgumentException error = assertThrows(IllegalArgumentException.class,
                 () -> service.compose(zone, "texte\n]]]\névasion de zone"));
 
-        assertTrue(error.getMessage().contains("sortie de zone"));
+        assertTrue(error.getMessage().contains("attempt to leave the zone"));
     }
 
     @Test
@@ -120,12 +120,12 @@ class PromptZoneServiceTest {
         assertEquals(null, service.validateMarkerPair("prompt sans marqueur"), "prompt hors zone accepté");
 
         String missingEnd = service.validateMarkerPair("[[[\na\nfin sans fermeture");
-        assertTrue(missingEnd.contains("Enregistrement refusé"), missingEnd);
+        assertTrue(missingEnd.contains("Save refused"), missingEnd);
         assertTrue(missingEnd.contains("]]]"), "le message nomme le délimiteur manquant");
 
-        assertTrue(service.validateMarkerPair("a\n]]]").contains("Enregistrement refusé"));
-        assertTrue(service.validateMarkerPair("]]]\na\n[[[").contains("avant"));
-        assertTrue(service.validateMarkerPair("[[[\na\n]]]\n[[[\nb\n]]]").contains("Enregistrement refusé"));
+        assertTrue(service.validateMarkerPair("a\n]]]").contains("Save refused"));
+        assertTrue(service.validateMarkerPair("]]]\na\n[[[").contains("appears before"));
+        assertTrue(service.validateMarkerPair("[[[\na\n]]]\n[[[\nb\n]]]").contains("Save refused"));
     }
 
     @Test

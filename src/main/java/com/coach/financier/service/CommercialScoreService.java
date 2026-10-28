@@ -54,9 +54,9 @@ public class CommercialScoreService {
 
     /** Marqueurs d'urgence cherchés dans les messages du CLIENT (texte normalisé, sans accents). */
     private static final List<String> URGENCY_KEYWORDS = List.of(
-            "urgent", "urgence", "rapidement", "au plus vite", "des que possible", "le plus tot possible",
-            "avant la fin", "avant le", "avant fevrier", "ce mois", "semaine prochaine", "brefs delais",
-            "vite", "aujourd'hui", "des demain", "fin du mois");
+            "urgent", "urgency", "quickly", "asap", "as soon as possible", "as early as possible",
+            "before the end", "before", "by february", "this month", "next week", "short notice",
+            "fast", "today", "tomorrow", "end of the month");
 
     private final FinancialAnalysisService financialAnalysisService;
 
@@ -90,7 +90,7 @@ public class CommercialScoreService {
         List<String> maturityDetails = new ArrayList<>();
         if (project != null) {
             maturity += 12;
-            maturityDetails.add(project.getType() == null ? "projet identifié" : project.getType().name());
+            maturityDetails.add(project.getType() == null ? "project identified" : project.getType().name());
         }
         boolean quantified = hasObjectOrAmount(project);
         if (quantified) {
@@ -99,15 +99,15 @@ public class CommercialScoreService {
         }
         if (presentedProducts != null && !presentedProducts.isEmpty()) {
             maturity += 10;
-            maturityDetails.add(presentedProducts.size() + " offre(s) présentée(s)");
+            maturityDetails.add(presentedProducts.size() + " offer(s) presented");
         }
         maturity = Math.min(MAX_MATURITY, maturity);
-        criteria.add(new SuiviModels.ScoreCriterion("MATURITY", "Maturité du projet", maturity, MAX_MATURITY,
+        criteria.add(new SuiviModels.ScoreCriterion("MATURITY", "Project maturity", maturity, MAX_MATURITY,
                 String.join(", ", maturityDetails)));
         if (maturity >= 20) {
-            reasons.add("Projet cadré" + (quantified ? " et chiffré (" + amountDetail(project) + ")" : "")
-                    + " avec " + (presentedProducts == null ? 0 : presentedProducts.size())
-                    + " offre(s) présentée(s) au client.");
+            reasons.add("Well-defined project" + (quantified ? " and quantified (" + amountDetail(project) + ")" : "")
+                    + " with " + (presentedProducts == null ? 0 : presentedProducts.size())
+                    + " offer(s) presented to the customer.");
         }
 
         // 2) Intérêt du client (meilleur niveau observé).
@@ -128,12 +128,12 @@ public class CommercialScoreService {
             case LOW -> 5;
             case REJECTED -> 0;
         };
-        criteria.add(new SuiviModels.ScoreCriterion("INTEREST", "Intérêt du client", interestPoints, MAX_INTEREST,
+        criteria.add(new SuiviModels.ScoreCriterion("INTEREST", "Customer interest", interestPoints, MAX_INTEREST,
                 best == SuiviModels.InterestLevel.HIGH && !interestedNames.isEmpty()
-                        ? "intérêt fort : " + String.join(", ", interestedNames)
-                        : "niveau observé : " + best.name()));
+                        ? "strong interest: " + String.join(", ", interestedNames)
+                        : "observed level: " + best.name()));
         if (best == SuiviModels.InterestLevel.HIGH) {
-            reasons.add("Client intéressé par l'offre recommandée"
+            reasons.add("Customer interested in the recommended offer"
                     + (interestedNames.isEmpty() ? "" : " (" + String.join(", ", interestedNames) + ")") + ".");
         }
 
@@ -150,47 +150,47 @@ public class CommercialScoreService {
             case "LOW" -> 5;
             default -> 0;
         };
-        criteria.add(new SuiviModels.ScoreCriterion("URGENCY", "Urgence exprimée", urgencyPoints, MAX_URGENCY,
-                urgencyPoints == 0 ? "aucune contrainte de temps exprimée"
+        criteria.add(new SuiviModels.ScoreCriterion("URGENCY", "Urgency expressed", urgencyPoints, MAX_URGENCY,
+                urgencyPoints == 0 ? "no time constraint expressed"
                         : (urgencySignal + (matchedKeyword.isBlank() ? "" : " (« " + matchedKeyword + " »)"))));
         if (urgencyPoints >= 12) {
-            reasons.add("Contrainte de temps exprimée par le client : relance à traiter en priorité.");
+            reasons.add("Time constraint expressed by the customer: follow-up to prioritise.");
         }
 
         // 4) Capacité de financement, uniquement à partir des indicateurs disponibles.
         FinancialSummary summary = conversation != null && conversation.financialSummary() != null
                 ? conversation.financialSummary() : safeAnalyze();
         int capacityPoints = 7;
-        String capacityDetail = "indicateurs financiers indisponibles";
+        String capacityDetail = "financial indicators unavailable";
         if (summary != null) {
             double ratio = summary.debtServiceToIncomeRatio();
             double savings = summary.averageMonthlySavings();
-            String ratioText = "endettement " + percent(ratio) + ", épargne mensuelle " + euros(savings);
+            String ratioText = "debt-to-income " + percent(ratio) + ", monthly savings " + euros(savings);
             if (ratio <= 0) {
                 capacityPoints = 7;
                 capacityDetail = ratioText;
             } else if (ratio < 0.33 && savings > 0) {
                 capacityPoints = MAX_CAPACITY;
-                capacityDetail = ratioText + " : marge confortable";
+                capacityDetail = ratioText + ": comfortable margin";
             } else if (ratio < 0.40) {
                 capacityPoints = 9;
-                capacityDetail = ratioText + " : marge correcte";
+                capacityDetail = ratioText + ": adequate margin";
             } else {
                 capacityPoints = 4;
-                capacityDetail = ratioText + " : marge limitée";
+                capacityDetail = ratioText + ": limited margin";
             }
             if (summary.overdraftOccurrences() > 0) {
                 capacityPoints = Math.max(0, capacityPoints - 3);
-                capacityDetail = capacityDetail + ", " + summary.overdraftOccurrences() + " découvert(s)"
-                        + " : vigilance";
+                capacityDetail = capacityDetail + ", " + summary.overdraftOccurrences() + " overdraft(s)"
+                        + ": watch out";
             }
         }
-        criteria.add(new SuiviModels.ScoreCriterion("CAPACITY", "Capacité de financement", capacityPoints,
+        criteria.add(new SuiviModels.ScoreCriterion("CAPACITY", "Financing capacity", capacityPoints,
                 MAX_CAPACITY, capacityDetail));
         if (capacityPoints >= MAX_CAPACITY) {
-            reasons.add("Capacité de remboursement confortable d'après les indicateurs disponibles.");
+            reasons.add("Comfortable repayment capacity based on the available indicators.");
         } else if (capacityPoints <= 4 && summary != null) {
-            reasons.add("Capacité de remboursement limitée : dossier à accompagner (apport, durée, garanties).");
+            reasons.add("Limited repayment capacity: case file to support (down payment, term, guarantees).");
         }
 
         // 5) Engagement : implication réelle du client dans l'échange.
@@ -199,10 +199,10 @@ public class CommercialScoreService {
         int engagementPoints = clientMessages >= 5 ? MAX_ENGAGEMENT
                 : clientMessages >= 3 ? 7
                 : clientMessages >= 2 ? 4 : 0;
-        criteria.add(new SuiviModels.ScoreCriterion("ENGAGEMENT", "Engagement du client", engagementPoints,
-                MAX_ENGAGEMENT, clientMessages + " message(s) client"));
+        criteria.add(new SuiviModels.ScoreCriterion("ENGAGEMENT", "Customer engagement", engagementPoints,
+                MAX_ENGAGEMENT, clientMessages + " customer message(s)"));
         if (engagementPoints >= 7) {
-            reasons.add("Échange approfondi (" + clientMessages + " messages client) : le besoin est précisé.");
+            reasons.add("In-depth exchange (" + clientMessages + " customer messages): the need is clarified.");
         }
 
         // 6) Pénalités : offres explicitement écartées.
@@ -212,7 +212,7 @@ public class CommercialScoreService {
                 .count();
         int penalty = (int) Math.min(MAX_PENALTY, rejected * REJECTED_PENALTY);
         if (penalty > 0) {
-            reasons.add("Offre(s) écartée(s) par le client (" + rejected + ") : relance à réorienter.");
+            reasons.add("Offer(s) dismissed by the customer (" + rejected + "): follow-up to redirect.");
         }
 
         int computed = Math.max(0, Math.min(100,
@@ -228,7 +228,7 @@ public class CommercialScoreService {
             }
         }
         if (reasons.isEmpty()) {
-            reasons.add("Aucun signal fort dans cet échange : dossier à reprendre depuis le début.");
+            reasons.add("No strong signal in this exchange: case file to restart from scratch.");
         }
         reasons = limit(reasons, MAX_REASONS);
 
@@ -249,10 +249,10 @@ public class CommercialScoreService {
     /** Libellé lisible de la priorité, affiché au conseiller. */
     public static String labelOf(int score) {
         return switch (priorityOf(score)) {
-            case SuiviModels.PRIORITY_VERY_HIGH -> "Priorité très haute — affaire mûre";
-            case SuiviModels.PRIORITY_HIGH -> "Priorité haute";
-            case SuiviModels.PRIORITY_MEDIUM -> "Priorité moyenne";
-            default -> "Priorité faible — à recontacter plus tard";
+            case SuiviModels.PRIORITY_VERY_HIGH -> "Very high priority — mature deal";
+            case SuiviModels.PRIORITY_HIGH -> "High priority";
+            case SuiviModels.PRIORITY_MEDIUM -> "Medium priority";
+            default -> "Low priority — to contact again later";
         };
     }
 
@@ -260,10 +260,10 @@ public class CommercialScoreService {
     public static String labelOfPriority(String priority) {
         if (priority == null) return labelOf(0);
         return switch (priority) {
-            case SuiviModels.PRIORITY_VERY_HIGH -> "Priorité très haute — affaire mûre";
-            case SuiviModels.PRIORITY_HIGH -> "Priorité haute";
-            case SuiviModels.PRIORITY_MEDIUM -> "Priorité moyenne";
-            default -> "Priorité faible — à recontacter plus tard";
+            case SuiviModels.PRIORITY_VERY_HIGH -> "Very high priority — mature deal";
+            case SuiviModels.PRIORITY_HIGH -> "High priority";
+            case SuiviModels.PRIORITY_MEDIUM -> "Medium priority";
+            default -> "Low priority — to contact again later";
         };
     }
 

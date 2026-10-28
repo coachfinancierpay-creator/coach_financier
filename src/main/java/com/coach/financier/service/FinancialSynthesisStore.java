@@ -88,7 +88,7 @@ public class FinancialSynthesisStore {
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), synthesis);
             log.info("Synthèse financière enregistrée dans {}", filePath);
         } catch (Exception e) {
-            throw new IllegalStateException("Impossible d'écrire la synthèse financière dans " + filePath, e);
+            throw new IllegalStateException("Unable to write the financial summary to " + filePath, e);
         }
     }
 

@@ -1,13 +1,13 @@
 [ {
   "reason" : "MISSING_INFORMATION",
-  "label" : "Il manquait des informations",
+  "label" : "Information was missing",
   "count" : 2,
   "share" : 0.6667,
   "previousCount" : null,
   "evolutionPercent" : null
 }, {
   "reason" : "HARD_TO_UNDERSTAND",
-  "label" : "Les explications étaient difficiles à comprendre",
+  "label" : "The explanations were hard to understand",
   "count" : 1,
   "share" : 0.3333,
   "previousCount" : null,

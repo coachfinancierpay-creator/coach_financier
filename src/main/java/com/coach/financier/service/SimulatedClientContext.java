@@ -35,15 +35,15 @@ public final class SimulatedClientContext {
     public static Map<String, Object> figures(FinancialSummary summary) {
         Map<String, Object> figures = new LinkedHashMap<>();
         figures.put("compteCourant", Map.of(
-                "libelle", "Solde du compte courant",
+                "libelle", "Current account balance",
                 "montant", summary.currentAccountBalance(),
                 "devise", "EUR"));
         figures.put("epargne", Map.of(
-                "libelle", "Épargne disponible",
+                "libelle", "Available savings",
                 "montant", summary.savingsBalance(),
                 "devise", "EUR"));
         figures.put("creditEnCours", Map.of(
-                "libelle", "Mensualité de crédit en cours",
+                "libelle", "Current loan monthly payment",
                 "montant", summary.monthlyLoanPayments(),
                 "devise", "EUR"));
         return figures;
@@ -60,12 +60,12 @@ public final class SimulatedClientContext {
     public static String briefFromConversation(List<ConversationModels.Message> transcript) {
         String firstRequest = firstClientMessage(transcript);
         StringBuilder brief = new StringBuilder();
-        brief.append("Le client est celui de CETTE conversation : tu reprends SON projet et SA situation, ")
-                .append("tels qu'ils ressortent de ses messages (ils te sont fournis dans previousExchanges). ")
-                .append("N'invente ni un autre client, ni un autre projet, ni un chiffre qui ne serait pas ")
-                .append("dans la conversation ou dans clientFigures.");
+        brief.append("The customer is the one from THIS conversation: you take up HIS project and HIS situation, ")
+                .append("as they emerge from his messages (they are provided in previousExchanges). ")
+                .append("Do not invent another customer, another project, or a figure that is not ")
+                .append("in the conversation or in clientFigures.");
         if (!firstRequest.isEmpty()) {
-            brief.append("\nSa demande initiale, mot pour mot : « ").append(bounded(firstRequest)).append(" »");
+            brief.append("\nHis initial request, word for word: \"").append(bounded(firstRequest)).append("\"");
         }
         return brief.toString();
     }

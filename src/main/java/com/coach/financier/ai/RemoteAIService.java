@@ -158,7 +158,7 @@ public abstract class RemoteAIService implements AIService {
         try {
             return objectMapper.readValue(content, IntentClassification.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Réponse classification invalide: " + content, e);
+            throw new IllegalStateException("Invalid classification response: " + content, e);
         }
     }
 
@@ -168,11 +168,11 @@ public abstract class RemoteAIService implements AIService {
      * duplique pas le fichier et sert juste à obtenir un JSON exploitable.
      */
     private static final String FALLBACK_INTENT_CLASSIFIER_PROMPT =
-            "Tu analyses les messages d'un client bancaire. Tu ne donnes aucun conseil et ne proposes aucun produit.\n"
-            + "Réponds UNIQUEMENT en JSON valide avec les champs : inScope, intent, projectType, projectObject, "
+            "You analyse the messages of a banking customer. You give no advice and suggest no product.\n"
+            + "Reply ONLY in valid JSON with the fields: inScope, intent, projectType, projectObject, "
             + "amount, currency, refersToCurrentProject, projectChanged, confidence, reason.\n"
-            + "N'invente aucune donnée absente du message ou du contexte. "
-            + "Si le type de projet n'est pas fiable : projectType = UNKNOWN.";
+            + "Do not invent any data absent from the message or the context. "
+            + "If the project type is not reliable: projectType = UNKNOWN.";
 
     @Override
     public AIModels.AIAnswer answer(String customerMessage, AIModels.Classification classification,
@@ -233,13 +233,13 @@ public abstract class RemoteAIService implements AIService {
                 if (e instanceof RuntimeException runtime) {
                     throw runtime;
                 }
-                throw new IllegalStateException("Appel du fournisseur " + providerName
-                        + " impossible : " + e.getMessage(), e);
+                throw new IllegalStateException("Call to provider " + providerName
+                        + " failed: " + e.getMessage(), e);
             }
             // La FIN de la réponse est citée : sans elle, « Unexpected end-of-input » ne dit pas si la réponse
             // est vide, coupée en plein texte ou seulement mal formée.
-            throw new IllegalStateException("Réponse IA invalide: " + contentOrUnknown(e)
-                    + " (fin de la réponse reçue : …" + tailOf(content) + ")", e);
+            throw new IllegalStateException("Invalid AI response: " + contentOrUnknown(e)
+                    + " (end of the response received: …" + tailOf(content) + ")", e);
         }
     }
 
@@ -292,7 +292,7 @@ public abstract class RemoteAIService implements AIService {
     /** Vérifie la présence d'une clé API : message explicite, exploitable par l'IHM. */
     protected void requireApiKey() {
         if (apiKeyRequired && apiKey.isBlank()) {
-            throw new IllegalStateException("Clé API absente pour le fournisseur " + providerName);
+            throw new IllegalStateException("Missing API key for provider " + providerName);
         }
     }
 
@@ -336,8 +336,8 @@ public abstract class RemoteAIService implements AIService {
 
     /** Rappel de FORME (jamais de fond) ajouté en fin de message utilisateur — voir {@link #requestBody}. */
     static final String JSON_FORMAT_REMINDER =
-            "\n\nRAPPEL DE FORMAT : réponds UNIQUEMENT par un objet JSON valide "
-            + "(premier caractère {, dernier }), sans texte avant ni après.";
+            "\n\nFORMAT REMINDER: reply ONLY with a valid JSON object "
+            + "(first character {, last }), with no text before or after.";
 
     private AIModels.AIAnswer parseAnswer(String raw) throws Exception {
         JsonNode node = objectMapper.readTree(raw);
@@ -355,7 +355,7 @@ public abstract class RemoteAIService implements AIService {
     @Override
     public SuiviModels.SuiviResult summarizeConversation(Map<String, Object> context, AIModels.AIProvider provider) {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Clé API absente pour le fournisseur " + providerName);
+            throw new IllegalStateException("Missing API key for provider " + providerName);
         }
         // Agent de synthèse dédié (rédaction du dossier de suivi conseiller + brouillon client).
         String system = AgentFiles.suiviSystemPrompt();
@@ -363,14 +363,14 @@ public abstract class RemoteAIService implements AIService {
         try {
             user = objectMapper.writeValueAsString(context == null ? Map.of() : context);
         } catch (Exception e) {
-            throw new IllegalStateException("Contexte de synthèse non sérialisable", e);
+            throw new IllegalStateException("Unable to serialise the summary context", e);
         }
         String content = call(system, user);
         try {
             SuiviModels.SuiviResult result = objectMapper.readValue(content, SuiviModels.SuiviResult.class);
             return result == null ? emptySuivi() : result;
         } catch (Exception e) {
-            throw new IllegalStateException("Réponse de synthèse invalide: " + content, e);
+            throw new IllegalStateException("Invalid summary response: " + content, e);
         }
     }
 
@@ -387,7 +387,7 @@ public abstract class RemoteAIService implements AIService {
     public MarketingModels.MarketingReport analyzeMarketing(MarketingModels.MarketingAggregates aggregates,
                                                            AIModels.AIProvider provider) {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Clé API absente pour le fournisseur " + providerName);
+            throw new IllegalStateException("Missing API key for provider " + providerName);
         }
         // L'analyste ne reçoit QUE des statistiques agrégées (jamais les conversations brutes).
         String system = AgentFiles.marketingSystemPrompt();
@@ -395,7 +395,7 @@ public abstract class RemoteAIService implements AIService {
         try {
             user = objectMapper.writeValueAsString(aggregates == null ? Map.of() : aggregates);
         } catch (Exception e) {
-            throw new IllegalStateException("Agrégats marketing non sérialisables", e);
+            throw new IllegalStateException("Unable to serialise marketing aggregates", e);
         }
         String content = call(system, user);
         try {
@@ -403,7 +403,7 @@ public abstract class RemoteAIService implements AIService {
                     objectMapper.readValue(content, MarketingModels.MarketingReport.class);
             return withReportMeta(parsed, aggregates);
         } catch (Exception e) {
-            throw new IllegalStateException("Rapport marketing invalide: " + content, e);
+            throw new IllegalStateException("Invalid marketing report: " + content, e);
         }
     }
 
@@ -412,7 +412,7 @@ public abstract class RemoteAIService implements AIService {
             com.coach.financier.model.AdvisorFeedbackModels.AdvisorFeedbackAggregates aggregates,
             AIModels.AIProvider provider) {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Clé API absente pour le fournisseur " + providerName);
+            throw new IllegalStateException("Missing API key for provider " + providerName);
         }
         // L'analyste ne reçoit QUE les KPI calculés et des commentaires anonymisés (§1 du prompt).
         String system = AgentFiles.advisorFeedbackSystemPrompt();
@@ -420,7 +420,7 @@ public abstract class RemoteAIService implements AIService {
         try {
             user = objectMapper.writeValueAsString(advisorPayload(aggregates));
         } catch (Exception e) {
-            throw new IllegalStateException("Agrégats de feedback conseiller non sérialisables", e);
+            throw new IllegalStateException("Unable to serialise advisor feedback aggregates", e);
         }
         String content = call(system, user);
         try {
@@ -429,7 +429,7 @@ public abstract class RemoteAIService implements AIService {
                             com.coach.financier.model.AdvisorFeedbackModels.AdvisorFeedbackReport.class);
             return withAdvisorMeta(parsed, aggregates);
         } catch (Exception e) {
-            throw new IllegalStateException("Rapport Feedback Conseiller invalide: " + content, e);
+            throw new IllegalStateException("Invalid Advisor Feedback report: " + content, e);
         }
     }
 
@@ -542,7 +542,7 @@ public abstract class RemoteAIService implements AIService {
             com.coach.financier.model.QualityModels.QualityAggregates aggregates,
             AIModels.AIProvider provider) {
         if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("Clé API absente pour le fournisseur " + providerName);
+            throw new IllegalStateException("Missing API key for provider " + providerName);
         }
         // L'analyste qualité ne reçoit QUE des agrégats calculés + des commentaires anonymisés
         // (jamais de donnée bancaire, jamais d'identité client).
@@ -551,7 +551,7 @@ public abstract class RemoteAIService implements AIService {
         try {
             user = objectMapper.writeValueAsString(qualityPayload(aggregates));
         } catch (Exception e) {
-            throw new IllegalStateException("Agrégats qualité non sérialisables", e);
+            throw new IllegalStateException("Unable to serialise quality aggregates", e);
         }
         String content = call(system, user);
         try {
@@ -559,7 +559,7 @@ public abstract class RemoteAIService implements AIService {
                     objectMapper.readValue(content, com.coach.financier.model.QualityModels.QualityReport.class);
             return withQualityMeta(parsed, aggregates);
         } catch (Exception e) {
-            throw new IllegalStateException("Rapport qualité invalide: " + content, e);
+            throw new IllegalStateException("Invalid quality report: " + content, e);
         }
     }
 
@@ -657,7 +657,7 @@ public abstract class RemoteAIService implements AIService {
         log.info("[IA] {} : réponse complète reçue en {} ms (stream=false, modèle={})",
                 providerName, elapsedMillis(callStarted, responseReceived), model);
         if (rawResponse == null || rawResponse.isBlank()) {
-            throw new IllegalStateException("Réponse IA vide");
+            throw new IllegalStateException("Empty AI response");
         }
         try {
             JsonNode response = objectMapper.readTree(rawResponse);
@@ -670,7 +670,7 @@ public abstract class RemoteAIService implements AIService {
                     providerName, elapsedMillis(callStarted, System.nanoTime()), answer.length());
             return answer;
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la lecture de la réponse JSON de l'IA", e);
+            throw new RuntimeException("Error while reading the AI JSON response", e);
         }
     }
 
@@ -688,9 +688,9 @@ public abstract class RemoteAIService implements AIService {
         if (isTimeout(e)) {
             log.warn("[IA] {} : délai de lecture dépassé ({} s) — aucune réponse reçue à temps. {}",
                     providerName, readTimeoutMs / 1000, readTimeoutHint());
-            return new IllegalStateException("Délai de lecture dépassé après " + (readTimeoutMs / 1000)
-                    + " s sur le fournisseur " + providerName
-                    + " : le modèle n'a pas rendu sa réponse à temps. " + readTimeoutHint(), e);
+            return new IllegalStateException("Read timeout exceeded after " + (readTimeoutMs / 1000)
+                    + " s on provider " + providerName
+                    + ": the model did not return its response in time. " + readTimeoutHint(), e);
         }
         // Appel REFUSÉ par le fournisseur (400/401/429/500…) : le corps de la réponse est la seule source
         // d'explication (ex. LM Studio : « The number of tokens to keep from the initial prompt is greater
@@ -698,13 +698,13 @@ public abstract class RemoteAIService implements AIService {
         if (e instanceof RestClientResponseException response) {
             log.warn("[IA] {} : le fournisseur a refusé l'appel (HTTP {}) : {}", providerName,
                     response.getStatusCode().value(), tailOf(response.getResponseBodyAsString()));
-            return new IllegalStateException("Le fournisseur " + providerName + " a refusé l'appel (HTTP "
+            return new IllegalStateException("Provider " + providerName + " rejected the call (HTTP "
                     + response.getStatusCode().value() + ") : " + tailOf(response.getResponseBodyAsString()),
                     e);
         }
         return e instanceof RuntimeException runtime
                 ? runtime
-                : new IllegalStateException("Appel du fournisseur " + providerName + " impossible : "
+                : new IllegalStateException("Call to provider " + providerName + " failed: "
                         + e.getMessage(), e);
     }
 
@@ -732,8 +732,8 @@ public abstract class RemoteAIService implements AIService {
      * réglable par configuration ({@code app.ai.local.read-timeout-seconds}).
      */
     protected String readTimeoutHint() {
-        return "Allongez le délai de lecture du fournisseur " + providerName
-                + " si le service est simplement lent.";
+        return "Increase the read timeout of provider " + providerName
+                + " if the service is simply slow.";
     }
 
     /**
@@ -767,7 +767,7 @@ public abstract class RemoteAIService implements AIService {
     /** Fin d'un texte, pour un message de diagnostic (jamais plus de {@link #ERROR_TAIL_LENGTH} caractères). */
     private static String tailOf(String content) {
         if (content == null) {
-            return "(vide)";
+            return "(empty)";
         }
         return content.length() <= ERROR_TAIL_LENGTH
                 ? content : content.substring(content.length() - ERROR_TAIL_LENGTH);
@@ -799,15 +799,15 @@ public abstract class RemoteAIService implements AIService {
                                                                        AIModels.AIProvider provider) {
         requireApiKey();
         String content = call(AgentFiles.promptControllerSystemPrompt(),
-                serialize(context, "Contexte de contrôle non sérialisable"));
+                serialize(context, "Unable to serialise the review context"));
         PromptOptimizationModels.ControllerFeedback feedback;
         try {
             feedback = objectMapper.readValue(content, PromptOptimizationModels.ControllerFeedback.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Diagnostic du contrôleur invalide: " + content, e);
+            throw new IllegalStateException("Invalid controller diagnostic: " + content, e);
         }
         if (feedback == null) {
-            throw new IllegalStateException("Diagnostic du contrôleur vide");
+            throw new IllegalStateException("Empty controller diagnostic");
         }
         return feedback;
     }
@@ -817,15 +817,15 @@ public abstract class RemoteAIService implements AIService {
                                                                   AIModels.AIProvider provider) {
         requireApiKey();
         String content = call(AgentFiles.promptEditorSystemPrompt(),
-                serialize(context, "Contexte d'édition non sérialisable"));
+                serialize(context, "Unable to serialise the editing context"));
         PromptOptimizationModels.EditorResult result;
         try {
             result = objectMapper.readValue(content, PromptOptimizationModels.EditorResult.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Proposition d'édition invalide: " + content, e);
+            throw new IllegalStateException("Invalid editing proposal: " + content, e);
         }
         if (result == null) {
-            throw new IllegalStateException("Proposition d'édition vide");
+            throw new IllegalStateException("Empty editing proposal");
         }
         return result;
     }
@@ -839,12 +839,12 @@ public abstract class RemoteAIService implements AIService {
     public PromptOptimizationModels.ClientTurn clientTurn(Map<String, Object> context, AIModels.AIProvider provider) {
         requireApiKey();
         String content = call(AgentFiles.promptClientSystemPrompt(),
-                serialize(context, "Contexte client non sérialisable"));
+                serialize(context, "Unable to serialise the client context"));
         PromptOptimizationModels.ClientTurn turn;
         try {
             turn = objectMapper.readValue(content, PromptOptimizationModels.ClientTurn.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Question du client invalide: " + content, e);
+            throw new IllegalStateException("Invalid customer question: " + content, e);
         }
         return turn == null ? PromptOptimizationModels.ClientTurn.empty() : turn;
     }
@@ -858,17 +858,17 @@ public abstract class RemoteAIService implements AIService {
     public PromptOptimizationModels.ClientBrief clientBrief(Map<String, Object> context, AIModels.AIProvider provider) {
         requireApiKey();
         String content = call(AgentFiles.promptClientBriefSystemPrompt(),
-                serialize(context, "Contexte de génération du projet non sérialisable"));
+                serialize(context, "Unable to serialise the project generation context"));
         PromptOptimizationModels.ClientBrief brief;
         try {
             brief = objectMapper.readValue(content, PromptOptimizationModels.ClientBrief.class);
         } catch (Exception e) {
-            throw new IllegalStateException("Projet du client invalide: " + content, e);
+            throw new IllegalStateException("Invalid customer project: " + content, e);
         }
         if (brief == null || !brief.usable()) {
             // Une réponse vide n'est pas un projet : mieux vaut un échec explicite qu'un brief vide proposé à
             // l'humain, qui lancerait ensuite un scénario sans aucun cadre.
-            throw new IllegalStateException("Projet du client invalide: réponse vide");
+            throw new IllegalStateException("Invalid customer project: empty response");
         }
         return brief;
     }

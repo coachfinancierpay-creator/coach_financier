@@ -24,7 +24,7 @@ export default function Agents() {
       })
       .catch((err) => {
         if (!active) return
-        setError(err instanceof Error ? err.message : 'Erreur de chargement.')
+        setError(err instanceof Error ? err.message : 'Loading error.')
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -49,7 +49,7 @@ export default function Agents() {
       })
       .catch((err) => {
         if (!active) return
-        setError(err instanceof Error ? err.message : 'Erreur de chargement.')
+        setError(err instanceof Error ? err.message : 'Loading error.')
       })
       .finally(() => {
         if (active) setLoading(false)
@@ -70,7 +70,7 @@ export default function Agents() {
       setContent(data.content ?? content)
       setSaved(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de la sauvegarde.')
+      setError(err instanceof Error ? err.message : 'Error while saving.')
     } finally {
       setSaving(false)
     }
@@ -79,9 +79,9 @@ export default function Agents() {
   return (
     <div className="logs-shell agents-page">
       <header className="logs-header">
-        <a href="#/" className="logs-back"><ArrowLeft size={18} /> Retour au chat</a>
+        <a href="#/" className="logs-back"><ArrowLeft size={18} /> Back to chat</a>
         <h1><Bot size={22} /> Agents (prompts)</h1>
-        <span className="logs-status ok"><span className="status-dot" /> Enregistré dans agent/ — actif immédiatement</span>
+        <span className="logs-status ok"><span className="status-dot" /> Saved in agent/ — active immediately</span>
       </header>
 
       {error && <div className="logs-error">{error}</div>}
@@ -106,20 +106,20 @@ export default function Agents() {
         </label>
 
         <p className="prompt-hint">
-          Chaque agent possède son propre prompt système. L&rsquo;agent <strong>générique</strong>{' '}
-          inclut le contenu de l&rsquo;<strong>agent principal</strong> via la balise{' '}
-          <code>[agent_principal]</code>. L&rsquo;<strong>agent de suivi</strong> est utilisé à la fin
-          d&rsquo;une conversation (dossier conseiller + brouillon d&rsquo;email client) et les agents
-          analystes <strong>marketing</strong>, <strong>qualité &amp; satisfaction</strong> et{' '}
-          <strong>feedback conseiller</strong> rédigent les rapports des pages{' '}
-          <a href="#/marketing">Marketing</a>, <a href="#/quality">Qualité</a> et{' '}
-          <a href="#/advisor-feedback">Feedback Conseillers</a> à partir des statistiques calculées par le
-          backend. La sauvegarde est prise en compte{' '}
-          <strong>immédiatement</strong>, sans redémarrer le serveur.
+          Each agent has its own system prompt. The <strong>generic</strong> agent{' '}
+          includes the content of the <strong>main agent</strong> through the{' '}
+          <code>[agent_principal]</code> tag. The <strong>follow-up agent</strong> is used at the end
+          of a conversation (advisor case file + customer email draft) and the analyst agents{' '}
+          <strong>marketing</strong>, <strong>quality &amp; satisfaction</strong> and{' '}
+          <strong>advisor feedback</strong> write the reports for the{' '}
+          <a href="#/marketing">Marketing</a>, <a href="#/quality">Quality</a> and{' '}
+          <a href="#/advisor-feedback">Advisor Feedback</a> pages from the statistics computed by the
+          backend. Saving takes effect{' '}
+          <strong>immediately</strong>, without restarting the server.
         </p>
 
         {loading ? (
-          <div className="prompt-loading">Chargement…</div>
+          <div className="prompt-loading">Loading…</div>
         ) : (
           <textarea
             className="prompt-textarea"
@@ -128,18 +128,18 @@ export default function Agents() {
               setContent(event.target.value)
               setSaved(false)
             }}
-            placeholder="Saisissez le prompt de l'agent…"
+            placeholder="Enter the agent prompt…"
             spellCheck={false}
           />
         )}
 
         <div className="prompt-actions">
           <span className={`prompt-saved ${saved ? 'visible' : ''}`}>
-            {saved && <><Check size={16} /> Prompt « {selectedKey} » enregistré et actif.</>}
+            {saved && <><Check size={16} /> Prompt “{selectedKey}” saved and active.</>}
           </span>
           <button className="prompt-save" type="button" onClick={handleSave} disabled={loading || saving}>
             {saving ? <X size={16} /> : <Save size={16} />}
-            {saving ? 'Enregistrement…' : 'Enregistrer'}
+            {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
       </div>

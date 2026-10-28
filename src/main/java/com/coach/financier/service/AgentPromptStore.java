@@ -66,19 +66,19 @@ public class AgentPromptStore {
         if (generic != null) {
             result.add(entry(generic.getTheme(), generic.getLibelle(), generic.getPrompt()));
         }
-        result.add(entry(PRINCIPAL_KEY, "Agent principal", PRINCIPAL_FILE));
-        result.add(entry(SUIVI_KEY, "Agent de suivi (fin de conversation)", AgentFiles.SUIVI_PROMPT_FILE));
-        result.add(entry(MARKETING_KEY, "Agent analyste marketing", AgentFiles.MARKETING_PROMPT_FILE));
-        result.add(entry(QUALITY_KEY, "Agent analyste qualité & satisfaction", AgentFiles.QUALITY_PROMPT_FILE));
-        result.add(entry(ADVISOR_FEEDBACK_KEY, "Analyste Feedback Conseiller",
+        result.add(entry(PRINCIPAL_KEY, "Main agent", PRINCIPAL_FILE));
+        result.add(entry(SUIVI_KEY, "Follow-up agent (end of conversation)", AgentFiles.SUIVI_PROMPT_FILE));
+        result.add(entry(MARKETING_KEY, "Marketing analyst agent", AgentFiles.MARKETING_PROMPT_FILE));
+        result.add(entry(QUALITY_KEY, "Quality & satisfaction analyst agent", AgentFiles.QUALITY_PROMPT_FILE));
+        result.add(entry(ADVISOR_FEEDBACK_KEY, "Advisor Feedback Analyst",
                 AgentFiles.ADVISOR_FEEDBACK_PROMPT_FILE));
-        result.add(entry(PROMPT_CONTROLLER_KEY, "Atelier prompts — agent contrôleur (Agent B)",
+        result.add(entry(PROMPT_CONTROLLER_KEY, "Prompt Lab — controller agent (Agent B)",
                 AgentFiles.PROMPT_CONTROLLER_PROMPT_FILE));
-        result.add(entry(PROMPT_EDITOR_KEY, "Atelier prompts — agent éditeur (Agent A)",
+        result.add(entry(PROMPT_EDITOR_KEY, "Prompt Lab — editor agent (Agent A)",
                 AgentFiles.PROMPT_EDITOR_PROMPT_FILE));
-        result.add(entry(PROMPT_CLIENT_KEY, "Atelier prompts — client simulé (Agent C)",
+        result.add(entry(PROMPT_CLIENT_KEY, "Prompt Lab — simulated client (Agent C)",
                 AgentFiles.PROMPT_CLIENT_PROMPT_FILE));
-        result.add(entry(PROMPT_CLIENT_BRIEF_KEY, "Atelier prompts — projet du client (Agent C, « Générer projet »)",
+        result.add(entry(PROMPT_CLIENT_BRIEF_KEY, "Prompt Lab — client project (Agent C, \"Generate project\")",
                 AgentFiles.PROMPT_CLIENT_BRIEF_PROMPT_FILE));
         for (AgentDefinition agent : agents) {
             if (GENERIC_THEME.equalsIgnoreCase(agent.getTheme())) {
@@ -139,7 +139,7 @@ public class AgentPromptStore {
     public void write(String key, String content) {
         String file = fileNameOf(key);
         if (file == null) {
-            throw new IllegalArgumentException("Agent inconnu : " + key);
+            throw new IllegalArgumentException("Unknown agent: " + key);
         }
         String text = content == null ? "" : content;
         try {
@@ -147,7 +147,7 @@ public class AgentPromptStore {
             Files.createDirectories(dir);
             Files.writeString(dir.resolve(file), text, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Impossible d'écrire agent/" + file, e);
+            throw new IllegalStateException("Unable to write agent/" + file, e);
         }
     }
 }

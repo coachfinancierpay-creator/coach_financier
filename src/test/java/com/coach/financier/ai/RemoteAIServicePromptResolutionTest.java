@@ -33,15 +33,15 @@ class RemoteAIServicePromptResolutionTest {
         String resolved = Probe.resolveSystemPrompt(frozen, Map.of("agent", "credit_conso"));
 
         assertEquals(frozen, resolved, "une campagne doit rejouer la version figée, pas le disque");
-        assertFalse(resolved.contains("Crédit à la consommation"));
+        assertFalse(resolved.contains("Consumer Loan"));
     }
 
     @Test
     void withoutOverrideTheActiveAgentPromptIsUsed() {
         String resolved = Probe.resolveSystemPrompt(null, Map.of("agent", "credit_conso"));
 
-        assertTrue(resolved.contains("Crédit à la consommation"), "prompt de l'agent actif");
-        assertTrue(resolved.contains("CONTINUITÉ DE CONVERSATION"), "agent principal inclus");
+        assertTrue(resolved.contains("Consumer Loan"), "prompt de l'agent actif");
+        assertTrue(resolved.contains("CONVERSATION CONTINUITY"), "agent principal inclus");
     }
 
     @Test
@@ -55,7 +55,7 @@ class RemoteAIServicePromptResolutionTest {
     void withoutAgentInContextTheGenericAgentIsUsed() {
         String resolved = Probe.resolveSystemPrompt(null, Map.of());
 
-        assertTrue(resolved.contains("agent « Générique »"), "repli sur l'agent générique");
+        assertTrue(resolved.contains("You are the \"Generic\" agent"), "repli sur l'agent générique");
         assertFalse(resolved.contains("[["), "aucun marqueur de zone éditable dans le prompt envoyé");
     }
 }

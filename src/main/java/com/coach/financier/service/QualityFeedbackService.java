@@ -70,21 +70,21 @@ public class QualityFeedbackService {
     public FeedbackResponse submit(String sessionId, QualityModels.FeedbackRequest request) {
         if (!properties.isEnabled()) {
             return new FeedbackResponse("DISABLED", null, sessionId, null, List.of(),
-                    "Module qualité désactivé.");
+                    "Quality module disabled.");
         }
         if (sessionId == null || sessionId.isBlank()) {
             return new FeedbackResponse("INVALID", null, sessionId, null, List.of(),
-                    "Session inconnue : aucun avis enregistré.");
+                    "Unknown session: no review saved.");
         }
         if (request == null || request.rating() == null) {
             // « Passer » : aucun avis, aucune erreur, la conversation se clôture normalement.
             return new FeedbackResponse("SKIPPED", null, sessionId, null, List.of(),
-                    "Aucun avis fourni (facultatif).");
+                    "No review provided (optional).");
         }
         int rating = request.rating();
         if (rating < 1 || rating > 5) {
             return new FeedbackResponse("INVALID", null, sessionId, rating, List.of(),
-                    "La note doit être comprise entre 1 et 5.");
+                    "The rating must be between 1 and 5.");
         }
 
         String sanitizedComment = QualityModels.sanitizeComment(request.comment(), properties.commentMaxLength());
@@ -110,12 +110,12 @@ public class QualityFeedbackService {
         QualityFeedbackStore.SaveResult result = feedbackStore.save(feedback);
         if (result.duplicate()) {
             return new FeedbackResponse("DUPLICATE", result.feedback().feedbackId(), sessionId, rating, reasons,
-                    "Un avis a déjà été enregistré pour cette conversation.");
+                    "A review has already been saved for this conversation.");
         }
         if (!result.saved()) {
             log.warn("Avis non enregistré pour la session {} : {}", sessionId, result.error());
             return new FeedbackResponse("STORAGE_ERROR", feedbackId, sessionId, rating, reasons,
-                    "Avis non enregistré (la conversation reste clôturable).");
+                    "Review not saved (the conversation can still be closed).");
         }
         return new FeedbackResponse("SAVED", feedbackId, sessionId, rating, reasons, null);
     }

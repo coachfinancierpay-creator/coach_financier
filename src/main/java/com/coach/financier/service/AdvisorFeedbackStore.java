@@ -52,7 +52,7 @@ public class AdvisorFeedbackStore {
     public SaveResult save(AdvisorFeedbackModels.AdvisorFeedbackRequest request,
                            AdvisorFeedbackModels.AdvisorFeedback built) {
         if (built == null || built.feedbackId() == null || built.feedbackId().isBlank()) {
-            return new SaveResult(false, false, built, "feedback sans identifiant");
+            return new SaveResult(false, false, built, "feedback without identifier");
         }
         ensureKeysLoaded();
         String logicalKey = logicalKey(built.sessionId(), built.advisorIdHash(), built.version());
@@ -60,7 +60,7 @@ public class AdvisorFeedbackStore {
             return new SaveResult(false, true, built, null);
         }
         if (!write(built)) {
-            return new SaveResult(false, false, built, "écriture impossible dans " + properties.eventsDir());
+            return new SaveResult(false, false, built, "unable to write to " + properties.eventsDir());
         }
         knownKeys.add(built.feedbackId());
         knownKeys.add(logicalKey);

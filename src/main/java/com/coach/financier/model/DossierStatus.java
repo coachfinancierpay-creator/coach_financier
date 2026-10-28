@@ -15,14 +15,14 @@ import java.util.Locale;
  * {@link #NOUVEAU} — c'est le conseiller qui fait avancer le dossier.
  */
 public enum DossierStatus {
-    NOUVEAU("Nouveau", 0),
-    A_CONTACTER("A contacter", 1),
-    CONTACTE("Contacté", 2),
-    QUALIFIE("Qualifié", 3),
-    RDV("RDV planifié", 4),
-    CONCLU("Conclu", 5),
-    PERDU("Sans suite", 5),
-    CLOTURE("Clôturé", 6);
+    NOUVEAU("New", 0),
+    A_CONTACTER("To contact", 1),
+    CONTACTE("Contacted", 2),
+    QUALIFIE("Qualified", 3),
+    RDV("Appointment booked", 4),
+    CONCLU("Won", 5),
+    PERDU("No follow-up", 5),
+    CLOTURE("Closed", 6);
 
     private final String label;
     private final int rank;
